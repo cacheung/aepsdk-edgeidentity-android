@@ -116,16 +116,14 @@ public class IdentityECIDHandlingTest {
 	@Test
 	public void testECID_AreDifferentAfterPrivacyChange() throws Exception {
 		/// Test Edge Identity and IdentityDirect have same ECID on bootup, and after privacy change ECIDs are different
-		registerIdentityDirectExtension();
-
-		// register EdgeIdentity extension
-		Identity.registerExtension();
+		setIdentityDirectPersistedECID("legacyECID");
+		registerBothIdentityExtensions();
 		TestHelper.waitForThreads(2000);
 
 		// verify ECID for both extensions are same
 		String directECID = getIdentityDirectECIDSync();
 		String edgeECID = getExperienceCloudIdSync();
-		assertNotNull(edgeECID);
+		assertEquals("legacyECID", edgeECID);
 		assertEquals(directECID, edgeECID);
 
 		//  Toggle privacy
@@ -142,16 +140,14 @@ public class IdentityECIDHandlingTest {
 		/// Test Edge Identity and IdentityDirect have same ECID on bootup, and after resetIdentities and privacy change ECIDs are different
 
 		// 1) Register Identity then Edge Identity and verify both have same ECID
-		registerIdentityDirectExtension();
-
-		// register EdgeIdentity extension
-		Identity.registerExtension();
+		setIdentityDirectPersistedECID("legacyECID");
+		registerBothIdentityExtensions();
 		TestHelper.waitForThreads(2000);
 
 		// verify ECID for both extensions are same
 		String directECID = getIdentityDirectECIDSync();
 		String edgeECID = getExperienceCloudIdSync();
-		assertNotNull(edgeECID);
+		assertEquals("legacyECID", edgeECID);
 		assertEquals(directECID, edgeECID);
 
 		// 2) Reset identities and toggle privacy and verify legacy ECID added to IdentityMap
