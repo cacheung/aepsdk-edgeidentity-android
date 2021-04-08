@@ -20,12 +20,21 @@ import com.adobe.marketing.mobile.LoggingMode;
 import com.adobe.marketing.mobile.MobileCore;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static com.adobe.marketing.mobile.edge.identity.IdentityConstants.LOG_TAG;
 
 
 class IdentityExtension extends Extension {
-	private final IdentityState state = new IdentityState(new IdentityProperties());
+	private ExecutorService executorService;
+	private final Object executorMutex = new Object();
+	private final ConcurrentLinkedQueue<Event>
+	cachedEvents; // cached events in memory until required shared states are resolved
+
+	// package private for testing
+	IdentityState state = new IdentityState(new IdentityProperties());
 
 	/**
 	 * Constructor.
@@ -38,8 +47,6 @@ class IdentityExtension extends Extension {
 	 *      and EventSource {@link IdentityConstants.EventSource#BOOTED}</li>
 	 *     <li> Listener {@link ListenerEdgeIdentityRequestIdentity} to listen for event with eventType {@link IdentityConstants.EventType#EDGE_IDENTITY}
 	 *     and EventSource {@link IdentityConstants.EventSource#REQUEST_IDENTITY}</li>
-	 *     <li> Listener {@link ListenerGenericIdentityRequestContent} to listen for event with eventType {@link IdentityConstants.EventType#GENERIC_IDENTITY}
-	 *     and EventSource {@link IdentityConstants.EventSource#REQUEST_CONTENT}</li>
 	 *     <li> Listener {@link ListenerEdgeIdentityUpdateIdentity} to listen for event with eventType {@link IdentityConstants.EventType#EDGE_IDENTITY}
 	 *     and EventSource {@link IdentityConstants.EventSource#UPDATE_IDENTITY}</li>
 	 *     <li> Listener {@link ListenerEdgeIdentityRemoveIdentity} to listen for event with eventType {@link IdentityConstants.EventType#EDGE_IDENTITY}
@@ -58,6 +65,8 @@ class IdentityExtension extends Extension {
 	 */
 	protected IdentityExtension(ExtensionApi extensionApi) {
 		super(extensionApi);
+		cachedEvents = new ConcurrentLinkedQueue<>();
+
 		ExtensionErrorCallback<ExtensionError> listenerErrorCallback = new ExtensionErrorCallback<ExtensionError>() {
 			@Override
 			public void error(final ExtensionError extensionError) {
@@ -70,8 +79,6 @@ class IdentityExtension extends Extension {
 										   ListenerEventHubBoot.class, listenerErrorCallback);
 		extensionApi.registerEventListener(IdentityConstants.EventType.EDGE_IDENTITY,
 										   IdentityConstants.EventSource.REQUEST_IDENTITY, ListenerEdgeIdentityRequestIdentity.class, listenerErrorCallback);
-		extensionApi.registerEventListener(IdentityConstants.EventType.GENERIC_IDENTITY,
-										   IdentityConstants.EventSource.REQUEST_CONTENT, ListenerGenericIdentityRequestContent.class, listenerErrorCallback);
 		extensionApi.registerEventListener(IdentityConstants.EventType.EDGE_IDENTITY,
 										   IdentityConstants.EventSource.UPDATE_IDENTITY, ListenerEdgeIdentityUpdateIdentity.class, listenerErrorCallback);
 		extensionApi.registerEventListener(IdentityConstants.EventType.EDGE_IDENTITY,
@@ -80,7 +87,6 @@ class IdentityExtension extends Extension {
 										   ListenerHubSharedState.class, listenerErrorCallback);
 		extensionApi.registerEventListener(IdentityConstants.EventType.GENERIC_IDENTITY,
 										   IdentityConstants.EventSource.REQUEST_RESET, ListenerIdentityRequestReset.class, listenerErrorCallback);
-		state.bootUp();
 	}
 
 	/**
@@ -103,26 +109,89 @@ class IdentityExtension extends Extension {
 		return IdentityConstants.EXTENSION_VERSION;
 	}
 
-
 	/**
-	 * Call this method with the EventHub's Boot event to handle the boot operation of the {@code Identity} Extension.
-	 * <p>
-	 * On boot share the initial identities loaded from persistence to XDM shared state.
-	 *
-	 * @param event the boot {@link Event}
+	 * Adds an event to the event queue and starts processing the queue.
+	 * @param event the received event to be added in the events queue; should not be null
 	 */
-	void handleEventHubBoot(final Event event) {
-
-		// share the initial XDMSharedState on bootUp
-		final Map currentIdentities = state.getIdentityProperties().toXDMData(false);
-
-		if (currentIdentities == null || currentIdentities.isEmpty()) {
-			MobileCore.log(LoggingMode.WARNING, LOG_TAG,
-						   "IdentityExtension - Nothing loaded from persistence for initial Identity XDM shared state on boot");
+	void processAddEvent(final Event event) {
+		if (event == null) {
 			return;
 		}
 
-		shareIdentityXDMSharedState(event);
+		cachedEvents.add(event);
+		processCachedEvents();
+	}
+
+	/**
+	 * Processes the cached events in the order they were received.
+	 */
+	void processCachedEvents() {
+		if (!state.hasBooted()) {
+			return;
+		}
+
+		while (!cachedEvents.isEmpty()) {
+			final Event event = cachedEvents.peek();
+
+			if (EventUtils.isRequestIdentityEvent(event)) {
+				handleIdentityRequest(event);
+			} else if (EventUtils.isUpdateIdentityEvent(event)) {
+				handleUpdateIdentities(event);
+			} else if (EventUtils.isRemoveIdentityEvent(event)) {
+				handleRemoveIdentity(event);
+			} else if (EventUtils.isRequestResetEvent(event)) {
+				handleRequestReset(event);
+			} else if (EventUtils.isSharedStateUpdateFor(IdentityConstants.SharedState.IdentityDirect.NAME, event)) {
+				handleIdentityDirectECIDUpdate(event);
+			}
+
+			cachedEvents.poll();
+		}
+	}
+
+	/**
+	 * Calls {@link IdentityState#bootupIfReady(SharedStateCallback)} with a valid callback
+	 *
+	 * @return True if the bootup is complete
+	 */
+	boolean bootupIfReady() {
+		SharedStateCallback callback = new SharedStateCallback() {
+			@Override
+			public Map<String, Object> getSharedState(final String stateOwner, final Event event) {
+				ExtensionApi api = getApi();
+
+				if (api == null) {
+					return null;
+				}
+
+				return api.getSharedEventState(stateOwner, event, new ExtensionErrorCallback<ExtensionError>() {
+					@Override
+					public void error(ExtensionError extensionError) {
+						MobileCore.log(LoggingMode.WARNING, LOG_TAG,
+									   "SharedStateCallback - Unable to fetch shared state, failed with error: " + extensionError.getErrorName());
+					}
+				});
+			}
+
+			@Override
+			public boolean setXDMSharedEventState(final Map<String, Object> state, final Event event) {
+				ExtensionApi api = getApi();
+
+				if (api == null) {
+					return false;
+				}
+
+				return api.setXDMSharedEventState(state, event, new ExtensionErrorCallback<ExtensionError>() {
+					@Override
+					public void error(ExtensionError extensionError) {
+						MobileCore.log(LoggingMode.WARNING, LOG_TAG,
+									   "SharedStateCallback - Unable to set XDM shared state, failed with error: " + extensionError.getErrorName());
+					}
+				});
+			}
+		};
+
+		return state.bootupIfReady(callback);
 	}
 
 	/**
@@ -165,55 +234,27 @@ class IdentityExtension extends Extension {
 		shareIdentityXDMSharedState(event);
 	}
 
-	void handleGenericIdentityRequest(final Event event) {
-		// TODO
-	}
-
 	/**
 	 * Handles events of type {@code com.adobe.eventType.hub} and source {@code com.adobe.eventSource.sharedState}.
 	 * If the state change event is for the direct Identity extension, get the direct Identity shared state and attempt
 	 * to update the legacy ECID with the direct Identity extension ECID.
 	 *
-	 * @param event an event of type {@code com.adobe.eventType.hub} and source {@code com.adobe.eventSource.sharedState}
+	 * @param event an event of type {@code com.adobe.eventType.hub} and source {@code com.adobe.eventSource.sharedState};
+	 *              the event and its data should not be null, checked in listener
 	 */
 	void handleHubSharedState(final Event event) {
-		if (event == null || event.getEventData() == null) {
+		if (!EventUtils.isSharedStateUpdateFor(IdentityConstants.SharedState.Hub.NAME, event) &&
+				!EventUtils.isSharedStateUpdateFor(IdentityConstants.SharedState.IdentityDirect.NAME, event)) {
 			return;
 		}
 
-		try {
-			final String stateOwner = (String) event.getEventData().get(IdentityConstants.EventDataKeys.STATE_OWNER);
-
-			if (!IdentityConstants.SharedStateKeys.IDENTITY_DIRECT.equals(stateOwner)) {
-				return;
+		if (state.hasBooted()) {
+			// regular Identity Direct shared state update, queue event for handleIdentityDirectECIDUpdate
+			processAddEvent(event);
+		} else {
+			if (bootupIfReady()) {
+				processCachedEvents();
 			}
-		} catch (ClassCastException e) {
-			MobileCore.log(LoggingMode.DEBUG, LOG_TAG,
-						   "IdentityExtension - Could not process direct Identity shared state change event, failed to parse event state owner as String: "
-						   + e.getLocalizedMessage());
-			return;
-		}
-
-
-		final Map<String, Object> identityState = getSharedState(IdentityConstants.SharedStateKeys.IDENTITY_DIRECT, event);
-
-		if (identityState == null) {
-			MobileCore.log(LoggingMode.DEBUG, LOG_TAG,
-						   "IdentityExtension - Could not process direct Identity shared state change event, Identity shared state is null");
-			return;
-		}
-
-		try {
-			final String legacyEcidString = (String) identityState.get(IdentityConstants.EventDataKeys.VISITOR_ID_ECID);
-			final ECID legacyEcid = legacyEcidString == null ? null : new ECID(legacyEcidString);
-
-			if (state.updateLegacyExperienceCloudId(legacyEcid)) {
-				shareIdentityXDMSharedState(event);
-			}
-		} catch (ClassCastException e) {
-			MobileCore.log(LoggingMode.DEBUG, LOG_TAG,
-						   "IdentityExtension - Could not process direct Identity shared state change event, failed to parse stored ECID as String: "
-						   + e.getLocalizedMessage());
 		}
 	}
 
@@ -266,6 +307,43 @@ class IdentityExtension extends Extension {
 							   extensionError.getErrorName());
 			}
 		});
+	}
+
+	/**
+	 * Handles ECID sync between Edge Identity and Identity Direct, usually called when Identity Direct's shared state is updated.
+	 *
+	 * @param event the shared state update {@link Event}
+	 */
+	void handleIdentityDirectECIDUpdate(final Event event) {
+		final Map<String, Object> identityState = getSharedState(IdentityConstants.SharedState.IdentityDirect.NAME, event);
+
+		if (identityState == null) {
+			return;
+		}
+
+		final ECID legacyEcid = EventUtils.getECID(identityState);
+
+		if (state.updateLegacyExperienceCloudId(legacyEcid)) {
+			shareIdentityXDMSharedState(event);
+		}
+	}
+
+	/**
+	 * Called by listeners to retrieve an {@code ExecutorService}.
+	 * The {@code ExecutorService} is used to process events on a separate thread than the
+	 * {@code EventHub} thread on which they were received. Processing events on a separate
+	 * thread prevents blocking of the {@code EventHub}.
+	 *
+	 * @return this extension's instance of a single thread executor
+	 */
+	ExecutorService getExecutor() {
+		synchronized (executorMutex) {
+			if (executorService == null) {
+				executorService = Executors.newSingleThreadExecutor();
+			}
+
+			return executorService;
+		}
 	}
 
 	/**
