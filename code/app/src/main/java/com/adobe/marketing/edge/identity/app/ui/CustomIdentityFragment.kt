@@ -12,7 +12,6 @@
 package com.adobe.marketing.edge.identity.app.ui
 
 import android.os.Bundle
-import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -22,8 +21,6 @@ import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.RadioButton
 import android.widget.RadioGroup
-//import androidx.ads.identifier.AdvertisingIdClient
-//import androidx.ads.identifier.AdvertisingIdInfo
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -34,15 +31,8 @@ import com.adobe.marketing.mobile.edge.identity.AuthenticatedState
 import com.adobe.marketing.mobile.edge.identity.Identity
 import com.adobe.marketing.mobile.edge.identity.IdentityItem
 import com.adobe.marketing.mobile.edge.identity.IdentityMap
-import com.google.android.gms.ads.identifier.AdvertisingIdClient
-
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.Executor
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 
 class CustomIdentityFragment : Fragment() {
 
@@ -226,9 +216,7 @@ class CustomIdentityFragment : Fragment() {
                 }
                  */
             }
-
         }
-
 
         return root
     }

@@ -34,8 +34,6 @@ class SharedViewModel : ViewModel() {
         const val EDGE_IDENTITY_IS_REGISTERED_STRING = "Edge Identity is registered"
     }
 
-
-
     // Models for Get Identities View
 
     private val _ecidText = MutableLiveData<String>("")
