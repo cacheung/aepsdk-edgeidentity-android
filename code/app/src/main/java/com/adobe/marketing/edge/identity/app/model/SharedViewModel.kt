@@ -11,10 +11,20 @@
 
 package com.adobe.marketing.edge.identity.app.model
 
+import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.adobe.marketing.mobile.MobileCore
 import com.adobe.marketing.mobile.edge.identity.AuthenticatedState
+import com.google.android.gms.ads.identifier.AdvertisingIdClient
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException
+import com.google.android.gms.common.GooglePlayServicesRepairableException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.io.IOException
 
 class SharedViewModel : ViewModel() {
     companion object {
@@ -23,6 +33,8 @@ class SharedViewModel : ViewModel() {
         const val IDENTITY_IS_REGISTERED_STRING = "Identity is registered"
         const val EDGE_IDENTITY_IS_REGISTERED_STRING = "Edge Identity is registered"
     }
+
+
 
     // Models for Get Identities View
 
@@ -49,6 +61,9 @@ class SharedViewModel : ViewModel() {
 
     // Models for Update Identities View
 
+    private val _adId = MutableLiveData<String>("")
+    val adId: LiveData<String> = _adId
+
     private val _identifier = MutableLiveData<String>("")
     val identifier: LiveData<String> = _identifier
 
@@ -63,6 +78,13 @@ class SharedViewModel : ViewModel() {
 
     private val _authenticatedStateId = MutableLiveData<Int>(null)
     val authenticatedStateId: LiveData<Int> = _authenticatedStateId
+
+    fun setAdId(value: String) {
+        if (_adId.value == value) {
+            return
+        }
+        _adId.value = value
+    }
 
     fun setIdentifier(value: String) {
         if (_identifier.value == value) {
@@ -97,6 +119,24 @@ class SharedViewModel : ViewModel() {
             return
         }
         _authenticatedStateId.value = value
+    }
+
+    fun getGAID(applicationContext: Context) {
+        viewModelScope.launch(Dispatchers.Default) {
+            Log.d("Shared_View_Model", "Thread working in ${Thread.currentThread().name}")
+            try {
+                val idInfo = AdvertisingIdClient.getAdvertisingIdInfo(applicationContext)
+
+                Log.d("Shared_View_Model", "AdID: ${idInfo.id}")
+                MobileCore.setAdvertisingIdentifier(idInfo.id)
+            } catch (e: GooglePlayServicesNotAvailableException) {
+                e.printStackTrace()
+            } catch (e: GooglePlayServicesRepairableException) {
+                e.printStackTrace()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
     }
 
     // Models for Multiple Identities View

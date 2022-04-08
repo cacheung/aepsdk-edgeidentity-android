@@ -12,12 +12,12 @@ spotless {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
 
     defaultConfig {
         applicationId "com.adobe.marketing.edge.identity.app"
         minSdkVersion 19
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode 1
         versionName "1.0"
 
@@ -60,4 +60,9 @@ dependencies {
         exclude group: 'com.adobe.marketing.mobile', module:'edgeidentity'
     }
     implementation 'com.adobe.marketing.mobile:assurance:1+'
+
+    implementation("com.google.guava:guava:31.1-android")
+    implementation("com.google.android.gms:play-services-ads-lite:20.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.0-alpha06")
 }
