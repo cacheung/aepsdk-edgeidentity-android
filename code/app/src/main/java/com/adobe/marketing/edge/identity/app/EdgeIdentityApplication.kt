@@ -16,6 +16,7 @@ import com.adobe.marketing.mobile.Assurance
 import com.adobe.marketing.mobile.Edge
 import com.adobe.marketing.mobile.LoggingMode
 import com.adobe.marketing.mobile.MobileCore
+import com.adobe.marketing.mobile.edge.consent.Consent
 import com.adobe.marketing.mobile.edge.identity.Identity
 
 class EdgeIdentityApplication : Application() {
@@ -29,6 +30,7 @@ class EdgeIdentityApplication : Application() {
         MobileCore.setApplication(this)
         MobileCore.setLogLevel(LoggingMode.VERBOSE)
 
+        Consent.registerExtension()
         Identity.registerExtension()
         Edge.registerExtension()
         Assurance.registerExtension()
