@@ -148,6 +148,7 @@
         android:id="@+id/layout_request_authorization"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="8dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -164,8 +165,9 @@
 
     <LinearLayout
         android:id="@+id/layout_set_ad_id"
-        android:layout_width="402dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="8dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -190,6 +192,30 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/layout_set_ad_id_values"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/layout_set_ad_id"
+        tools:layout_editor_absoluteX="1dp">
+
+        <Button
+            android:id="@+id/btn_set_ad_id_null"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/btn_set_ad_id_null" />
+
+        <Button
+            android:id="@+id/btn_set_ad_id_all_zeros"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/btn_set_ad_id_all_zeros" />
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/layout_consents"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -198,7 +224,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/layout_set_ad_id">
+        app:layout_constraintTop_toBottomOf="@id/layout_set_ad_id_values">
 
         <Button
             android:id="@+id/btn_get_consents"

@@ -215,6 +215,16 @@ class CustomIdentityFragment : Fragment() {
             }
         }
 
+        root.findViewById<Button>(R.id.btn_set_ad_id_null).setOnClickListener {
+            Log.d("Custom_Identity_Fragment", "Setting advertising identifier to: null")
+            MobileCore.setAdvertisingIdentifier(null)
+        }
+
+        root.findViewById<Button>(R.id.btn_set_ad_id_all_zeros).setOnClickListener {
+            Log.d("Custom_Identity_Fragment", "Setting advertising identifier to: 00000000-0000-0000-0000-000000000000")
+            MobileCore.setAdvertisingIdentifier("00000000-0000-0000-0000-000000000000")
+        }
+
         root.findViewById<Button>(R.id.btn_get_consents).setOnClickListener {
             Consent.getConsents { consents ->
                 Log.d("Custom_Identity_Fragment", "Got Consents: $consents")
