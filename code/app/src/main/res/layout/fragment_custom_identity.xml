@@ -189,4 +189,23 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/layout_consents"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layout_set_ad_id">
+
+        <Button
+            android:id="@+id/btn_get_consents"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/btn_get_consents" />
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

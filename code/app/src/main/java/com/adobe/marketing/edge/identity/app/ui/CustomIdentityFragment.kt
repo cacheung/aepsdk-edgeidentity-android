@@ -16,17 +16,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.EditText
-import android.widget.RadioButton
-import android.widget.RadioGroup
+import android.widget.*
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.adobe.marketing.edge.identity.app.R
 import com.adobe.marketing.edge.identity.app.model.SharedViewModel
 import com.adobe.marketing.mobile.MobileCore
+import com.adobe.marketing.mobile.edge.consent.Consent
 import com.adobe.marketing.mobile.edge.identity.AuthenticatedState
 import com.adobe.marketing.mobile.edge.identity.Identity
 import com.adobe.marketing.mobile.edge.identity.IdentityItem
@@ -215,6 +212,12 @@ class CustomIdentityFragment : Fragment() {
                     // library to perform any required ads use cases.
                 }
                  */
+            }
+        }
+
+        root.findViewById<Button>(R.id.btn_get_consents).setOnClickListener {
+            Consent.getConsents { consents ->
+                Log.d("Custom_Identity_Fragment", "Got Consents: $consents")
             }
         }
 
