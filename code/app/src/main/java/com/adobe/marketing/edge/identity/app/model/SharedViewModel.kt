@@ -132,11 +132,11 @@ class SharedViewModel : ViewModel() {
                 Log.d("Shared_View_Model", "AdID: ${idInfo.id}")
                 MobileCore.setAdvertisingIdentifier(idInfo.id)
             } catch (e: GooglePlayServicesNotAvailableException) {
-                e.printStackTrace()
+                Log.d("Shared_View_Model", "GooglePlayServicesNotAvailableException while retrieving the advertising identifier ${e.localizedMessage}")
             } catch (e: GooglePlayServicesRepairableException) {
-                e.printStackTrace()
+                Log.d("Shared_View_Model", "GooglePlayServicesRepairableException while retrieving the advertising identifier ${e.localizedMessage}")
             } catch (e: IOException) {
-                e.printStackTrace()
+                Log.d("Shared_View_Model", "IOException while retrieving the advertising identifier ${e.localizedMessage}")
             }
         }
     }
