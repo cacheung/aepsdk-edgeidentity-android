@@ -42,6 +42,7 @@ class CustomIdentityFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        val LOG_TAG = "Custom_Identity_Fragment"
         val sharedViewModel by activityViewModels<SharedViewModel>()
 
         val root = inflater.inflate(R.layout.fragment_custom_identity, container, false)
@@ -115,7 +116,7 @@ class CustomIdentityFragment : Fragment() {
         // please see the project Documentation -> AEPEdgeIdentity.md : Test App -> GAID Implementation
         root.findViewById<Button>(R.id.btn_get_gaid).setOnClickListener {
             val context = context
-            Log.d("Custom_Identity_Fragment", "context: $context, appContext: ${context?.applicationContext}")
+            Log.d(LOG_TAG, "context: $context, appContext: ${context?.applicationContext}")
             if (context != null) {
                 // Implementation for google play services ads
                 // Logic implemented in ViewModel to leverage managed Kotlin coroutine scope from lifecycle-viewmodel-ktx
@@ -127,18 +128,18 @@ class CustomIdentityFragment : Fragment() {
         }
 
         root.findViewById<Button>(R.id.btn_set_ad_id_null).setOnClickListener {
-            Log.d("Custom_Identity_Fragment", "Setting advertising identifier to: null")
+            Log.d(LOG_TAG, "Setting advertising identifier to: null")
             MobileCore.setAdvertisingIdentifier(null)
         }
 
         root.findViewById<Button>(R.id.btn_set_ad_id_all_zeros).setOnClickListener {
-            Log.d("Custom_Identity_Fragment", "Setting advertising identifier to: 00000000-0000-0000-0000-000000000000")
+            Log.d(LOG_TAG, "Setting advertising identifier to: 00000000-0000-0000-0000-000000000000")
             MobileCore.setAdvertisingIdentifier("00000000-0000-0000-0000-000000000000")
         }
 
         root.findViewById<Button>(R.id.btn_get_consents).setOnClickListener {
             Consent.getConsents { consents ->
-                Log.d("Custom_Identity_Fragment", "Got Consents: $consents")
+                Log.d(LOG_TAG, "Got Consents: $consents")
             }
         }
 
