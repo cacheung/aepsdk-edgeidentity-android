@@ -32,6 +32,7 @@ class SharedViewModel : ViewModel() {
         const val REGISTER_EDGE_IDENTITY_STRING = "Register Edge Identity"
         const val IDENTITY_IS_REGISTERED_STRING = "Identity is registered"
         const val EDGE_IDENTITY_IS_REGISTERED_STRING = "Edge Identity is registered"
+        const val LOG_TAG = "Shared_View_Model"
     }
 
     // Models for Get Identities View
@@ -124,19 +125,19 @@ class SharedViewModel : ViewModel() {
             try {
                 val idInfo = AdvertisingIdClient.getAdvertisingIdInfo(applicationContext)
                 if (idInfo.isLimitAdTrackingEnabled) {
-                    Log.d("Shared_View_Model", "Limit Ad Tracking is enabled by the user, setting ad ID to \"\"")
+                    Log.d(LOG_TAG, "Limit Ad Tracking is enabled by the user, setting ad ID to \"\"")
                     MobileCore.setAdvertisingIdentifier("")
                     return@launch
                 }
 
-                Log.d("Shared_View_Model", "AdID: ${idInfo.id}")
+                Log.d(LOG_TAG, "AdID: ${idInfo.id}")
                 MobileCore.setAdvertisingIdentifier(idInfo.id)
             } catch (e: GooglePlayServicesNotAvailableException) {
-                Log.d("Shared_View_Model", "GooglePlayServicesNotAvailableException while retrieving the advertising identifier ${e.localizedMessage}")
+                Log.d(LOG_TAG, "GooglePlayServicesNotAvailableException while retrieving the advertising identifier ${e.localizedMessage}")
             } catch (e: GooglePlayServicesRepairableException) {
-                Log.d("Shared_View_Model", "GooglePlayServicesRepairableException while retrieving the advertising identifier ${e.localizedMessage}")
+                Log.d(LOG_TAG, "GooglePlayServicesRepairableException while retrieving the advertising identifier ${e.localizedMessage}")
             } catch (e: IOException) {
-                Log.d("Shared_View_Model", "IOException while retrieving the advertising identifier ${e.localizedMessage}")
+                Log.d(LOG_TAG, "IOException while retrieving the advertising identifier ${e.localizedMessage}")
             }
         }
     }
