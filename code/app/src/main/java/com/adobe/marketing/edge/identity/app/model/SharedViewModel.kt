@@ -121,7 +121,6 @@ class SharedViewModel : ViewModel() {
 
     fun getGAID(applicationContext: Context) {
         viewModelScope.launch(Dispatchers.Default) {
-            Log.d("Shared_View_Model", "Thread working in ${Thread.currentThread().name}")
             try {
                 val idInfo = AdvertisingIdClient.getAdvertisingIdInfo(applicationContext)
                 if (idInfo.isLimitAdTrackingEnabled) {
