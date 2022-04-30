@@ -32,8 +32,12 @@ import com.adobe.marketing.mobile.edge.identity.AuthenticatedState
 import com.adobe.marketing.mobile.edge.identity.Identity
 import com.adobe.marketing.mobile.edge.identity.IdentityItem
 import com.adobe.marketing.mobile.edge.identity.IdentityMap
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+
+private const val LOG_TAG = "Custom_Identity_Fragment"
+private const val ZERO_ADVERTISING_ID = "00000000-0000-0000-0000-000000000000"
 
 class CustomIdentityFragment : Fragment() {
 
@@ -42,7 +46,6 @@ class CustomIdentityFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val LOG_TAG = "Custom_Identity_Fragment"
         val sharedViewModel by activityViewModels<SharedViewModel>()
 
         val root = inflater.inflate(R.layout.fragment_custom_identity, container, false)
@@ -113,16 +116,16 @@ class CustomIdentityFragment : Fragment() {
         }
 
         // For details on implementation tips and differences between Google Play Services Ads vs AndroidX Ads,
-        // please see the project Documentation -> AEPEdgeIdentity.md : Test App -> GAID Implementation
+        // please see the project Documentation -> AEPEdgeIdentity.md : Android Test App -> Testing tips with Android advertising identifier
         root.findViewById<Button>(R.id.btn_get_gaid).setOnClickListener {
             val context = context
             Log.d(LOG_TAG, "context: $context, appContext: ${context?.applicationContext}")
             if (context != null) {
-                // Implementation for google play services ads
-                // Logic implemented in ViewModel to leverage managed Kotlin coroutine scope from lifecycle-viewmodel-ktx
-                // lifecycle-viewmodel-ktx requires compiled sdk version 31+
-                GlobalScope.launch {
-                    sharedViewModel.getGAID(context.applicationContext)
+                // Create IO (background) coroutine scope to fetch ad ID value
+                val scope = CoroutineScope(Dispatchers.IO).launch {
+                    val adID = sharedViewModel.getGAID(context.applicationContext)
+                    Log.d(LOG_TAG, "Sending ad ID value: $adID to MobileCore.setAdvertisingIdentifier")
+                    MobileCore.setAdvertisingIdentifier(adID)
                 }
             }
         }
@@ -133,8 +136,8 @@ class CustomIdentityFragment : Fragment() {
         }
 
         root.findViewById<Button>(R.id.btn_set_ad_id_all_zeros).setOnClickListener {
-            Log.d(LOG_TAG, "Setting advertising identifier to: 00000000-0000-0000-0000-000000000000")
-            MobileCore.setAdvertisingIdentifier("00000000-0000-0000-0000-000000000000")
+            Log.d(LOG_TAG, "Setting advertising identifier to: $ZERO_ADVERTISING_ID")
+            MobileCore.setAdvertisingIdentifier(ZERO_ADVERTISING_ID)
         }
 
         root.findViewById<Button>(R.id.btn_get_consents).setOnClickListener {
