@@ -11,26 +11,25 @@
 
 package com.adobe.marketing.mobile.edge.identity;
 
-import static com.adobe.marketing.mobile.TestHelper.getXDMSharedStateFor;
-import static com.adobe.marketing.mobile.edge.identity.IdentityFunctionalTestUtil.*;
-import static com.adobe.marketing.mobile.edge.identity.IdentityTestUtil.createXDMIdentityMap;
-import static com.adobe.marketing.mobile.edge.identity.IdentityTestUtil.flattenMap;
+import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.*;
+import static com.adobe.marketing.mobile.edge.identity.util.TestHelper.getXDMSharedStateFor;
 import static org.junit.Assert.assertEquals;
 
-import com.adobe.marketing.mobile.TestHelper;
-import com.adobe.marketing.mobile.TestPersistenceHelper;
+import com.adobe.marketing.mobile.edge.identity.util.MonitorExtension;
+import com.adobe.marketing.mobile.edge.identity.util.TestHelper;
+import com.adobe.marketing.mobile.edge.identity.util.TestPersistenceHelper;
+import com.adobe.marketing.mobile.util.JSONUtils;
+import java.util.Arrays;
 import java.util.Map;
 import org.json.JSONObject;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
 
 public class IdentityBootUpTest {
 
 	@Rule
-	public RuleChain rule = RuleChain
-		.outerRule(new TestHelper.SetupCoreRule())
-		.around(new TestHelper.RegisterMonitorExtensionRule());
+	public TestRule rule = new TestHelper.SetupCoreRule();
 
 	// --------------------------------------------------------------------------------------------
 	// OnBootUp
@@ -41,13 +40,14 @@ public class IdentityBootUpTest {
 		// test
 		setEdgeIdentityPersistence(
 			createXDMIdentityMap(
-				new IdentityTestUtil.TestItem("ECID", "primaryECID"),
-				new IdentityTestUtil.TestItem("ECID", "secondaryECID"),
-				new IdentityTestUtil.TestItem("Email", "example@email.com"),
-				new IdentityTestUtil.TestItem("UserId", "JohnDoe")
+				new TestItem("ECID", "primaryECID"),
+				new TestItem("ECID", "secondaryECID"),
+				new TestItem("Email", "example@email.com"),
+				new TestItem("UserId", "JohnDoe")
 			)
 		);
-		registerEdgeIdentityExtension();
+
+		registerExtensions(Arrays.asList(MonitorExtension.EXTENSION, Identity.EXTENSION), null);
 
 		// verify xdm shared state
 		Map<String, String> xdmSharedState = flattenMap(getXDMSharedStateFor(IdentityConstants.EXTENSION_NAME, 1000));
@@ -62,7 +62,7 @@ public class IdentityBootUpTest {
 			IdentityConstants.DataStoreKey.DATASTORE_NAME,
 			IdentityConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
-		Map<String, String> persistedMap = flattenMap(IdentityTestUtil.toMap(new JSONObject(persistedJson)));
+		Map<String, String> persistedMap = flattenMap(JSONUtils.toMap(new JSONObject(persistedJson)));
 		assertEquals(12, persistedMap.size()); // 3 for ECID and 3 for secondaryECID + 6
 	}
 	// --------------------------------------------------------------------------------------------

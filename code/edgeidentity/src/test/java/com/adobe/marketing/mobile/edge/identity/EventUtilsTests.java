@@ -17,7 +17,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import com.adobe.marketing.mobile.Event;
+import com.adobe.marketing.mobile.EventSource;
+import com.adobe.marketing.mobile.EventType;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import org.junit.Test;
 
 public class EventUtilsTests {
@@ -35,8 +39,8 @@ public class EventUtilsTests {
 	public void test_isRequestIdentityEventForGetUrlVariable_eventContainsUrlVariablesKey_validBooleanValue_returnsSetBooleanValue() {
 		Event event = new Event.Builder(
 			IdentityConstants.EventNames.IDENTITY_REQUEST_URL_VARIABLES,
-			IdentityConstants.EventType.EDGE_IDENTITY,
-			IdentityConstants.EventSource.REQUEST_IDENTITY
+			EventType.EDGE_IDENTITY,
+			EventSource.REQUEST_IDENTITY
 		)
 			.setEventData(
 				new HashMap<String, Object>() {
@@ -53,8 +57,8 @@ public class EventUtilsTests {
 		event =
 			new Event.Builder(
 				IdentityConstants.EventNames.IDENTITY_REQUEST_URL_VARIABLES,
-				IdentityConstants.EventType.EDGE_IDENTITY,
-				IdentityConstants.EventSource.REQUEST_IDENTITY
+				EventType.EDGE_IDENTITY,
+				EventSource.REQUEST_IDENTITY
 			)
 				.setEventData(
 					new HashMap<String, Object>() {
@@ -73,8 +77,8 @@ public class EventUtilsTests {
 		// eventType is not edgeIdentity and eventSource is not requestIdentity
 		Event event = new Event.Builder(
 			IdentityConstants.EventNames.IDENTITY_REQUEST_URL_VARIABLES,
-			IdentityConstants.EventType.IDENTITY,
-			IdentityConstants.EventSource.REQUEST_RESET
+			EventType.IDENTITY,
+			EventSource.REQUEST_RESET
 		)
 			.setEventData(
 				new HashMap<String, Object>() {
@@ -91,8 +95,8 @@ public class EventUtilsTests {
 		event =
 			new Event.Builder(
 				IdentityConstants.EventNames.IDENTITY_REQUEST_URL_VARIABLES,
-				IdentityConstants.EventType.IDENTITY,
-				IdentityConstants.EventSource.REQUEST_IDENTITY
+				EventType.IDENTITY,
+				EventSource.REQUEST_IDENTITY
 			)
 				.setEventData(
 					new HashMap<String, Object>() {
@@ -110,8 +114,8 @@ public class EventUtilsTests {
 	public void test_RequestIdentityEventForGetUrlVariable_eventContainsUrlVariablesKey_invalidValue_returnsFalse() {
 		Event event = new Event.Builder(
 			IdentityConstants.EventNames.IDENTITY_REQUEST_URL_VARIABLES,
-			IdentityConstants.EventType.EDGE_IDENTITY,
-			IdentityConstants.EventSource.REQUEST_IDENTITY
+			EventType.EDGE_IDENTITY,
+			EventSource.REQUEST_IDENTITY
 		)
 			.setEventData(
 				new HashMap<String, Object>() {
@@ -128,8 +132,8 @@ public class EventUtilsTests {
 		event =
 			new Event.Builder(
 				IdentityConstants.EventNames.IDENTITY_REQUEST_URL_VARIABLES,
-				IdentityConstants.EventType.EDGE_IDENTITY,
-				IdentityConstants.EventSource.REQUEST_IDENTITY
+				EventType.EDGE_IDENTITY,
+				EventSource.REQUEST_IDENTITY
 			)
 				.setEventData(
 					new HashMap<String, Object>() {
@@ -289,6 +293,96 @@ public class EventUtilsTests {
 		assertEquals("adId", EventUtils.getAdId(event));
 	}
 
+	// ======================================================================================================================
+	// Tests for method : isSharedStateUpdateFor(final String stateOwnerName, final Event event)
+	// ======================================================================================================================
+
+	@Test
+	public void test_isSharedStateUpdateFor_stateOwnerIsNull() {
+		final Event event = new Event.Builder(
+			"Shared state event",
+			EventType.GENERIC_IDENTITY,
+			EventSource.REQUEST_IDENTITY
+		)
+			.setEventData(Collections.EMPTY_MAP)
+			.build();
+
+		assertFalse(EventUtils.isSharedStateUpdateFor(null, event));
+	}
+
+	@Test
+	public void test_isSharedStateUpdateFor_eventIsNull() {
+		assertFalse(EventUtils.isSharedStateUpdateFor(IdentityConstants.SharedState.Configuration.NAME, null));
+	}
+
+	@Test
+	public void test_isSharedStateUpdateFor_stateOwnerValueIsNull() {
+		final Event event = new Event.Builder(
+			"Shared state event",
+			EventType.GENERIC_IDENTITY,
+			EventSource.REQUEST_IDENTITY
+		)
+			.setEventData(Collections.singletonMap(IdentityConstants.EventDataKeys.STATE_OWNER, null))
+			.build();
+
+		assertFalse(EventUtils.isSharedStateUpdateFor(EventType.GENERIC_IDENTITY, event));
+	}
+
+	@Test
+	public void test_isSharedStateUpdateFor_stateOwnerValueIsEmpty() {
+		final Event event = new Event.Builder(
+			"Shared state event",
+			EventType.GENERIC_IDENTITY,
+			EventSource.REQUEST_IDENTITY
+		)
+			.setEventData(Collections.singletonMap(IdentityConstants.EventDataKeys.STATE_OWNER, ""))
+			.build();
+
+		assertFalse(EventUtils.isSharedStateUpdateFor(IdentityConstants.EXTENSION_NAME, event));
+	}
+
+	@Test
+	public void test_isSharedStateUpdateFor_stateOwnerValueExists() {
+		final Event event = new Event.Builder(
+			"Shared state event",
+			EventType.GENERIC_IDENTITY,
+			EventSource.REQUEST_IDENTITY
+		)
+			.setEventData(
+				Collections.singletonMap(IdentityConstants.EventDataKeys.STATE_OWNER, "com.adobe.module.configuration")
+			)
+			.build();
+
+		assertTrue(EventUtils.isSharedStateUpdateFor("com.adobe.module.configuration", event));
+		assertFalse(EventUtils.isSharedStateUpdateFor(IdentityConstants.EXTENSION_NAME, event));
+	}
+
+	// ======================================================================================================================
+	// Tests for method : getECID(final Map<String, Object> identityDirectSharedState)
+	// ======================================================================================================================
+	@Test
+	public void test_getECID_valueExists() {
+		final Map<String, Object> identityDirectState = Collections.singletonMap(
+			IdentityConstants.SharedState.IdentityDirect.ECID,
+			"SomeRandomECID"
+		);
+		assertEquals("SomeRandomECID", EventUtils.getECID(identityDirectState).toString());
+	}
+
+	@Test
+	public void test_getECID_valueDoesNotExist() {
+		assertNull(EventUtils.getECID(Collections.EMPTY_MAP));
+	}
+
+	@Test
+	public void test_getECID_valueIsNull() {
+		final Map<String, Object> identityDirectState = Collections.singletonMap(
+			IdentityConstants.SharedState.IdentityDirect.ECID,
+			null
+		);
+		assertNull(EventUtils.getECID(identityDirectState));
+	}
+
 	// Test helpers
 
 	/**
@@ -297,11 +391,7 @@ public class EventUtilsTests {
 	 * @return {@link Event} with the given event data set
 	 */
 	private Event createGenericIdentityEvent(final HashMap<String, Object> data) {
-		return new Event.Builder(
-			"Test event",
-			IdentityConstants.EventType.GENERIC_IDENTITY,
-			IdentityConstants.EventSource.REQUEST_IDENTITY
-		)
+		return new Event.Builder("Test event", EventType.GENERIC_IDENTITY, EventSource.REQUEST_IDENTITY)
 			.setEventData(data)
 			.build();
 	}

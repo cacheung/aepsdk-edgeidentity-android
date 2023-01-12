@@ -15,6 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import com.adobe.marketing.mobile.util.JSONUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -294,7 +295,7 @@ public class IdentityMapTests {
 			"}";
 
 		final JSONObject jsonObject = new JSONObject(jsonStr);
-		final Map<String, Object> xdmData = Utils.toMap(jsonObject);
+		final Map<String, Object> xdmData = JSONUtils.toMap(jsonObject);
 
 		// test
 		IdentityMap map = IdentityMap.fromXDMMap(xdmData);
@@ -331,7 +332,7 @@ public class IdentityMapTests {
 			"}";
 
 		final JSONObject jsonObject = new JSONObject(invalidJsonStr);
-		final Map<String, Object> xdmData = Utils.toMap(jsonObject);
+		final Map<String, Object> xdmData = JSONUtils.toMap(jsonObject);
 
 		// test
 		IdentityMap map = IdentityMap.fromXDMMap(xdmData);
@@ -359,7 +360,7 @@ public class IdentityMapTests {
 			"}";
 
 		final JSONObject jsonObject = new JSONObject(invalidJsonStr);
-		final Map<String, Object> xdmData = Utils.toMap(jsonObject);
+		final Map<String, Object> xdmData = JSONUtils.toMap(jsonObject);
 
 		// test
 		IdentityMap map = IdentityMap.fromXDMMap(xdmData);
@@ -376,7 +377,7 @@ public class IdentityMapTests {
 		final String invalidJsonStr = "{\"identityMap\": [\"not a map\"]}";
 
 		final JSONObject jsonObject = new JSONObject(invalidJsonStr);
-		final Map<String, Object> xdmData = Utils.toMap(jsonObject);
+		final Map<String, Object> xdmData = JSONUtils.toMap(jsonObject);
 
 		// test
 		IdentityMap map = IdentityMap.fromXDMMap(xdmData);

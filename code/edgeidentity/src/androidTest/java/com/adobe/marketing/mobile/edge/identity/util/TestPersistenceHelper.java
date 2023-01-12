@@ -9,14 +9,13 @@
   governing permissions and limitations under the License.
 */
 
-package com.adobe.marketing.mobile;
+package com.adobe.marketing.mobile.edge.identity.util;
 
 import static org.junit.Assert.fail;
 
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import com.adobe.marketing.mobile.edge.identity.IdentityTestConstants;
 import java.util.ArrayList;
 
 /**

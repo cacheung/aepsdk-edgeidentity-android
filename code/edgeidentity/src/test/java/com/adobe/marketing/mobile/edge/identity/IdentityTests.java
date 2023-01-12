@@ -13,39 +13,42 @@ package com.adobe.marketing.mobile.edge.identity;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 
-import android.util.Log;
 import com.adobe.marketing.mobile.AdobeCallback;
 import com.adobe.marketing.mobile.AdobeCallbackWithError;
 import com.adobe.marketing.mobile.AdobeError;
 import com.adobe.marketing.mobile.Event;
+import com.adobe.marketing.mobile.EventSource;
+import com.adobe.marketing.mobile.EventType;
+import com.adobe.marketing.mobile.ExtensionError;
 import com.adobe.marketing.mobile.ExtensionErrorCallback;
 import com.adobe.marketing.mobile.MobileCore;
+import com.adobe.marketing.mobile.util.JSONUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockitoAnnotations;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ MobileCore.class })
 public class IdentityTests {
 
 	@Before
 	public void setup() {
-		PowerMockito.mockStatic(MobileCore.class);
+		MockitoAnnotations.openMocks(this);
 	}
 
 	// ========================================================================================
@@ -57,7 +60,7 @@ public class IdentityTests {
 		// test
 		String extensionVersion = Identity.extensionVersion();
 		assertEquals(
-			"The Extension version API returns the correct value",
+			"The Extension version API should return the correct value",
 			IdentityConstants.EXTENSION_VERSION,
 			extensionVersion
 		);
@@ -68,22 +71,26 @@ public class IdentityTests {
 	// ========================================================================================
 	@Test
 	public void testRegistration() {
-		// test
-		Identity.registerExtension();
-		final ArgumentCaptor<ExtensionErrorCallback> callbackCaptor = ArgumentCaptor.forClass(
-			ExtensionErrorCallback.class
-		);
+		try (MockedStatic<MobileCore> mockedStaticMobileCore = Mockito.mockStatic(MobileCore.class)) {
+			// test
+			Identity.registerExtension();
 
-		// The identity extension should register with core
-		PowerMockito.verifyStatic(MobileCore.class, Mockito.times(1));
-		MobileCore.registerExtension(ArgumentMatchers.eq(IdentityExtension.class), callbackCaptor.capture());
+			// verify
+			final ArgumentCaptor<ExtensionErrorCallback> callbackCaptor = ArgumentCaptor.forClass(
+				ExtensionErrorCallback.class
+			);
+			mockedStaticMobileCore.verify(() ->
+				MobileCore.registerExtension(eq(IdentityExtension.class), callbackCaptor.capture())
+			);
 
-		// verify the callback
-		ExtensionErrorCallback extensionErrorCallback = callbackCaptor.getValue();
-		assertNotNull("The extension callback should not be null", extensionErrorCallback);
-		// TODO - enable when ExtensionError creation is available
-		// should not crash on calling the callback
-		//extensionErrorCallback.error(ExtensionError.UNEXPECTED_ERROR);
+			final ExtensionErrorCallback extensionErrorCallback = callbackCaptor.getValue();
+			assertNotNull("The extension callback should not be null", extensionErrorCallback);
+
+			// verify that the callback invocation does not throw an exception
+			extensionErrorCallback.error(ExtensionError.UNEXPECTED_ERROR);
+		} catch (final Exception e) {
+			fail(e.getMessage());
+		}
 	}
 
 	// ========================================================================================
@@ -93,135 +100,196 @@ public class IdentityTests {
 	public void testGetExperienceCloudId() {
 		// setup
 		final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
-		final ArgumentCaptor<AdobeCallback> adobeCallbackCaptor = ArgumentCaptor.forClass(AdobeCallback.class);
-		final ArgumentCaptor<ExtensionErrorCallback> extensionErrorCallbackCaptor = ArgumentCaptor.forClass(
-			ExtensionErrorCallback.class
+		final ArgumentCaptor<AdobeCallbackWithError> adobeCallbackCaptor = ArgumentCaptor.forClass(
+			AdobeCallbackWithError.class
 		);
+
 		final List<String> callbackReturnValues = new ArrayList<>();
 
-		// test
-		Identity.getExperienceCloudId(
-			new AdobeCallback<String>() {
-				@Override
-				public void call(String s) {
-					callbackReturnValues.add(s);
-				}
-			}
+		try (MockedStatic<MobileCore> mockedStaticMobileCore = Mockito.mockStatic(MobileCore.class)) {
+			// test
+			Identity.getExperienceCloudId(callbackReturnValues::add);
+
+			//verify
+			mockedStaticMobileCore.verify(() ->
+				MobileCore.dispatchEventWithResponseCallback(
+					eventCaptor.capture(),
+					eq(500L),
+					adobeCallbackCaptor.capture()
+				)
+			);
+
+			// verify the dispatched event details
+			final Event dispatchedEvent = eventCaptor.getValue();
+			assertEquals(IdentityConstants.EventNames.IDENTITY_REQUEST_IDENTITY_ECID, dispatchedEvent.getName());
+			assertEquals(EventType.EDGE_IDENTITY, dispatchedEvent.getType());
+			assertEquals(EventSource.REQUEST_IDENTITY, dispatchedEvent.getSource());
+			assertNull(dispatchedEvent.getEventData());
+
+			// verify callback responses
+			final ECID ecid = new ECID();
+			final Map<String, Object> ecidDict = new HashMap<>();
+			ecidDict.put("id", ecid.toString());
+			final ArrayList<Object> ecidArr = new ArrayList<>();
+			ecidArr.add(ecidDict);
+			final Map<String, Object> identityMap = new HashMap<>();
+			identityMap.put("ECID", ecidArr);
+			final Map<String, Object> xdmData = new HashMap<>();
+			xdmData.put("identityMap", identityMap);
+
+			assertNotNull(adobeCallbackCaptor.getValue());
+			adobeCallbackCaptor.getValue().call(buildIdentityResponseEvent(xdmData));
+			assertEquals(ecid.toString(), callbackReturnValues.get(0));
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testGetExperienceCloudId_invokeCallbackOnfail() {
+		// setup
+		final String KEY_IS_ERROR_CALLBACK_CALLED = "errorCallBackCalled";
+		final String KEY_CAPTURED_ERROR_CALLBACK = "capturedErrorCallback";
+		final Map<String, Object> errorCapture = new HashMap<>();
+		final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+		final ArgumentCaptor<AdobeCallbackWithError> adobeCallbackCaptor = ArgumentCaptor.forClass(
+			AdobeCallbackWithError.class
 		);
+		final AdobeCallbackWithError<String> callbackWithError = new AdobeCallbackWithError<String>() {
+			@Override
+			public void fail(AdobeError adobeError) {
+				errorCapture.put(KEY_IS_ERROR_CALLBACK_CALLED, true);
+				errorCapture.put(KEY_CAPTURED_ERROR_CALLBACK, adobeError);
+			}
+
+			@Override
+			public void call(String ecid) {}
+		};
+
+		try (MockedStatic<MobileCore> mockedStaticMobileCore = Mockito.mockStatic(MobileCore.class)) {
+			// test
+			Identity.getExperienceCloudId(callbackWithError);
+
+			//verify
+			mockedStaticMobileCore.verify(() ->
+				MobileCore.dispatchEventWithResponseCallback(
+					eventCaptor.capture(),
+					eq(500L),
+					adobeCallbackCaptor.capture()
+				)
+			);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+
+		// set response event to null
+		adobeCallbackCaptor.getValue().fail(AdobeError.UNEXPECTED_ERROR);
 
 		// verify
-		PowerMockito.verifyStatic(MobileCore.class, Mockito.times(1));
-		MobileCore.dispatchEventWithResponseCallback(
-			eventCaptor.capture(),
-			adobeCallbackCaptor.capture(),
-			extensionErrorCallbackCaptor.capture()
-		);
-
-		// verify the dispatched event details
-		Event dispatchedEvent = eventCaptor.getValue();
-		assertEquals(IdentityConstants.EventNames.IDENTITY_REQUEST_IDENTITY_ECID, dispatchedEvent.getName());
-		assertEquals(IdentityConstants.EventType.EDGE_IDENTITY.toLowerCase(), dispatchedEvent.getType());
-		assertEquals(IdentityConstants.EventSource.REQUEST_IDENTITY.toLowerCase(), dispatchedEvent.getSource());
-		assertTrue(dispatchedEvent.getEventData().isEmpty());
-
-		// verify callback responses
-		ECID ecid = new ECID();
-
-		Map<String, Object> ecidDict = new HashMap<>();
-		ecidDict.put("id", ecid.toString());
-		ArrayList<Object> ecidArr = new ArrayList<>();
-		ecidArr.add(ecidDict);
-		Map<String, Object> identityMap = new HashMap<>();
-		identityMap.put("ECID", ecidArr);
-		Map<String, Object> xdmData = new HashMap<>();
-		xdmData.put("identityMap", identityMap);
-
-		adobeCallbackCaptor.getValue().call(buildIdentityResponseEvent(xdmData));
-		assertEquals(ecid.toString(), callbackReturnValues.get(0));
-		// TODO - enable when ExtensionError creation is available
-		// should not crash on calling the callback
-		//extensionErrorCallback.error(ExtensionError.UNEXPECTED_ERROR);
+		assertTrue(((boolean) errorCapture.get(KEY_IS_ERROR_CALLBACK_CALLED)));
+		assertEquals(AdobeError.UNEXPECTED_ERROR, errorCapture.get(KEY_CAPTURED_ERROR_CALLBACK));
 	}
 
 	@Test
 	public void testGetExperienceCloudId_nullCallback() {
-		// test
-		Identity.getExperienceCloudId(null);
+		try (MockedStatic<MobileCore> mockedStaticMobileCore = Mockito.mockStatic(MobileCore.class)) {
+			// test
+			Identity.getExperienceCloudId(null);
 
-		// verify
-		PowerMockito.verifyStatic(MobileCore.class, Mockito.times(0));
-		MobileCore.dispatchEventWithResponseCallback(
-			any(Event.class),
-			any(AdobeCallback.class),
-			any(ExtensionErrorCallback.class)
-		);
+			//verify
+			mockedStaticMobileCore.verify(
+				() ->
+					MobileCore.dispatchEventWithResponseCallback(
+						any(Event.class),
+						anyLong(),
+						any(AdobeCallbackWithError.class)
+					),
+				times(0)
+			);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 	}
 
 	@Test
 	public void testGetExperienceCloudId_nullResponseEvent() {
 		// setup
-		final String KEY_IS_ERRORCALLBACK_CALLED = "errorCallBackCalled";
-		final String KEY_CAPTUREDERRORCALLBACK = "capturedErrorCallback";
+		final String KEY_IS_ERROR_CALLBACK_CALLED = "errorCallBackCalled";
+		final String KEY_CAPTURED_ERROR_CALLBACK = "capturedErrorCallback";
 		final Map<String, Object> errorCapture = new HashMap<>();
-		final ArgumentCaptor<AdobeCallback> adobeCallbackCaptor = ArgumentCaptor.forClass(AdobeCallback.class);
-		final AdobeCallbackWithError callbackWithError = new AdobeCallbackWithError() {
+		final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+		final ArgumentCaptor<AdobeCallbackWithError> adobeCallbackCaptor = ArgumentCaptor.forClass(
+			AdobeCallbackWithError.class
+		);
+		final AdobeCallbackWithError<String> callbackWithError = new AdobeCallbackWithError<String>() {
 			@Override
 			public void fail(AdobeError adobeError) {
-				errorCapture.put(KEY_IS_ERRORCALLBACK_CALLED, true);
-				errorCapture.put(KEY_CAPTUREDERRORCALLBACK, adobeError);
+				errorCapture.put(KEY_IS_ERROR_CALLBACK_CALLED, true);
+				errorCapture.put(KEY_CAPTURED_ERROR_CALLBACK, adobeError);
 			}
 
 			@Override
-			public void call(Object o) {}
+			public void call(String ecid) {}
 		};
 
-		// test
-		Identity.getExperienceCloudId(callbackWithError);
+		try (MockedStatic<MobileCore> mockedStaticMobileCore = Mockito.mockStatic(MobileCore.class)) {
+			// test
+			Identity.getExperienceCloudId(callbackWithError);
 
-		// verify if the event is dispatched
-		PowerMockito.verifyStatic(MobileCore.class, Mockito.times(1));
-		MobileCore.dispatchEventWithResponseCallback(
-			any(Event.class),
-			adobeCallbackCaptor.capture(),
-			any(ExtensionErrorCallback.class)
-		);
+			//verify
+			mockedStaticMobileCore.verify(() ->
+				MobileCore.dispatchEventWithResponseCallback(
+					eventCaptor.capture(),
+					eq(500L),
+					adobeCallbackCaptor.capture()
+				)
+			);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 
 		// set response event to null
 		adobeCallbackCaptor.getValue().call(null);
 
 		// verify
-		assertTrue((boolean) errorCapture.get(KEY_IS_ERRORCALLBACK_CALLED));
-		assertEquals(AdobeError.UNEXPECTED_ERROR, errorCapture.get(KEY_CAPTUREDERRORCALLBACK));
+		assertTrue(((boolean) errorCapture.get(KEY_IS_ERROR_CALLBACK_CALLED)));
+		assertEquals(AdobeError.UNEXPECTED_ERROR, errorCapture.get(KEY_CAPTURED_ERROR_CALLBACK));
 	}
 
 	@Test
 	public void testGetExperienceCloudId_invalidEventData() {
 		// setup
-		final String KEY_IS_ERRORCALLBACK_CALLED = "errorCallBackCalled";
-		final String KEY_CAPTUREDERRORCALLBACK = "capturedErrorCallback";
+		final String KEY_IS_ERROR_CALLBACK_CALLED = "errorCallBackCalled";
+		final String KEY_CAPTURED_ERROR_CALLBACK = "capturedErrorCallback";
+		final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
 		final Map<String, Object> errorCapture = new HashMap<>();
-		final ArgumentCaptor<AdobeCallback> adobeCallbackCaptor = ArgumentCaptor.forClass(AdobeCallback.class);
-		final AdobeCallbackWithError callbackWithError = new AdobeCallbackWithError() {
+		final ArgumentCaptor<AdobeCallbackWithError> adobeCallbackCaptor = ArgumentCaptor.forClass(
+			AdobeCallbackWithError.class
+		);
+		final AdobeCallbackWithError<String> callbackWithError = new AdobeCallbackWithError<String>() {
 			@Override
 			public void fail(AdobeError adobeError) {
-				errorCapture.put(KEY_IS_ERRORCALLBACK_CALLED, true);
-				errorCapture.put(KEY_CAPTUREDERRORCALLBACK, adobeError);
+				errorCapture.put(KEY_IS_ERROR_CALLBACK_CALLED, true);
+				errorCapture.put(KEY_CAPTURED_ERROR_CALLBACK, adobeError);
 			}
 
 			@Override
-			public void call(Object o) {}
+			public void call(String ecid) {}
 		};
 
-		// test
-		Identity.getExperienceCloudId(callbackWithError);
+		try (MockedStatic<MobileCore> mockedStaticMobileCore = Mockito.mockStatic(MobileCore.class)) {
+			Identity.getExperienceCloudId(callbackWithError);
 
-		// verify if the event is dispatched
-		PowerMockito.verifyStatic(MobileCore.class, Mockito.times(1));
-		MobileCore.dispatchEventWithResponseCallback(
-			any(Event.class),
-			adobeCallbackCaptor.capture(),
-			any(ExtensionErrorCallback.class)
-		);
+			mockedStaticMobileCore.verify(() ->
+				MobileCore.dispatchEventWithResponseCallback(
+					eventCaptor.capture(),
+					eq(500L),
+					adobeCallbackCaptor.capture()
+				)
+			);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 
 		// set response event to null
 		Map<String, Object> eventData = new HashMap<>();
@@ -229,8 +297,8 @@ public class IdentityTests {
 		adobeCallbackCaptor.getValue().call(buildIdentityResponseEvent(eventData));
 
 		// verify
-		assertTrue((boolean) errorCapture.get(KEY_IS_ERRORCALLBACK_CALLED));
-		assertEquals(AdobeError.UNEXPECTED_ERROR, errorCapture.get(KEY_CAPTUREDERRORCALLBACK));
+		assertTrue((boolean) errorCapture.get(KEY_IS_ERROR_CALLBACK_CALLED));
+		assertEquals(AdobeError.UNEXPECTED_ERROR, errorCapture.get(KEY_CAPTURED_ERROR_CALLBACK));
 	}
 
 	@Test
@@ -238,8 +306,11 @@ public class IdentityTests {
 		// setup
 		final String KEY_IS_ERRORCALLBACK_CALLED = "errorCallBackCalled";
 		final String KEY_CAPTUREDERRORCALLBACK = "capturedErrorCallback";
+		final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
 		final Map<String, Object> errorCapture = new HashMap<>();
-		final ArgumentCaptor<AdobeCallback> adobeCallbackCaptor = ArgumentCaptor.forClass(AdobeCallback.class);
+		final ArgumentCaptor<AdobeCallbackWithError> adobeCallbackCaptor = ArgumentCaptor.forClass(
+			AdobeCallbackWithError.class
+		);
 		final AdobeCallbackWithError callbackWithError = new AdobeCallbackWithError() {
 			@Override
 			public void fail(AdobeError adobeError) {
@@ -251,16 +322,21 @@ public class IdentityTests {
 			public void call(Object o) {}
 		};
 
-		// test
-		Identity.getExperienceCloudId(callbackWithError);
+		try (MockedStatic<MobileCore> mockedStaticMobileCore = Mockito.mockStatic(MobileCore.class)) {
+			// test
+			Identity.getExperienceCloudId(callbackWithError);
 
-		// verify if the event is dispatched
-		PowerMockito.verifyStatic(MobileCore.class, Mockito.times(1));
-		MobileCore.dispatchEventWithResponseCallback(
-			any(Event.class),
-			adobeCallbackCaptor.capture(),
-			any(ExtensionErrorCallback.class)
-		);
+			//verify
+			mockedStaticMobileCore.verify(() ->
+				MobileCore.dispatchEventWithResponseCallback(
+					eventCaptor.capture(),
+					eq(500L),
+					adobeCallbackCaptor.capture()
+				)
+			);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 
 		// set response event to map missing ECID
 		Map<String, Object> emptyXDMData = new HashMap<>();
@@ -275,174 +351,205 @@ public class IdentityTests {
 	// getUrlVariables API
 	// ========================================================================================
 	@Test
-	public void testGetUrlVariables() throws InterruptedException {
+	public void testGetUrlVariables() {
 		// setup
 		final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
-		final ArgumentCaptor<AdobeCallback> adobeCallbackCaptor = ArgumentCaptor.forClass(AdobeCallback.class);
-		final ArgumentCaptor<ExtensionErrorCallback> extensionErrorCallbackCaptor = ArgumentCaptor.forClass(
-			ExtensionErrorCallback.class
+		final ArgumentCaptor<AdobeCallbackWithError> adobeCallbackCaptor = ArgumentCaptor.forClass(
+			AdobeCallbackWithError.class
 		);
 		final List<String> callbackReturnValues = new ArrayList<>();
-		final ADBCountDownLatch latch = new ADBCountDownLatch(1);
-		// test
-		Identity.getUrlVariables(
-			new AdobeCallback<String>() {
-				@Override
-				public void call(String s) {
-					callbackReturnValues.add(s);
-					latch.countDown();
+
+		try (MockedStatic<MobileCore> mockedStaticMobileCore = Mockito.mockStatic(MobileCore.class)) {
+			// test
+			Identity.getUrlVariables(
+				new AdobeCallback<String>() {
+					@Override
+					public void call(String s) {
+						callbackReturnValues.add(s);
+					}
 				}
-			}
-		);
-		latch.await(2000, TimeUnit.MILLISECONDS);
-		// verify
-		PowerMockito.verifyStatic(MobileCore.class, Mockito.times(1));
-		MobileCore.dispatchEventWithResponseCallback(
-			eventCaptor.capture(),
-			adobeCallbackCaptor.capture(),
-			extensionErrorCallbackCaptor.capture()
-		);
+			);
+
+			mockedStaticMobileCore.verify(() ->
+				MobileCore.dispatchEventWithResponseCallback(
+					eventCaptor.capture(),
+					eq(500L),
+					adobeCallbackCaptor.capture()
+				)
+			);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 
 		// verify the dispatched event details
-		Event dispatchedEvent = eventCaptor.getValue();
+		final Event dispatchedEvent = eventCaptor.getValue();
 		assertEquals(IdentityConstants.EventNames.IDENTITY_REQUEST_URL_VARIABLES, dispatchedEvent.getName());
-		assertEquals(IdentityConstants.EventType.EDGE_IDENTITY.toLowerCase(), dispatchedEvent.getType());
-		assertEquals(IdentityConstants.EventSource.REQUEST_IDENTITY.toLowerCase(), dispatchedEvent.getSource());
+		assertEquals(EventType.EDGE_IDENTITY, dispatchedEvent.getType());
+		assertEquals(EventSource.REQUEST_IDENTITY, dispatchedEvent.getSource());
 		assertTrue(dispatchedEvent.getEventData().containsKey("urlvariables"));
 		assertTrue((boolean) dispatchedEvent.getEventData().get("urlvariables"));
 
 		// verify callback responses
-		Map<String, Object> urlVariablesResponse = new HashMap<>();
+		final Map<String, Object> urlVariablesResponse = new HashMap<>();
 		urlVariablesResponse.put("urlvariables", "test-url-variable-string");
 
 		adobeCallbackCaptor.getValue().call(buildUrlVariablesResponseEvent(urlVariablesResponse));
 		assertEquals("test-url-variable-string", callbackReturnValues.get(0));
-		// TODO - enable when ExtensionError creation is available
-		// should not crash on calling the callback
-		//extensionErrorCallback.error(ExtensionError.UNEXPECTED_ERROR);
 	}
 
 	@Test
 	public void testGetUrlVariables_nullCallback() {
-		// test
-		Identity.getExperienceCloudId(null);
+		try (MockedStatic<MobileCore> mockedStaticMobileCore = Mockito.mockStatic(MobileCore.class)) {
+			// test
+			Identity.getUrlVariables(null);
 
-		// verify
-		PowerMockito.verifyStatic(MobileCore.class, Mockito.times(0));
-		MobileCore.dispatchEventWithResponseCallback(
-			any(Event.class),
-			any(AdobeCallback.class),
-			any(ExtensionErrorCallback.class)
-		);
+			mockedStaticMobileCore.verify(
+				() ->
+					MobileCore.dispatchEventWithResponseCallback(
+						any(Event.class),
+						anyLong(),
+						any(AdobeCallbackWithError.class)
+					),
+				never()
+			);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 	}
 
 	@Test
 	public void testGetUrlVariables_nullResponseEvent() {
 		// setup
-		final String KEY_IS_ERRORCALLBACK_CALLED = "errorCallBackCalled";
-		final String KEY_CAPTUREDERRORCALLBACK = "capturedErrorCallback";
+		final String KEY_IS_ERROR_CALLBACK_CALLED = "errorCallBackCalled";
+		final String KEY_CAPTURED_ERROR_CALLBACK = "capturedErrorCallback";
 		final Map<String, Object> errorCapture = new HashMap<>();
-		final ArgumentCaptor<AdobeCallback> adobeCallbackCaptor = ArgumentCaptor.forClass(AdobeCallback.class);
-		final AdobeCallbackWithError callbackWithError = new AdobeCallbackWithError() {
+		final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+		final ArgumentCaptor<AdobeCallbackWithError> adobeCallbackCaptor = ArgumentCaptor.forClass(
+			AdobeCallbackWithError.class
+		);
+		final AdobeCallbackWithError<String> callbackWithError = new AdobeCallbackWithError<String>() {
 			@Override
 			public void fail(AdobeError adobeError) {
-				errorCapture.put(KEY_IS_ERRORCALLBACK_CALLED, true);
-				errorCapture.put(KEY_CAPTUREDERRORCALLBACK, adobeError);
+				errorCapture.put(KEY_IS_ERROR_CALLBACK_CALLED, true);
+				errorCapture.put(KEY_CAPTURED_ERROR_CALLBACK, adobeError);
 			}
 
 			@Override
-			public void call(Object o) {}
+			public void call(String o) {}
 		};
 
-		// test
-		Identity.getUrlVariables(callbackWithError);
+		try (MockedStatic<MobileCore> mockedStaticMobileCore = Mockito.mockStatic(MobileCore.class)) {
+			// test
+			Identity.getUrlVariables(callbackWithError);
 
-		// verify if the event is dispatched
-		PowerMockito.verifyStatic(MobileCore.class, Mockito.times(1));
-		MobileCore.dispatchEventWithResponseCallback(
-			any(Event.class),
-			adobeCallbackCaptor.capture(),
-			any(ExtensionErrorCallback.class)
-		);
+			mockedStaticMobileCore.verify(() ->
+				MobileCore.dispatchEventWithResponseCallback(
+					eventCaptor.capture(),
+					eq(500L),
+					adobeCallbackCaptor.capture()
+				)
+			);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+
+		final Event dispatchedEvent = eventCaptor.getValue();
+		assertEquals(IdentityConstants.EventNames.IDENTITY_REQUEST_URL_VARIABLES, dispatchedEvent.getName());
+		assertEquals(EventType.EDGE_IDENTITY, dispatchedEvent.getType());
+		assertEquals(EventSource.REQUEST_IDENTITY, dispatchedEvent.getSource());
+		assertTrue(dispatchedEvent.getEventData().containsKey("urlvariables"));
+		assertTrue((boolean) dispatchedEvent.getEventData().get("urlvariables"));
 
 		// set response event to null
 		adobeCallbackCaptor.getValue().call(null);
 
 		// verify
-		assertTrue((boolean) errorCapture.get(KEY_IS_ERRORCALLBACK_CALLED));
-		assertEquals(AdobeError.UNEXPECTED_ERROR, errorCapture.get(KEY_CAPTUREDERRORCALLBACK));
+		assertEquals(true, errorCapture.get(KEY_IS_ERROR_CALLBACK_CALLED));
+		assertEquals(AdobeError.UNEXPECTED_ERROR, errorCapture.get(KEY_CAPTURED_ERROR_CALLBACK));
 	}
 
 	@Test
 	public void testGetUrlVariables_invalidEventData() {
 		// setup
-		final String KEY_IS_ERRORCALLBACK_CALLED = "errorCallBackCalled";
-		final String KEY_CAPTUREDERRORCALLBACK = "capturedErrorCallback";
+		final String KEY_IS_ERROR_CALLBACK_CALLED = "errorCallBackCalled";
+		final String KEY_CAPTURED_ERROR_CALLBACK = "capturedErrorCallback";
 		final Map<String, Object> errorCapture = new HashMap<>();
-		final ArgumentCaptor<AdobeCallback> adobeCallbackCaptor = ArgumentCaptor.forClass(AdobeCallback.class);
-		final AdobeCallbackWithError callbackWithError = new AdobeCallbackWithError() {
+		final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+		final ArgumentCaptor<AdobeCallbackWithError> adobeCallbackCaptor = ArgumentCaptor.forClass(
+			AdobeCallbackWithError.class
+		);
+		final AdobeCallbackWithError<String> callbackWithError = new AdobeCallbackWithError<String>() {
 			@Override
 			public void fail(AdobeError adobeError) {
-				errorCapture.put(KEY_IS_ERRORCALLBACK_CALLED, true);
-				errorCapture.put(KEY_CAPTUREDERRORCALLBACK, adobeError);
+				errorCapture.put(KEY_IS_ERROR_CALLBACK_CALLED, true);
+				errorCapture.put(KEY_CAPTURED_ERROR_CALLBACK, adobeError);
 			}
 
 			@Override
-			public void call(Object o) {}
+			public void call(String o) {}
 		};
 
-		// test
-		Identity.getUrlVariables(callbackWithError);
+		try (MockedStatic<MobileCore> mockedStaticMobileCore = Mockito.mockStatic(MobileCore.class)) {
+			// test
+			Identity.getUrlVariables(callbackWithError);
 
-		// verify if the event is dispatched
-		PowerMockito.verifyStatic(MobileCore.class, Mockito.times(1));
-		MobileCore.dispatchEventWithResponseCallback(
-			any(Event.class),
-			adobeCallbackCaptor.capture(),
-			any(ExtensionErrorCallback.class)
-		);
+			mockedStaticMobileCore.verify(() ->
+				MobileCore.dispatchEventWithResponseCallback(
+					eventCaptor.capture(),
+					eq(500L),
+					adobeCallbackCaptor.capture()
+				)
+			);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 
 		// set response event data to not have urlvariables key
-		Map<String, Object> eventData = new HashMap<>();
+		final Map<String, Object> eventData = new HashMap<>();
 		eventData.put("someKey", "someValue");
 		eventData.put("urlvariables", true);
 		adobeCallbackCaptor.getValue().call(buildUrlVariablesResponseEvent(eventData));
 
 		// verify
-		assertTrue((boolean) errorCapture.get(KEY_IS_ERRORCALLBACK_CALLED));
-		assertEquals(AdobeError.UNEXPECTED_ERROR, errorCapture.get(KEY_CAPTUREDERRORCALLBACK));
+		assertEquals(true, errorCapture.get(KEY_IS_ERROR_CALLBACK_CALLED));
+		assertEquals(AdobeError.UNEXPECTED_ERROR, errorCapture.get(KEY_CAPTURED_ERROR_CALLBACK));
 	}
 
 	@Test
 	public void testGetUrlVariables_NullUrlVariablesStringInResponseData() {
 		// setup
-		final String KEY_IS_ERRORCALLBACK_CALLED = "errorCallBackCalled";
-		final String KEY_CAPTUREDERRORCALLBACK = "capturedErrorCallback";
+		final String KEY_IS_ERROR_CALLBACK_CALLED = "errorCallBackCalled";
+		final String KEY_CAPTURED_ERROR_CALLBACK = "capturedErrorCallback";
 		final Map<String, Object> errorCapture = new HashMap<>();
-		final ArgumentCaptor<AdobeCallback> adobeCallbackCaptor = ArgumentCaptor.forClass(AdobeCallback.class);
-		final AdobeCallbackWithError callbackWithError = new AdobeCallbackWithError() {
+		final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+		final ArgumentCaptor<AdobeCallbackWithError> adobeCallbackCaptor = ArgumentCaptor.forClass(
+			AdobeCallbackWithError.class
+		);
+		final AdobeCallbackWithError<String> callbackWithError = new AdobeCallbackWithError<String>() {
 			@Override
 			public void fail(AdobeError adobeError) {
-				errorCapture.put(KEY_IS_ERRORCALLBACK_CALLED, true);
-				errorCapture.put(KEY_CAPTUREDERRORCALLBACK, adobeError);
+				errorCapture.put(KEY_IS_ERROR_CALLBACK_CALLED, true);
+				errorCapture.put(KEY_CAPTURED_ERROR_CALLBACK, adobeError);
 			}
 
 			@Override
-			public void call(Object o) {
-				Log.d("test", "test");
-			}
+			public void call(String o) {}
 		};
 
 		// test
-		Identity.getUrlVariables(callbackWithError);
+		try (MockedStatic<MobileCore> mockedStaticMobileCore = Mockito.mockStatic(MobileCore.class)) {
+			Identity.getUrlVariables(callbackWithError);
 
-		// verify if the event is dispatched
-		PowerMockito.verifyStatic(MobileCore.class, Mockito.times(1));
-		MobileCore.dispatchEventWithResponseCallback(
-			any(Event.class),
-			adobeCallbackCaptor.capture(),
-			any(ExtensionErrorCallback.class)
-		);
+			mockedStaticMobileCore.verify(() ->
+				MobileCore.dispatchEventWithResponseCallback(
+					eventCaptor.capture(),
+					eq(500L),
+					adobeCallbackCaptor.capture()
+				)
+			);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 
 		// set response event to have urlvariables map to null value
 		Map<String, Object> nullUrlVariablesData = new HashMap<>();
@@ -450,8 +557,50 @@ public class IdentityTests {
 		adobeCallbackCaptor.getValue().call(buildUrlVariablesResponseEvent(nullUrlVariablesData));
 
 		// verify
-		assertTrue((boolean) errorCapture.get(KEY_IS_ERRORCALLBACK_CALLED));
-		assertEquals(AdobeError.UNEXPECTED_ERROR, errorCapture.get(KEY_CAPTUREDERRORCALLBACK));
+		assertEquals(true, errorCapture.get(KEY_IS_ERROR_CALLBACK_CALLED));
+		assertEquals(AdobeError.UNEXPECTED_ERROR, errorCapture.get(KEY_CAPTURED_ERROR_CALLBACK));
+	}
+
+	@Test
+	public void testGetUrlVariables_callbackOnFail() {
+		// setup
+		final String KEY_IS_ERROR_CALLBACK_CALLED = "errorCallBackCalled";
+		final String KEY_CAPTURED_ERROR_CALLBACK = "capturedErrorCallback";
+		final Map<String, Object> errorCapture = new HashMap<>();
+		final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+		final ArgumentCaptor<AdobeCallbackWithError> adobeCallbackCaptor = ArgumentCaptor.forClass(
+			AdobeCallbackWithError.class
+		);
+		final AdobeCallbackWithError<String> callbackWithError = new AdobeCallbackWithError<String>() {
+			@Override
+			public void fail(AdobeError adobeError) {
+				errorCapture.put(KEY_IS_ERROR_CALLBACK_CALLED, true);
+				errorCapture.put(KEY_CAPTURED_ERROR_CALLBACK, adobeError);
+			}
+
+			@Override
+			public void call(String o) {}
+		};
+
+		// test
+		try (MockedStatic<MobileCore> mockedStaticMobileCore = Mockito.mockStatic(MobileCore.class)) {
+			Identity.getUrlVariables(callbackWithError);
+			mockedStaticMobileCore.verify(() ->
+				MobileCore.dispatchEventWithResponseCallback(
+					eventCaptor.capture(),
+					eq(500L),
+					adobeCallbackCaptor.capture()
+				)
+			);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+
+		adobeCallbackCaptor.getValue().fail(AdobeError.UNEXPECTED_ERROR);
+
+		// verify
+		assertEquals(true, errorCapture.get(KEY_IS_ERROR_CALLBACK_CALLED));
+		assertEquals(AdobeError.UNEXPECTED_ERROR, errorCapture.get(KEY_CAPTURED_ERROR_CALLBACK));
 	}
 
 	// ========================================================================================
@@ -461,70 +610,82 @@ public class IdentityTests {
 	public void testUpdateIdentities() {
 		// setup
 		final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
-		final ArgumentCaptor<ExtensionErrorCallback> extensionErrorCallbackCaptor = ArgumentCaptor.forClass(
-			ExtensionErrorCallback.class
-		);
-
-		// test
-		IdentityMap map = new IdentityMap();
+		final IdentityMap map = new IdentityMap();
 		map.addItem(new IdentityItem("id", AuthenticatedState.AUTHENTICATED, true), "mainspace");
 		map.addItem(new IdentityItem("idtwo", AuthenticatedState.LOGGED_OUT, false), "secondspace");
-		Identity.updateIdentities(map);
 
-		// verify
-		PowerMockito.verifyStatic(MobileCore.class, Mockito.times(1));
-		MobileCore.dispatchEvent(eventCaptor.capture(), extensionErrorCallbackCaptor.capture());
+		try (MockedStatic<MobileCore> mockedStaticMobileCore = Mockito.mockStatic(MobileCore.class)) {
+			// test
+			Identity.updateIdentities(map);
 
-		// TODO - enable when ExtensionError creation is available
-		// should not crash on calling the callback
-		//extensionErrorCallback.error(ExtensionError.UNEXPECTED_ERROR);
+			mockedStaticMobileCore.verify(() -> MobileCore.dispatchEvent(eventCaptor.capture()));
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 
 		// verify the dispatched event details
 		Event dispatchedEvent = eventCaptor.getValue();
 		assertEquals(IdentityConstants.EventNames.UPDATE_IDENTITIES, dispatchedEvent.getName());
-		assertEquals(IdentityConstants.EventType.EDGE_IDENTITY.toLowerCase(), dispatchedEvent.getType());
-		assertEquals(IdentityConstants.EventSource.UPDATE_IDENTITY.toLowerCase(), dispatchedEvent.getSource());
+		assertEquals(EventType.EDGE_IDENTITY, dispatchedEvent.getType());
+		assertEquals(EventSource.UPDATE_IDENTITY, dispatchedEvent.getSource());
 		assertEquals(map.asXDMMap(), dispatchedEvent.getEventData());
 	}
 
 	@Test
-	public void testUpdateIdentitiesNullAndEmptyMap() {
+	public void testUpdateIdentitiesNullMap() {
 		// test
-		IdentityMap map = new IdentityMap();
-		Identity.updateIdentities(map);
-		Identity.updateIdentities(null);
+		try (MockedStatic<MobileCore> mockedStaticMobileCore = Mockito.mockStatic(MobileCore.class)) {
+			// test
+			Identity.updateIdentities(null);
 
-		// verify none of these API calls dispatch an event
-		PowerMockito.verifyStatic(MobileCore.class, Mockito.times(0));
-		MobileCore.dispatchEvent(any(Event.class), any(ExtensionErrorCallback.class));
+			// verify that no event is dispatched
+			mockedStaticMobileCore.verify(() -> MobileCore.dispatchEvent(any(Event.class)), never());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 	}
+
+	@Test
+	public void testUpdateIdentities_EmptyMap() {
+		// test
+		try (MockedStatic<MobileCore> mockedStaticMobileCore = Mockito.mockStatic(MobileCore.class)) {
+			// test
+			Identity.updateIdentities(new IdentityMap());
+
+			// verify that no event is dispatched
+			mockedStaticMobileCore.verify(() -> MobileCore.dispatchEvent(any(Event.class)), never());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+
+	// ========================================================================================
+	// removeIdentity API
+	// ========================================================================================
 
 	@Test
 	public void testRemoveIdentity() {
 		// setup
 		final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
-		final ArgumentCaptor<ExtensionErrorCallback> extensionErrorCallbackCaptor = ArgumentCaptor.forClass(
-			ExtensionErrorCallback.class
-		);
-		IdentityItem sampleItem = new IdentityItem("sample", AuthenticatedState.AMBIGUOUS, false);
+		final IdentityItem sampleItem = new IdentityItem("sample", AuthenticatedState.AMBIGUOUS, false);
 
-		// test
-		Identity.removeIdentity(sampleItem, "namespace");
+		try (MockedStatic<MobileCore> mockedStaticMobileCore = Mockito.mockStatic(MobileCore.class)) {
+			// test
+			Identity.removeIdentity(sampleItem, "namespace");
 
-		// verify dispatch event
-		PowerMockito.verifyStatic(MobileCore.class, Mockito.times(1));
-		MobileCore.dispatchEvent(eventCaptor.capture(), extensionErrorCallbackCaptor.capture());
+			mockedStaticMobileCore.verify(() -> MobileCore.dispatchEvent(eventCaptor.capture()));
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 
-		Event dispatchedEvent = eventCaptor.getValue();
+		final Event dispatchedEvent = eventCaptor.getValue();
 		assertEquals(IdentityConstants.EventNames.REMOVE_IDENTITIES, dispatchedEvent.getName());
-		assertEquals(IdentityConstants.EventType.EDGE_IDENTITY.toLowerCase(), dispatchedEvent.getType());
-		assertEquals(IdentityConstants.EventSource.REMOVE_IDENTITY.toLowerCase(), dispatchedEvent.getSource());
-		IdentityMap sampleInputIdentitymap = new IdentityMap();
-		sampleInputIdentitymap.addItem(sampleItem, "namespace");
-		assertEquals(sampleInputIdentitymap.asXDMMap(), dispatchedEvent.getEventData());
-		// TODO - enable when ExtensionError creation is available
-		// should not crash on calling the callback
-		//extensionErrorCallback.error(ExtensionError.UNEXPECTED_ERROR);
+		assertEquals(EventType.EDGE_IDENTITY, dispatchedEvent.getType());
+		assertEquals(EventSource.REMOVE_IDENTITY, dispatchedEvent.getSource());
+
+		final IdentityMap expectedIdentityMap = new IdentityMap();
+		expectedIdentityMap.addItem(sampleItem, "namespace");
+		assertEquals(expectedIdentityMap.asXDMMap(), dispatchedEvent.getEventData());
 	}
 
 	@Test
@@ -532,14 +693,17 @@ public class IdentityTests {
 		// setup
 		IdentityItem sampleItem = new IdentityItem("sample", AuthenticatedState.AMBIGUOUS, false);
 
-		// test
-		Identity.removeIdentity(null, "namespace");
-		Identity.removeIdentity(sampleItem, "");
-		Identity.removeIdentity(sampleItem, null);
+		try (MockedStatic<MobileCore> mockedStaticMobileCore = Mockito.mockStatic(MobileCore.class)) {
+			// test
+			Identity.removeIdentity(null, "namespace");
+			Identity.removeIdentity(sampleItem, "");
+			Identity.removeIdentity(sampleItem, null);
 
-		// verify none of these API calls dispatch an event
-		PowerMockito.verifyStatic(MobileCore.class, Mockito.times(0));
-		MobileCore.dispatchEvent(any(Event.class), any(ExtensionErrorCallback.class));
+			// verify that no event is dispatched
+			mockedStaticMobileCore.verify(() -> MobileCore.dispatchEvent(any(Event.class)), never());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 	}
 
 	// ========================================================================================
@@ -549,36 +713,39 @@ public class IdentityTests {
 	public void testGetIdentities() throws Exception {
 		// setup
 		final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
-		final ArgumentCaptor<AdobeCallback> adobeCallbackCaptor = ArgumentCaptor.forClass(AdobeCallback.class);
-		final ArgumentCaptor<ExtensionErrorCallback> extensionErrorCallbackCaptor = ArgumentCaptor.forClass(
-			ExtensionErrorCallback.class
+		final ArgumentCaptor<AdobeCallbackWithError> adobeCallbackCaptor = ArgumentCaptor.forClass(
+			AdobeCallbackWithError.class
 		);
 		final List<IdentityMap> callbackReturnValues = new ArrayList<>();
 
-		// test
-		Identity.getIdentities(
-			new AdobeCallback<IdentityMap>() {
-				@Override
-				public void call(IdentityMap map) {
-					callbackReturnValues.add(map);
+		try (MockedStatic<MobileCore> mockedStaticMobileCore = Mockito.mockStatic(MobileCore.class)) {
+			Identity.getIdentities(
+				new AdobeCallback<IdentityMap>() {
+					@Override
+					public void call(IdentityMap map) {
+						callbackReturnValues.add(map);
+					}
 				}
-			}
-		);
+			);
 
-		// verify
-		PowerMockito.verifyStatic(MobileCore.class, Mockito.times(1));
-		MobileCore.dispatchEventWithResponseCallback(
-			eventCaptor.capture(),
-			adobeCallbackCaptor.capture(),
-			extensionErrorCallbackCaptor.capture()
-		);
+			// verify
+			mockedStaticMobileCore.verify(() ->
+				MobileCore.dispatchEventWithResponseCallback(
+					eventCaptor.capture(),
+					eq(500L),
+					adobeCallbackCaptor.capture()
+				)
+			);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 
 		// verify the dispatched event details
-		Event dispatchedEvent = eventCaptor.getValue();
+		final Event dispatchedEvent = eventCaptor.getValue();
 		assertEquals(IdentityConstants.EventNames.REQUEST_IDENTITIES, dispatchedEvent.getName());
-		assertEquals(IdentityConstants.EventType.EDGE_IDENTITY.toLowerCase(), dispatchedEvent.getType());
-		assertEquals(IdentityConstants.EventSource.REQUEST_IDENTITY.toLowerCase(), dispatchedEvent.getSource());
-		assertTrue(dispatchedEvent.getEventData().isEmpty());
+		assertEquals(EventType.EDGE_IDENTITY, dispatchedEvent.getType());
+		assertEquals(EventSource.REQUEST_IDENTITY, dispatchedEvent.getSource());
+		assertNull(dispatchedEvent.getEventData());
 
 		// verify callback responses
 		final ECID ecid = new ECID();
@@ -608,11 +775,11 @@ public class IdentityTests {
 			"}";
 
 		final JSONObject jsonObject = new JSONObject(jsonStr);
-		final Map<String, Object> xdmData = Utils.toMap(jsonObject);
+		final Map<String, Object> xdmData = JSONUtils.toMap(jsonObject);
 
 		adobeCallbackCaptor.getValue().call(buildIdentityResponseEvent(xdmData));
-		IdentityItem ecidItem = callbackReturnValues.get(0).getIdentityItemsForNamespace("ECID").get(0);
-		IdentityItem coreItem = callbackReturnValues.get(0).getIdentityItemsForNamespace("CORE").get(0);
+		final IdentityItem ecidItem = callbackReturnValues.get(0).getIdentityItemsForNamespace("ECID").get(0);
+		final IdentityItem coreItem = callbackReturnValues.get(0).getIdentityItemsForNamespace("CORE").get(0);
 
 		assertEquals(ecid.toString(), ecidItem.getId());
 		assertEquals(AuthenticatedState.AMBIGUOUS, ecidItem.getAuthenticatedState());
@@ -621,147 +788,216 @@ public class IdentityTests {
 		assertEquals(coreId, coreItem.getId());
 		assertEquals(AuthenticatedState.AUTHENTICATED, coreItem.getAuthenticatedState());
 		assertEquals(false, coreItem.isPrimary());
-		// TODO - enable when ExtensionError creation is available
-		// should not crash on calling the callback
-		//extensionErrorCallback.error(ExtensionError.UNEXPECTED_ERROR);
 	}
 
 	@Test
 	public void testGetIdentities_nullCallback() {
-		// test
-		Identity.getIdentities(null);
+		// setup
+		try (MockedStatic<MobileCore> mockedStaticMobileCore = Mockito.mockStatic(MobileCore.class)) {
+			Identity.getIdentities(null);
 
-		// verify
-		PowerMockito.verifyStatic(MobileCore.class, Mockito.times(0));
-		MobileCore.dispatchEventWithResponseCallback(
-			any(Event.class),
-			any(AdobeCallback.class),
-			any(ExtensionErrorCallback.class)
-		);
+			// verify
+			mockedStaticMobileCore.verify(
+				() ->
+					MobileCore.dispatchEventWithResponseCallback(
+						any(Event.class),
+						anyLong(),
+						any(AdobeCallbackWithError.class)
+					),
+				never()
+			);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 	}
 
 	@Test
 	public void testGetIdentities_nullResponseEvent() {
 		// setup
-		final String KEY_IS_ERRORCALLBACK_CALLED = "errorCallBackCalled";
-		final String KEY_CAPTUREDERRORCALLBACK = "capturedErrorCallback";
+		final String KEY_IS_ERROR_CALLBACK_CALLED = "errorCallBackCalled";
+		final String KEY_CAPTURED_ERROR_CALLBACK = "capturedErrorCallback";
+		final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
 		final Map<String, Object> errorCapture = new HashMap<>();
-		final ArgumentCaptor<AdobeCallback> adobeCallbackCaptor = ArgumentCaptor.forClass(AdobeCallback.class);
+		final ArgumentCaptor<AdobeCallbackWithError> adobeCallbackCaptor = ArgumentCaptor.forClass(
+			AdobeCallbackWithError.class
+		);
 		final AdobeCallbackWithError callbackWithError = new AdobeCallbackWithError() {
 			@Override
 			public void fail(AdobeError adobeError) {
-				errorCapture.put(KEY_IS_ERRORCALLBACK_CALLED, true);
-				errorCapture.put(KEY_CAPTUREDERRORCALLBACK, adobeError);
+				errorCapture.put(KEY_IS_ERROR_CALLBACK_CALLED, true);
+				errorCapture.put(KEY_CAPTURED_ERROR_CALLBACK, adobeError);
 			}
 
 			@Override
 			public void call(Object o) {}
 		};
 
-		// test
-		Identity.getIdentities(callbackWithError);
+		try (MockedStatic<MobileCore> mockedStaticMobileCore = Mockito.mockStatic(MobileCore.class)) {
+			Identity.getIdentities(callbackWithError);
 
-		// verify if the event is dispatched
-		PowerMockito.verifyStatic(MobileCore.class, Mockito.times(1));
-		MobileCore.dispatchEventWithResponseCallback(
-			any(Event.class),
-			adobeCallbackCaptor.capture(),
-			any(ExtensionErrorCallback.class)
-		);
+			// verify
+			mockedStaticMobileCore.verify(() ->
+				MobileCore.dispatchEventWithResponseCallback(
+					eventCaptor.capture(),
+					eq(500L),
+					adobeCallbackCaptor.capture()
+				)
+			);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 
 		// set response event to null
 		adobeCallbackCaptor.getValue().call(null);
 
 		// verify
-		assertTrue((boolean) errorCapture.get(KEY_IS_ERRORCALLBACK_CALLED));
-		assertEquals(AdobeError.UNEXPECTED_ERROR, errorCapture.get(KEY_CAPTUREDERRORCALLBACK));
+		assertTrue((boolean) errorCapture.get(KEY_IS_ERROR_CALLBACK_CALLED));
+		assertEquals(AdobeError.UNEXPECTED_ERROR, errorCapture.get(KEY_CAPTURED_ERROR_CALLBACK));
 	}
 
 	@Test
 	public void testGetIdentities_invalidEventData() {
 		// setup
-		final String KEY_IS_ERRORCALLBACK_CALLED = "errorCallBackCalled";
-		final String KEY_CAPTUREDERRORCALLBACK = "capturedErrorCallback";
+		final String KEY_IS_ERROR_CALLBACK_CALLED = "errorCallBackCalled";
+		final String KEY_CAPTURED_ERROR_CALLBACK = "capturedErrorCallback";
+		final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
 		final Map<String, Object> errorCapture = new HashMap<>();
-		final ArgumentCaptor<AdobeCallback> adobeCallbackCaptor = ArgumentCaptor.forClass(AdobeCallback.class);
+		final ArgumentCaptor<AdobeCallbackWithError> adobeCallbackCaptor = ArgumentCaptor.forClass(
+			AdobeCallbackWithError.class
+		);
 		final AdobeCallbackWithError callbackWithError = new AdobeCallbackWithError() {
 			@Override
 			public void fail(AdobeError adobeError) {
-				errorCapture.put(KEY_IS_ERRORCALLBACK_CALLED, true);
-				errorCapture.put(KEY_CAPTUREDERRORCALLBACK, adobeError);
+				errorCapture.put(KEY_IS_ERROR_CALLBACK_CALLED, true);
+				errorCapture.put(KEY_CAPTURED_ERROR_CALLBACK, adobeError);
 			}
 
 			@Override
 			public void call(Object o) {}
 		};
 
-		// test
-		Identity.getIdentities(callbackWithError);
+		try (MockedStatic<MobileCore> mockedStaticMobileCore = Mockito.mockStatic(MobileCore.class)) {
+			Identity.getIdentities(callbackWithError);
 
-		// verify if the event is dispatched
-		PowerMockito.verifyStatic(MobileCore.class, Mockito.times(1));
-		MobileCore.dispatchEventWithResponseCallback(
-			any(Event.class),
-			adobeCallbackCaptor.capture(),
-			any(ExtensionErrorCallback.class)
-		);
+			// verify
+			mockedStaticMobileCore.verify(() ->
+				MobileCore.dispatchEventWithResponseCallback(
+					eventCaptor.capture(),
+					eq(500L),
+					adobeCallbackCaptor.capture()
+				)
+			);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 
-		// set response event to null
+		// set response event
 		Map<String, Object> eventData = new HashMap<>();
 		eventData.put("someKey", "someValue");
 		adobeCallbackCaptor.getValue().call(buildIdentityResponseEvent(eventData));
 
 		// verify
-		assertTrue((boolean) errorCapture.get(KEY_IS_ERRORCALLBACK_CALLED));
-		assertEquals(AdobeError.UNEXPECTED_ERROR, errorCapture.get(KEY_CAPTUREDERRORCALLBACK));
+		assertTrue((boolean) errorCapture.get(KEY_IS_ERROR_CALLBACK_CALLED));
+		assertEquals(AdobeError.UNEXPECTED_ERROR, errorCapture.get(KEY_CAPTURED_ERROR_CALLBACK));
 	}
 
 	@Test
 	public void testGetIdentities_missingIdentityMap() {
 		// setup
-		final String KEY_IS_ERRORCALLBACK_CALLED = "errorCallBackCalled";
-		final String KEY_CAPTUREDERRORCALLBACK = "capturedErrorCallback";
+		final String KEY_IS_ERROR_CALLBACK_CALLED = "errorCallBackCalled";
+		final String KEY_CAPTURED_ERROR_CALLBACK = "capturedErrorCallback";
+		final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
 		final Map<String, Object> errorCapture = new HashMap<>();
-		final ArgumentCaptor<AdobeCallback> adobeCallbackCaptor = ArgumentCaptor.forClass(AdobeCallback.class);
+		final ArgumentCaptor<AdobeCallbackWithError> adobeCallbackCaptor = ArgumentCaptor.forClass(
+			AdobeCallbackWithError.class
+		);
 		final AdobeCallbackWithError callbackWithError = new AdobeCallbackWithError() {
 			@Override
 			public void fail(AdobeError adobeError) {
-				errorCapture.put(KEY_IS_ERRORCALLBACK_CALLED, true);
-				errorCapture.put(KEY_CAPTUREDERRORCALLBACK, adobeError);
+				errorCapture.put(KEY_IS_ERROR_CALLBACK_CALLED, true);
+				errorCapture.put(KEY_CAPTURED_ERROR_CALLBACK, adobeError);
 			}
 
 			@Override
 			public void call(Object o) {}
 		};
 
-		// test
-		Identity.getIdentities(callbackWithError);
+		try (MockedStatic<MobileCore> mockedStaticMobileCore = Mockito.mockStatic(MobileCore.class)) {
+			Identity.getIdentities(callbackWithError);
 
-		// verify if the event is dispatched
-		PowerMockito.verifyStatic(MobileCore.class, Mockito.times(1));
-		MobileCore.dispatchEventWithResponseCallback(
-			any(Event.class),
-			adobeCallbackCaptor.capture(),
-			any(ExtensionErrorCallback.class)
-		);
+			// verify
+			mockedStaticMobileCore.verify(() ->
+				MobileCore.dispatchEventWithResponseCallback(
+					eventCaptor.capture(),
+					eq(500L),
+					adobeCallbackCaptor.capture()
+				)
+			);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 
-		// set response event to map missing IdentityMap
-		Map<String, Object> emptyXDMData = new HashMap<>();
-		adobeCallbackCaptor.getValue().call(buildIdentityResponseEvent(emptyXDMData));
+		// set response event with empty data
+		Map<String, Object> eventData = new HashMap<>();
+		adobeCallbackCaptor.getValue().call(buildIdentityResponseEvent(eventData));
 
 		// verify
-		assertTrue((boolean) errorCapture.get(KEY_IS_ERRORCALLBACK_CALLED));
-		assertEquals(AdobeError.UNEXPECTED_ERROR, errorCapture.get(KEY_CAPTUREDERRORCALLBACK));
+		assertTrue((boolean) errorCapture.get(KEY_IS_ERROR_CALLBACK_CALLED));
+		assertEquals(AdobeError.UNEXPECTED_ERROR, errorCapture.get(KEY_CAPTURED_ERROR_CALLBACK));
+	}
+
+	@Test
+	public void testGetIdentities_callbackOnFail() {
+		// setup
+		final String KEY_IS_ERROR_CALLBACK_CALLED = "errorCallBackCalled";
+		final String KEY_CAPTURED_ERROR_CALLBACK = "capturedErrorCallback";
+		final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+		final Map<String, Object> errorCapture = new HashMap<>();
+		final ArgumentCaptor<AdobeCallbackWithError> adobeCallbackCaptor = ArgumentCaptor.forClass(
+			AdobeCallbackWithError.class
+		);
+		final AdobeCallbackWithError callbackWithError = new AdobeCallbackWithError() {
+			@Override
+			public void fail(AdobeError adobeError) {
+				errorCapture.put(KEY_IS_ERROR_CALLBACK_CALLED, true);
+				errorCapture.put(KEY_CAPTURED_ERROR_CALLBACK, adobeError);
+			}
+
+			@Override
+			public void call(Object o) {}
+		};
+
+		try (MockedStatic<MobileCore> mockedStaticMobileCore = Mockito.mockStatic(MobileCore.class)) {
+			Identity.getIdentities(callbackWithError);
+
+			// verify
+			mockedStaticMobileCore.verify(() ->
+				MobileCore.dispatchEventWithResponseCallback(
+					eventCaptor.capture(),
+					eq(500L),
+					adobeCallbackCaptor.capture()
+				)
+			);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+
+		// set response event with empty data
+		adobeCallbackCaptor.getValue().fail(AdobeError.UNEXPECTED_ERROR);
+
+		// verify
+		assertTrue((boolean) errorCapture.get(KEY_IS_ERROR_CALLBACK_CALLED));
+		assertEquals(AdobeError.UNEXPECTED_ERROR, errorCapture.get(KEY_CAPTURED_ERROR_CALLBACK));
 	}
 
 	// ========================================================================================
-	// Private method
+	// Private methods
 	// ========================================================================================
 	private Event buildIdentityResponseEvent(final Map<String, Object> eventData) {
 		return new Event.Builder(
 			IdentityConstants.EventNames.IDENTITY_REQUEST_IDENTITY_ECID,
-			IdentityConstants.EventType.EDGE_IDENTITY,
-			IdentityConstants.EventSource.RESPONSE_IDENTITY
+			EventType.EDGE_IDENTITY,
+			EventSource.RESPONSE_IDENTITY
 		)
 			.setEventData(eventData)
 			.build();
@@ -770,8 +1006,8 @@ public class IdentityTests {
 	private Event buildUrlVariablesResponseEvent(final Map<String, Object> eventData) {
 		return new Event.Builder(
 			IdentityConstants.EventNames.IDENTITY_REQUEST_URL_VARIABLES,
-			IdentityConstants.EventType.EDGE_IDENTITY,
-			IdentityConstants.EventSource.RESPONSE_IDENTITY
+			EventType.EDGE_IDENTITY,
+			EventSource.RESPONSE_IDENTITY
 		)
 			.setEventData(eventData)
 			.build();

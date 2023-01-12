@@ -13,8 +13,9 @@ package com.adobe.marketing.mobile.edge.identity;
 
 import static com.adobe.marketing.mobile.edge.identity.IdentityConstants.LOG_TAG;
 
-import com.adobe.marketing.mobile.LoggingMode;
-import com.adobe.marketing.mobile.MobileCore;
+import com.adobe.marketing.mobile.services.Log;
+import com.adobe.marketing.mobile.util.DataReader;
+import com.adobe.marketing.mobile.util.StringUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +32,8 @@ import java.util.Map;
 @SuppressWarnings("unused")
 public class IdentityMap {
 
+	private static final String LOG_SOURCE = "IdentityMap";
+
 	private final Map<String, List<IdentityItem>> identityItems = new HashMap<>();
 
 	/**
@@ -43,7 +46,7 @@ public class IdentityMap {
 	public List<IdentityItem> getIdentityItemsForNamespace(final String namespace) {
 		final List<IdentityItem> copyItems = new ArrayList<>();
 
-		if (Utils.isNullOrEmpty(namespace)) {
+		if (StringUtils.isNullOrEmpty(namespace)) {
 			return copyItems;
 		}
 
@@ -88,20 +91,12 @@ public class IdentityMap {
 	 */
 	public void removeItem(final IdentityItem item, final String namespace) {
 		if (item == null) {
-			MobileCore.log(
-				LoggingMode.DEBUG,
-				LOG_TAG,
-				"IdentityMap remove item ignored as must contain a non-null IdentityItem."
-			);
+			Log.debug(LOG_TAG, LOG_SOURCE, "Remove item ignored as must contain a non-null IdentityItem.");
 			return;
 		}
 
-		if (Utils.isNullOrEmpty(namespace)) {
-			MobileCore.log(
-				LoggingMode.DEBUG,
-				LOG_TAG,
-				"IdentityMap remove item ignored as must contain a non-null/non-empty namespace."
-			);
+		if (StringUtils.isNullOrEmpty(namespace)) {
+			Log.debug(LOG_TAG, LOG_SOURCE, "Remove item ignored as must contain a non-null/non-empty namespace.");
 			return;
 		}
 
@@ -159,20 +154,12 @@ public class IdentityMap {
 	 */
 	void addItem(final IdentityItem item, final String namespace, final boolean isFirstItem) {
 		if (item == null) {
-			MobileCore.log(
-				LoggingMode.DEBUG,
-				LOG_TAG,
-				"IdentityMap - add item ignored as must contain a non-null IdentityItem."
-			);
+			Log.debug(LOG_TAG, LOG_SOURCE, "Add item ignored as must contain a non-null IdentityItem.");
 			return;
 		}
 
-		if (Utils.isNullOrEmpty(namespace)) {
-			MobileCore.log(
-				LoggingMode.DEBUG,
-				LOG_TAG,
-				"IdentityMap - add item ignored as must contain a non-null/non-empty namespace."
-			);
+		if (StringUtils.isNullOrEmpty(namespace)) {
+			Log.debug(LOG_TAG, LOG_SOURCE, "Add item ignored as must contain a non-null/non-empty namespace.");
 			return;
 		}
 
@@ -281,7 +268,7 @@ public class IdentityMap {
 	}
 
 	/**
-	 * Creates an {@link IdentityMap} from the given xdm formatted {@link Map}
+	 * Creates an {@link IdentityMap} from the given xdm formatted immutable {@link Map}
 	 * Returns null if the provided map is null/empty.
 	 * Return null if the provided map is not in Identity Map's XDM format.
 	 *
@@ -292,16 +279,12 @@ public class IdentityMap {
 			return null;
 		}
 
-		Map<String, Object> identityMapDict = null;
-		try {
-			identityMapDict = (HashMap<String, Object>) map.get(IdentityConstants.XDMKeys.IDENTITY_MAP);
-		} catch (ClassCastException e) {
-			MobileCore.log(
-				LoggingMode.ERROR,
-				LOG_TAG,
-				String.format("Failed to create IdentityMap from data. Exception thrown: %s", e.getLocalizedMessage())
-			);
-		}
+		final Map<String, Object> identityMapDict = DataReader.optTypedMap(
+			Object.class,
+			map,
+			IdentityConstants.XDMKeys.IDENTITY_MAP,
+			null
+		);
 
 		if (identityMapDict == null) {
 			return null;
@@ -309,31 +292,21 @@ public class IdentityMap {
 
 		final IdentityMap identityMap = new IdentityMap();
 		for (final String namespace : identityMapDict.keySet()) {
-			try {
-				final ArrayList<HashMap<String, Object>> idArr = (ArrayList<HashMap<String, Object>>) identityMapDict.get(
-					namespace
-				);
-				if (idArr == null) {
-					continue;
-				}
+			final List<Map<String, Object>> immutableIdList = DataReader.optTypedListOfMap(
+				Object.class,
+				identityMapDict,
+				namespace,
+				null
+			);
 
-				for (Object idMap : idArr) {
-					final IdentityItem item = IdentityItem.fromData((Map<String, Object>) idMap);
+			if (immutableIdList == null) continue;
 
-					if (item != null) {
-						identityMap.addItemToMap(item, namespace, false);
-					}
+			for (final Map<String, Object> idMap : immutableIdList) {
+				final IdentityItem item = IdentityItem.fromData(idMap);
+
+				if (item != null) {
+					identityMap.addItemToMap(item, namespace, false);
 				}
-			} catch (ClassCastException e) {
-				MobileCore.log(
-					LoggingMode.ERROR,
-					LOG_TAG,
-					String.format(
-						"Failed to parse data for namespace (%s). Exception thrown: %s",
-						namespace,
-						e.getLocalizedMessage()
-					)
-				);
 			}
 		}
 

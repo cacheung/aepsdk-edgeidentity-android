@@ -9,9 +9,12 @@
   governing permissions and limitations under the License.
 */
 
-package com.adobe.marketing.mobile;
+package com.adobe.marketing.mobile.edge.identity.util;
+
+import static com.adobe.marketing.mobile.edge.identity.util.IdentityTestConstants.LOG_TAG;
 
 import com.adobe.marketing.mobile.services.HttpConnecting;
+import com.adobe.marketing.mobile.services.Log;
 import com.adobe.marketing.mobile.services.NetworkCallback;
 import com.adobe.marketing.mobile.services.NetworkRequest;
 import com.adobe.marketing.mobile.services.Networking;
@@ -24,9 +27,9 @@ import java.io.InputStream;
  */
 class MockNetworkService implements Networking {
 
-	private static String TAG = "MockNetworkService";
+	private static final String LOG_SOURCE = "MockNetworkService";
 
-	private static HttpConnecting dummyConnection = new HttpConnecting() {
+	private static final HttpConnecting dummyConnection = new HttpConnecting() {
 		@Override
 		public InputStream getInputStream() {
 			return new ByteArrayInputStream("{}".getBytes());
@@ -62,7 +65,7 @@ class MockNetworkService implements Networking {
 			return;
 		}
 
-		MobileCore.log(LoggingMode.DEBUG, TAG, "Received async request '" + networkRequest.getUrl() + "', ignoring.");
+		Log.debug(LOG_TAG, LOG_SOURCE, "Received async request '" + networkRequest.getUrl() + "', ignoring.");
 
 		if (networkCallback != null) {
 			networkCallback.call(dummyConnection);
