@@ -137,7 +137,7 @@ class IdentityState {
 
 		hasBooted = true;
 		Log.debug(LOG_TAG, LOG_SOURCE, "Edge Identity has successfully booted up");
-		callback.createXDMSharedState(identityProperties.toXDMData(false), null);
+		callback.createXDMSharedState(identityProperties.toXDMData(), null);
 
 		return hasBooted;
 	}
@@ -209,7 +209,7 @@ class IdentityState {
 
 		// Save to persistence
 		identityStorageManager.savePropertiesToPersistence(identityProperties);
-		callback.createXDMSharedState(identityProperties.toXDMData(false), event);
+		callback.createXDMSharedState(identityProperties.toXDMData(), event);
 	}
 
 	/**

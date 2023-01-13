@@ -31,7 +31,7 @@ public class IdentityMapTests {
 		map.addItem(new IdentityItem("California"), "location");
 
 		// verify
-		IdentityTestUtil.flattenMap(map.asXDMMap()).get("identityMap.location[0].id");
+		IdentityTestUtil.flattenMap(map.asXDMMap(false)).get("identityMap.location[0].id");
 	}
 
 	@Test
@@ -148,7 +148,7 @@ public class IdentityMapTests {
 		baseMap.merge(newMap);
 
 		// verify the existing identityMap is unchanged
-		Map<String, String> flattenedMap = IdentityTestUtil.flattenMap(baseMap.asXDMMap());
+		Map<String, String> flattenedMap = IdentityTestUtil.flattenMap(baseMap.asXDMMap(false));
 		assertEquals(3, flattenedMap.size());
 		assertEquals("California", flattenedMap.get("identityMap.location[0].id"));
 		assertEquals("authenticated", flattenedMap.get("identityMap.location[0].authenticatedState"));
@@ -219,7 +219,7 @@ public class IdentityMapTests {
 
 		// test
 		emptyMap.clearItemsForNamespace("location");
-		assertTrue(emptyMap.asXDMMap().isEmpty());
+		assertTrue(emptyMap.asXDMMap(false).isEmpty());
 	}
 
 	@Test
@@ -301,7 +301,7 @@ public class IdentityMapTests {
 		IdentityMap map = IdentityMap.fromXDMMap(xdmData);
 
 		// verify
-		Map<String, String> flattenedMap = IdentityTestUtil.flattenMap(map.asXDMMap());
+		Map<String, String> flattenedMap = IdentityTestUtil.flattenMap(map.asXDMMap(false));
 		assertEquals("randomECID", flattenedMap.get("identityMap.ECID[0].id"));
 		assertEquals("ambiguous", flattenedMap.get("identityMap.ECID[0].authenticatedState"));
 		assertEquals("true", flattenedMap.get("identityMap.ECID[0].primary"));
@@ -387,16 +387,16 @@ public class IdentityMapTests {
 	}
 
 	@Test
-	public void testAsXDMMap_AllowEmptyTrue() {
+	public void testAsXDMMap_AllowEmptyFalse() {
 		IdentityMap map = new IdentityMap();
-		Map xdmMap = map.asXDMMap(true);
+		Map xdmMap = map.asXDMMap(false);
 		assertTrue(xdmMap.isEmpty());
 	}
 
 	@Test
-	public void testAsXDMMap_AllowEmptyFalse() {
+	public void testAsXDMMap_AllowEmptyTrue() {
 		IdentityMap map = new IdentityMap();
-		Map xdmMap = map.asXDMMap(false);
+		Map xdmMap = map.asXDMMap(true);
 
 		// verify that the base xdm key identityMap is present
 		assertEquals(1, xdmMap.size());
@@ -404,7 +404,7 @@ public class IdentityMapTests {
 	}
 
 	private Map<String, List<IdentityItem>> getCastedIdentityMap(final IdentityMap map) {
-		final Map<String, Object> xdmMap = map.asXDMMap();
+		final Map<String, Object> xdmMap = map.asXDMMap(false);
 		return (Map<String, List<IdentityItem>>) xdmMap.get(IdentityConstants.XDMKeys.IDENTITY_MAP);
 	}
 

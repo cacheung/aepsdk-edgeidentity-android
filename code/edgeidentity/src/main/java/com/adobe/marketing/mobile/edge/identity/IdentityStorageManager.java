@@ -99,7 +99,7 @@ class IdentityStorageManager {
 			return;
 		}
 
-		final JSONObject jsonObject = new JSONObject(properties.toXDMData(false));
+		final JSONObject jsonObject = new JSONObject(properties.toXDMData());
 		final String jsonString = jsonObject.toString();
 		edgeIdentityStore.setString(IdentityConstants.DataStoreKey.IDENTITY_PROPERTIES, jsonString);
 	}

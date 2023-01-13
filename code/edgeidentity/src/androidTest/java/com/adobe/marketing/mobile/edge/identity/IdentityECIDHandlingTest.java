@@ -66,7 +66,7 @@ public class IdentityECIDHandlingTest {
 	public void testECID_edgePersistenceTakesPreferenceOverDirectExtension() throws Exception {
 		// setup
 		setIdentityDirectPersistedECID("legacyECID");
-		setEdgeIdentityPersistence(createIdentityMap("ECID", "edgeECID").asXDMMap());
+		setEdgeIdentityPersistence(createIdentityMap("ECID", "edgeECID").asXDMMap(false));
 		registerExtensions(Arrays.asList(MonitorExtension.EXTENSION, Identity.EXTENSION), null);
 
 		// verify
@@ -217,7 +217,7 @@ public class IdentityECIDHandlingTest {
 	public void testECID_DirectEcidIsRemovedOnPrivacyOptOut() throws Exception {
 		// setup
 		setIdentityDirectPersistedECID("legacyECID");
-		setEdgeIdentityPersistence(createIdentityMap("ECID", "edgeECID").asXDMMap());
+		setEdgeIdentityPersistence(createIdentityMap("ECID", "edgeECID").asXDMMap(false));
 
 		registerExtensions(
 			Arrays.asList(

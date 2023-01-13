@@ -628,7 +628,7 @@ public class IdentityTests {
 		assertEquals(IdentityConstants.EventNames.UPDATE_IDENTITIES, dispatchedEvent.getName());
 		assertEquals(EventType.EDGE_IDENTITY, dispatchedEvent.getType());
 		assertEquals(EventSource.UPDATE_IDENTITY, dispatchedEvent.getSource());
-		assertEquals(map.asXDMMap(), dispatchedEvent.getEventData());
+		assertEquals(map.asXDMMap(false), dispatchedEvent.getEventData());
 	}
 
 	@Test
@@ -685,7 +685,7 @@ public class IdentityTests {
 
 		final IdentityMap expectedIdentityMap = new IdentityMap();
 		expectedIdentityMap.addItem(sampleItem, "namespace");
-		assertEquals(expectedIdentityMap.asXDMMap(), dispatchedEvent.getEventData());
+		assertEquals(expectedIdentityMap.asXDMMap(false), dispatchedEvent.getEventData());
 	}
 
 	@Test

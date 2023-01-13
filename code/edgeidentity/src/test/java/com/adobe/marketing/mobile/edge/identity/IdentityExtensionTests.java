@@ -685,7 +685,7 @@ public class IdentityExtensionTests {
 		// verify identifiers updated
 		final ArgumentCaptor<IdentityMap> identityMapCaptor = ArgumentCaptor.forClass(IdentityMap.class);
 		verify(mockIdentityState).updateCustomerIdentifiers(identityMapCaptor.capture());
-		assertEquals(identityXDM, identityMapCaptor.getValue().asXDMMap());
+		assertEquals(identityXDM, identityMapCaptor.getValue().asXDMMap(false));
 
 		// verify pending state is created and resolved
 		verify(mockExtensionApi).createPendingXDMSharedState(eq(updateIdentityEvent));
