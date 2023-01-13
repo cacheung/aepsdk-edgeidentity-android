@@ -224,9 +224,21 @@ class IdentityProperties {
 	}
 
 	/**
-	 * Converts this into an event data representation in XDM format
+	 * Converts this {@code IdentityProperties} into an event data representation in XDM format
+	 * Use this method to cast the {@link IdentityMap} as {@code Map<String, Object>} to be passed as EventData for an SDK Event.
+	 * This method returns an empty map if the {@code IdentityMap} contains no data
 	 *
-	 * @param allowEmpty If this {@link IdentityProperties} contains no data, return a dictionary with a single {@link IdentityMap} key
+	 * @return A {@link Map} representing this in XDM format, or an empty {@link Map} if this contains no data.
+	 */
+	Map<String, Object> toXDMData() {
+		return toXDMData(false);
+	}
+
+	/**
+	 * Converts this {@code IdentityProperties} into an event data representation in XDM format
+	 *
+	 * @param allowEmpty If this {@link IdentityProperties} contains no data, return a dictionary with a single {@link IdentityMap} key,
+	 *                   otherwise an empty map is returned.
 	 * @return A {@link Map} representing this in XDM format
 	 */
 	Map<String, Object> toXDMData(final boolean allowEmpty) {

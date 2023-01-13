@@ -230,20 +230,10 @@ public class IdentityMap {
 	}
 
 	/**
-	 * Use this method to cast the {@link IdentityMap} as {@code Map<String, Object>} to be passed as EventData for an SDK Event.
-	 * This method returns an empty map if the {@code IdentityMap} contains no data
-	 *
-	 * @return {@code Map} representation of xdm formatted IdentityMap
-	 */
-	Map<String, Object> asXDMMap() {
-		return asXDMMap(true);
-	}
-
-	/**
 	 * Use this method to cast the {@link IdentityMap} as {@code Map<String,Object>} to be passed as EventData for an SDK Event.
 	 *
-	 * @param allowEmpty If false and if this {@code IdentityMap} contains no data, then returns a map with empty xdmFormatted Identity Map.
-	 *                   If true and if this {@code IdentityMap} contains no data, then returns an empty map
+	 * @param allowEmpty If true and if this {@code IdentityMap} contains no data, then returns a map with empty xdmFormatted Identity Map.
+	 *                   If false and if this {@code IdentityMap} contains no data, then returns an empty map
 	 * @return {@code Map} representation of xdm formatted IdentityMap
 	 */
 	Map<String, Object> asXDMMap(final boolean allowEmpty) {
@@ -260,7 +250,7 @@ public class IdentityMap {
 			identityMap.put(namespace, namespaceIds);
 		}
 
-		if (!identityMap.isEmpty() || !allowEmpty) {
+		if (!identityMap.isEmpty() || allowEmpty) {
 			xdmMap.put(IdentityConstants.XDMKeys.IDENTITY_MAP, identityMap);
 		}
 

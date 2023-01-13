@@ -13,8 +13,12 @@ package com.adobe.marketing.mobile.edge.identity;
 
 import static com.adobe.marketing.mobile.edge.identity.IdentityTestUtil.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+import com.adobe.marketing.mobile.util.DataReader;
+import com.adobe.marketing.mobile.util.DataReaderException;
 import java.util.Map;
 import org.junit.Test;
 
@@ -25,12 +29,30 @@ public class IdentityPropertiesTests {
 	// ======================================================================================================================
 
 	@Test
-	public void test_toXDMData_AllowEmpty() {
+	public void test_toXDMData_AllowEmpty_True() throws DataReaderException {
 		// setup
 		IdentityProperties props = new IdentityProperties();
 
 		// test
 		Map<String, Object> xdmMap = props.toXDMData(true);
+
+		// verify
+		Map<String, Object> identityMap = DataReader.getTypedMap(
+			Object.class,
+			xdmMap,
+			IdentityConstants.XDMKeys.IDENTITY_MAP
+		);
+		assertNotNull(identityMap);
+		assertTrue(identityMap.isEmpty());
+	}
+
+	@Test
+	public void test_toXDMData_AllowEmpty_False() {
+		// setup
+		IdentityProperties props = new IdentityProperties();
+
+		// test
+		Map<String, Object> xdmMap = props.toXDMData(false);
 
 		// verify
 		assertNull(xdmMap.get(IdentityConstants.XDMKeys.IDENTITY_MAP));
