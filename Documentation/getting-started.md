@@ -13,11 +13,12 @@ The Adobe Experience Platform Identity for Edge Network extension has the follow
 ### Java
 
 1. Add the Mobile Core and Edge extensions to your project using the app's Gradle file.
+See the [current version list](https://developer.adobe.com/client-sdks/documentation/current-sdk-versions) for the latest extension versions to use.
 
    ```java
-   implementation 'com.adobe.marketing.mobile:core:1.+'
-   implementation 'com.adobe.marketing.mobile:edge:1.+'
-   implementation 'com.adobe.marketing.mobile:edgeidentity:1.+'
+   implementation 'com.adobe.marketing.mobile:core:2.0.0'
+   implementation 'com.adobe.marketing.mobile:edge:2.0.0'
+   implementation 'com.adobe.marketing.mobile:edgeidentity:2.0.0'
    ```
 
 2. Import the Mobile Core and Edge extensions in your Application class.
@@ -39,22 +40,36 @@ public class MobileApp extends Application {
     public void onCreate() {
       super.onCreate();
       MobileCore.setApplication(this);
-      try {
-        Edge.registerExtension();
-        Identity.registerExtension();
-        // register other extensions
-        MobileCore.start(new AdobeCallback () {
-            @Override
-            public void call(Object o) {
-                MobileCore.configureWithAppID("yourAppId");
-            }
-        });      
+    
+		  MobileCore.configureWithAppID(ENVIRONMENT_FILE_ID);
 
-      } catch (Exception e) {
-        ...
-      }
+		// register Adobe extensions
+		MobileCore.registerExtensions(
+			Arrays.asList(Edge.EXTENSION, Identity.EXTENSION, Assurance.EXTENSION),
+			o -> Log.d("MobileApp", "Mobile SDK was initialized")
+		);
+	}
+}
+```
+### Kotlin
 
+```kotlin
+class MobileApp : Application() {
+    // Set up the preferred Environment File ID from your mobile property configured in Data Collection UI
+    private var ENVIRONMENT_FILE_ID: String = ""
 
+    override fun onCreate() {
+        super.onCreate()
+
+        // register AEP SDK extensions
+        MobileCore.setApplication(this)
+        MobileCore.setLogLevel(LoggingMode.VERBOSE)
+        
+        MobileCore.registerExtensions(
+            listOf(Edge.EXTENSION, Identity.EXTENSION, Consent.EXTENSION, Assurance.EXTENSION)
+        ) {
+            MobileCore.configureWithAppID(ENVIRONMENT_FILE_ID)
+        }
     }
 }
 ```

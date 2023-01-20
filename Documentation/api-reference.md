@@ -134,6 +134,9 @@ Identity.getUrlVariables(new AdobeCallback<String>() {
 
 Registers the Identity for Edge Network extension with the Mobile Core extension.
 
+> **Warning**
+> Deprecated as of 2.0.0. Use [MobileCore.registerExtensions API](https://github.com/adobe/aepsdk-core-android/blob/main/docs/Usage/MobileCore.md#registering-extensions-and-starting-the-sdk) instead.
+
 > **Note**
 > If your use-case covers both Edge Network and Adobe Experience Cloud Solutions extensions, you need to register Identity for Edge Network and Identity for Experience Cloud Identity Service from Mobile Core extensions. For more details, see the [frequently asked questions](https://aep-sdks.gitbook.io/docs/foundation-extensions/identity-for-edge-network/identity-faq#q-i-am-using-aep-edge-and-adobe-solutions-extensions-which-identity-extension-should-i-install-and-register).
 

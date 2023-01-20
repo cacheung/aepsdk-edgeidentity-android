@@ -11,11 +11,13 @@ The Adobe Experience Platform Edge Identity is a mobile extension for the [Adobe
 Integrate the Edge Identity extension into your app by including the following in your gradle file's `dependencies`:
 
 ```gradle
-implementation 'com.adobe.marketing.mobile:edgeidentity:1.+'
-implementation 'com.adobe.marketing.mobile:edge:1.+'
-implementation 'com.adobe.marketing.mobile:core:1.+'
-implementation 'com.adobe.marketing.mobile:edgeconsent:1.+' // Recommended when using the setAdvertisingIdentifier API
+implementation 'com.adobe.marketing.mobile:edgeidentity:2.0.0'
+implementation 'com.adobe.marketing.mobile:edge:2.0.0'
+implementation 'com.adobe.marketing.mobile:core:2.0.0'
+implementation 'com.adobe.marketing.mobile:edgeconsent:2.0.0' // Recommended when using the setAdvertisingIdentifier API
 ```
+
+See the [current version list](https://developer.adobe.com/client-sdks/documentation/current-sdk-versions) for the latest extension versions to use.
 
 ### Development
 
@@ -88,12 +90,6 @@ To enable the Git pre-commit hook to apply code formatting on each commit, run t
 ```
 make init
 ```
-
-## Related Projects
-
-| Project                                                      | Description                                                  |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| [AEP SDK Sample App for Android](https://github.com/adobe/aepsdk-sample-app-android) | Contains Android sample app for the AEP SDK.                 |
 
 ## Documentation
 
