@@ -29,9 +29,9 @@ To open and run the project, open the `code/settings.gradle` file in Android Stu
 
 The test app needs to be configured with the following edge extensions before it can be used:
 - Mobile Core (installed by default)
-- [Edge](https://aep-sdks.gitbook.io/docs/foundation-extensions/experience-platform-extension)
-- [Edge Identity](https://aep-sdks.gitbook.io/docs/foundation-extensions/identity-for-edge-network)
-- [Edge Consent](https://aep-sdks.gitbook.io/docs/foundation-extensions/consent-for-edge-network) (recommended when using the setAdvertisingIdentifier API)
+- [Edge](https://developer.adobe.com/client-sdks/documentation/edge-network)
+- [Edge Identity](https://developer.adobe.com/client-sdks/documentation/identity-for-edge-network)
+- [Edge Consent](https://developer.adobe.com/client-sdks/documentation/consent-for-edge-network) (recommended when using the setAdvertisingIdentifier API)
 
 **Run demo application**
 
@@ -90,6 +90,12 @@ To enable the Git pre-commit hook to apply code formatting on each commit, run t
 ```
 make init
 ```
+
+## Related Projects
+
+| Project                                                      | Description                                                  |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| [AEP SDK Sample App for Android](https://github.com/adobe/aepsdk-sample-app-android) | Contains Android sample app for the AEP SDK.                 |
 
 ## Documentation
 
