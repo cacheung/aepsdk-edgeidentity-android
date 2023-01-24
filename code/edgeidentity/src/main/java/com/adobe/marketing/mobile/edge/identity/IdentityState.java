@@ -24,6 +24,7 @@ import com.adobe.marketing.mobile.SharedStateStatus;
 import com.adobe.marketing.mobile.services.Log;
 import com.adobe.marketing.mobile.services.ServiceProvider;
 import com.adobe.marketing.mobile.util.DataReader;
+import com.adobe.marketing.mobile.util.MapUtils;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -294,7 +295,7 @@ class IdentityState {
 			null
 		);
 
-		return !Utils.isNullOrEmpty(identityDirectInfo);
+		return !MapUtils.isNullOrEmpty(identityDirectInfo);
 	}
 
 	/**
