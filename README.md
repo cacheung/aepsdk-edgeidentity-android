@@ -39,7 +39,7 @@ The test app needs to be configured with the following edge extensions before it
 2. Select the `app` runnable with the desired emulator and run the program.
 
 > **Note**
-> To enable GAID related advertising identifier features, follow the [documentation](Documentation/README.md#advertising-identifier) for the required setup steps.
+> To enable GAID related advertising identifier features, follow the [documentation](Documentation/advertising-identifier.md) for the required setup steps.
 
 **View the platform events with Assurance**
 
