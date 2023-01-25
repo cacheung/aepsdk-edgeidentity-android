@@ -40,15 +40,15 @@ public class MobileApp extends Application {
     public void onCreate() {
       super.onCreate();
       MobileCore.setApplication(this);
-    
-		  MobileCore.configureWithAppID(ENVIRONMENT_FILE_ID);
 
-		// register Adobe extensions
-		MobileCore.registerExtensions(
-			Arrays.asList(Edge.EXTENSION, Identity.EXTENSION, Assurance.EXTENSION),
-			o -> Log.d("MobileApp", "Mobile SDK was initialized")
-		);
-	}
+      MobileCore.configureWithAppID(ENVIRONMENT_FILE_ID);
+
+      // register Adobe extensions
+      MobileCore.registerExtensions(
+         Arrays.asList(Edge.EXTENSION, Identity.EXTENSION),
+         o -> Log.d("MobileApp", "Mobile SDK was initialized")
+       );
+    }
 }
 ```
 ### Kotlin
@@ -66,7 +66,7 @@ class MobileApp : Application() {
         MobileCore.setLogLevel(LoggingMode.VERBOSE)
         
         MobileCore.registerExtensions(
-            listOf(Edge.EXTENSION, Identity.EXTENSION, Consent.EXTENSION, Assurance.EXTENSION)
+            listOf(Edge.EXTENSION, Identity.EXTENSION, Consent.EXTENSION)
         ) {
             MobileCore.configureWithAppID(ENVIRONMENT_FILE_ID)
         }
