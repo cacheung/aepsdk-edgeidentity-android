@@ -63,8 +63,7 @@ class MobileApp : Application() {
 
         // register AEP SDK extensions
         MobileCore.setApplication(this)
-        MobileCore.setLogLevel(LoggingMode.VERBOSE)
-        
+         
         MobileCore.registerExtensions(
             listOf(Edge.EXTENSION, Identity.EXTENSION, Consent.EXTENSION)
         ) {
