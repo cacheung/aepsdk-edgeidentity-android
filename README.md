@@ -39,11 +39,11 @@ make init
 
 | Project                                                      | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| [AEPCore Extensions](https://github.com/adobe/aepsdk-core-android) | The AEPCore represents the foundation of the Adobe Experience Platform SDK.                |
-| [AEPEdge Extension](https://github.com/adobe/aepsdk-edge-android) | Provides support to the Experience Platform Edge.                |
-| [AEPConsent Extension](https://github.com/adobe/aepsdk-edgeconsent-android) | The AEPConsent extension enables consent preferences collection from your mobile app when using the AEP Mobile SDK and the Edge Network extension.              |
-| [AEP Assurance SDK for Android](https://github.com/adobe/aepsdk-sample-app-android) | Provides support to inspect and validate AEP SDK by integrating with Adobe Experience Platform Assurance.                |
-| [AEP SDK Sample App for Android](https://github.com/adobe/aepsdk-sample-app-android) | Contains Android sample app for the AEP SDK.                 |
+| [AEP Core Extensions](https://github.com/adobe/aepsdk-core-android) | The AEPCore represents the foundation of the Adobe Experience Platform SDK.                |
+| [AEP Edge Extension](https://github.com/adobe/aepsdk-edge-android) | The AEPEdge extension provides support to the Experience Platform Edge.                |
+| [AEP Consent Extension](https://github.com/adobe/aepsdk-edgeconsent-android) | The AEPConsent extension enables consent preferences collection from your mobile app when using the AEP SDK and the Edge Network extension.              |
+| [AEP Assurance SDK for Android](https://github.com/adobe/aepsdk-sample-app-android) | The AEP Assurance provides support to inspect and validate AEP SDK by integrating with Adobe Experience Platform Assurance.                |
+| [AEP SDK Sample App for Android](https://github.com/adobe/aepsdk-sample-app-android) | The AEP SDK Sample App contains Android sample app for the AEP SDK.                 |
 
 ## Documentation
 
