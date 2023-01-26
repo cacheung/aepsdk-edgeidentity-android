@@ -1,7 +1,7 @@
 # Advertising identifier
 
 ## Configuration
-To enable advertising identifier features in the sample app, follow these steps:
+To enable advertising identifier features in the test app, follow these steps:
 1. Update the value for key `gms_ads_app_id` located in the `secrets.xml` at [aepsdk-edgeidentity-android/code/app/src/main/res/values](../code/app/src/main/res/values/secrets.xml) with a valid Google AdMob app ID.
     - See Google's [quick start reference](https://developers.google.com/admob/android/quick-start) on how to get your AdMob app ID. See step 3 of the [Configure your app](https://developers.google.com/admob/android/quick-start#import_the_mobile_ads_sdk) section for a free public test app ID from Google.
     - Any real key values in the `secrets.xml` file should **not** be committed to the repository.

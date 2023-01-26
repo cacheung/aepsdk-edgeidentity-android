@@ -1,5 +1,31 @@
 # Getting started with the test app
 
+**Data Collection mobile property prerequisites**
+
+The test app needs to be configured with the following edge extensions before it can be used:
+- Mobile Core (installed by default)
+- [Edge](https://github.com/adobe/aepsdk-edge-android)
+- [Edge Identity](https://github.com/adobe/aepsdk-edgeidentity-android)
+- [Edge Consent](https://github.com/adobe/aepsdk-edgeconsent-android) (recommended when using the setAdvertisingIdentifier API)
+
+1. In the test app, set your `ENVIRONMENT_FILE_ID` in `EdgeIdentityApplication.kt`.
+2. Select the `app` runnable with the desired emulator and run the program.
+
+> **Note**
+> To enable GAID related advertising identifier features, follow the [documentation](./advertising-identifier.md) for the required setup steps.
+
+**View the platform events with Assurance**
+
+Configure a new Assurance session by setting the Base URL to `testapp://main` and launch Assurance in the demo app by running the following command in your terminal:
+
+```bash
+$ adb shell am start -W -a  android.intent.action.VIEW -d "testapp://main?adb_validation_sessionid=ADD_YOUR_SESSION_ID_HERE" com.adobe.marketing.mobile.testapp
+```
+
+Note: replace ADD_YOUR_SESSION_ID_HERE with your Assurance session identifier.
+
+Once the connection is established and the events list starts getting populated, you can filter the events for this extension by typing `Edge Identity` in the `Search Events` search box.
+
 ## Testing tips for Android advertising identifier
 See Google's [Advertising ID help article](https://support.google.com/googleplay/android-developer/answer/6048248?hl=en) for the latest requirements to access ad ID through `AdvertisingIdClient` APIs.
 

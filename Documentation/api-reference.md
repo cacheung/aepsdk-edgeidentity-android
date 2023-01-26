@@ -135,10 +135,10 @@ Identity.getUrlVariables(new AdobeCallback<String>() {
 Registers the Identity for Edge Network extension with the Mobile Core extension.
 
 > **Warning**
-> Deprecated as of 2.0.0. Use the [MobileCore.registerExtensions API](https://developer.adobe.com/client-sdks/documentation/mobile-core/api-reference) instead.
+> Deprecated as of 2.0.0. Use the [MobileCore.registerExtensions API](https://github.com/adobe/aepsdk-core-android) instead.
 
 > **Note**
-> If your use-case covers both Edge Network and Adobe Experience Cloud Solutions extensions, you need to register Identity for Edge Network and Identity for Experience Cloud Identity Service from Mobile Core extensions. For more details, see the [frequently asked questions](https://aep-sdks.gitbook.io/docs/foundation-extensions/identity-for-edge-network/identity-faq#q-i-am-using-aep-edge-and-adobe-solutions-extensions-which-identity-extension-should-i-install-and-register).
+> If your use-case covers both Edge Network and Adobe Experience Cloud Solutions extensions, you need to register Identity for Edge Network and Identity for Experience Cloud Identity Service from Mobile Core extensions. For more details, see the [frequently asked questions](https://developer.adobe.com/client-sdks/documentation/identity-for-edge-network/faq).
 
 #### Java
 
@@ -195,12 +195,12 @@ Some example use cases for this API are:
 * A last-resort reset for when an ECID should no longer be used.
 
 This API is not recommended for:
-* Resetting a user's consent and privacy settings; see [Privacy and GDPR](https://aep-sdks.gitbook.io/docs/resources/privacy-and-gdpr).
+* Resetting a user's consent and privacy settings; see [Privacy and GDPR](https://developer.adobe.com/client-sdks/documentation/privacy-and-gdpr).
 * Removing existing custom identifiers; use the [`removeIdentity`](#removeidentity) API instead.
-* Removing a previously synced advertising identifier after the advertising tracking settings were changed by the user; use the [`setAdvertisingIdentifier`](https://aep-sdks.gitbook.io/docs/foundation-extensions/mobile-core/identity/identity-api-reference#setadvertisingidentifier) API instead.
+* Removing a previously synced advertising identifier after the advertising tracking settings were changed by the user; use the [`setAdvertisingIdentifier`](#setadvertisingidentifier) API instead.
 
 > **Warning**
->The Identity for Edge Network extension does not read the Mobile SDK's privacy status, and therefore setting the SDK's privacy status to opt-out will not automatically clear the identities from the Identity for Edge Network extension. See [`MobileCore.resetIdentities`](https://aep-sdks.gitbook.io/docs/foundation-extensions/mobile-core/mobile-core-api-reference#resetidentities) for more details.
+>The Identity for Edge Network extension does not read the Mobile SDK's privacy status, and therefore setting the SDK's privacy status to opt-out will not automatically clear the identities from the Identity for Edge Network extension. See [`MobileCore.resetIdentities`](https://github.com/adobe/aepsdk-core-android/blob/staging/Documentation/Usage/MobileCore.md) for more details.
 
 ------
 
@@ -211,7 +211,7 @@ When this API is called with a valid advertising identifier, the Identity for Ed
 The GAID is preserved between app upgrades, is saved and restored during the standard application backup process, and is removed at uninstall.
 
 > **Warning**  
-> In order to enable collection of the user's current advertising tracking authorization selection for the provided advertising identifier, you need to install and register the [AEPEdgeConsent](https://aep-sdks.gitbook.io/docs/foundation-extensions/consent-for-edge-network) extension and update the [AEPEdge](https://aep-sdks.gitbook.io/docs/foundation-extensions/experience-platform-extension) dependency to minimum 1.3.2.
+> In order to enable collection of the user's current advertising tracking authorization selection for the provided advertising identifier, you need to install and register the [AEPEdgeConsent](https://github.com/adobe/aepsdk-edgeconsent-android) extension and update the [AEPEdge](https://github.com/adobe/aepsdk-edge-android) dependency to minimum 1.3.2.
 
 > **Note**  
 > These examples require Google Play Services to be configured in your mobile application, and use the Google Mobile Ads Lite SDK. For instructions on how to import the SDK and configure your `ApplicationManifest.xml` file, see [Google Mobile Ads Lite SDK setup](https://developers.google.com/admob/android/lite-sdk).
@@ -466,7 +466,7 @@ boolean primary = item.isPrimary();
 
 ### AuthenticatedState
 
-Defines the state an [Identity Item](api-reference.md#identityitem) is authenticated for.
+Defines the state an [Identity Item](#identityitem) is authenticated for.
 
 The possible authenticated states are:
 

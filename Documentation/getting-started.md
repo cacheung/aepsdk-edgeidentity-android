@@ -1,24 +1,32 @@
 ## Getting started
 
 The Adobe Experience Platform Identity for Edge Network extension has the following peer dependency, which must be installed prior to installing the identity extension:
-- [Mobile Core](https://aep-sdks.gitbook.io/docs/foundation-extensions/mobile-core)
+- [Mobile Core](https://github.com/adobe/aepsdk-core-android)
+
+## Configure the Identity extension in Data Collection UI
+1. Log into [Adobe Experience Platform Data Collection](https://experience.adobe.com/data-collection).
+2. From **Tags**, locate or search for your Tag mobile property.
+3. In your mobile property, select **Extensions** tab.
+4. On the **Catalog** tab, locate or search for the **Identity** extension, and select **Install**.
+5. There are no configuration settings for **Identity**.
+6. Follow the [publishing process](https://developer.adobe.com/client-sdks/documentation/getting-started/create-a-mobile-property) to update SDK configuration.
 
 ## Add the AEP Identity extension to your app
 
 ### Download and import the Identity extension
 
-> :information_source: The following instructions are for configuring an application using Adobe Experience Platform Edge mobile extensions. If an application will include both Edge Network and Adobe Solution extensions, both the Identity for Edge Network and Identity for Experience Cloud ID Service extensions are required. Find more details in the [Frequently Asked Questions](https://aep-sdks.gitbook.io/docs/foundation-extensions/identity-for-edge-network/identity-faq) page.
+> :information_source: The following instructions are for configuring an application using Adobe Experience Platform Edge mobile extensions. If an application will include both Edge Network and Adobe Solution extensions, both the Identity for Edge Network and Identity for Experience Cloud ID Service extensions are required. Find more details in the [Frequently Asked Questions](https://developer.adobe.com/client-sdks/documentation/identity-for-edge-network/faq) page.
 
 
 ### Java
 
 1. Add the Mobile Core and Edge extensions to your project using the app's Gradle file.
-See the [current version list](https://developer.adobe.com/client-sdks/documentation/current-sdk-versions) for the latest extension versions to use.
+For instruction on how to enclose the latest SDK versions in the gradle dependencies section, follow this [guide](placeholderlink).
 
    ```java
-   implementation 'com.adobe.marketing.mobile:core:2.0.0'
-   implementation 'com.adobe.marketing.mobile:edge:2.0.0'
-   implementation 'com.adobe.marketing.mobile:edgeidentity:2.0.0'
+   implementation 'com.adobe.marketing.mobile:core:2.+'
+   implementation 'com.adobe.marketing.mobile:edge:2.+'
+   implementation 'com.adobe.marketing.mobile:edgeidentity:2.+'
    ```
 
 2. Import the Mobile Core and Edge extensions in your Application class.
@@ -63,7 +71,7 @@ class MobileApp : Application() {
 
         // register AEP SDK extensions
         MobileCore.setApplication(this)
-         
+
         MobileCore.registerExtensions(
             listOf(Edge.EXTENSION, Identity.EXTENSION, Consent.EXTENSION)
         ) {

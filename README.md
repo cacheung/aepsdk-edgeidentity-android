@@ -3,21 +3,12 @@
 
 ## About this project
 
-The Adobe Experience Platform Edge Identity is a mobile extension for the [Adobe Experience Platform SDK](https://github.com/Adobe-Marketing-Cloud/acp-sdks) and requires the `MobileCore` extension. This extension enables handling of user identity data from a mobile app when using the AEP Mobile SDK and the Edge Network extension.
+The Adobe Experience Platform Edge Identity is a mobile extension for the [Adobe Experience Platform SDK](https://developer.adobe.com/client-sdks/documentation) and requires the `MobileCore` extension. This extension enables handling of user identity data from a mobile app when using the AEP Mobile SDK and the Edge Network extension.
 
 
 ### Installation
 
-Integrate the Edge Identity extension into your app by including the following in your gradle file's `dependencies`:
-
-```gradle
-implementation 'com.adobe.marketing.mobile:edgeidentity:2.0.0'
-implementation 'com.adobe.marketing.mobile:edge:2.0.0'
-implementation 'com.adobe.marketing.mobile:core:2.0.0'
-implementation 'com.adobe.marketing.mobile:edgeconsent:2.0.0' // Recommended when using the setAdvertisingIdentifier API
-```
-
-See the [current version list](https://developer.adobe.com/client-sdks/documentation/current-sdk-versions) for the latest extension versions to use.
+Integrate the Adobe Experience Platform Edge Identity Mobile extension into your app by following the [getting started guide](Documentation/getting-started.md).
 
 ### Development
 
@@ -25,62 +16,15 @@ See the [current version list](https://developer.adobe.com/client-sdks/documenta
 
 To open and run the project, open the `code/settings.gradle` file in Android Studio.
 
-**Data Collection mobile property prerequisites**
+**Run the test app**
 
-The test app needs to be configured with the following edge extensions before it can be used:
-- Mobile Core (installed by default)
-- [Edge](https://developer.adobe.com/client-sdks/documentation/edge-network)
-- [Edge Identity](https://developer.adobe.com/client-sdks/documentation/identity-for-edge-network)
-- [Edge Consent](https://developer.adobe.com/client-sdks/documentation/consent-for-edge-network) (recommended when using the setAdvertisingIdentifier API)
+To configure and run the test app for this project, follow the [getting started guide for the test app](Documentation/getting-started-test-app.md).
 
-**Run demo application**
+**Development on M1 Macs**
 
-1. In the test app, set your `ENVIRONMENT_FILE_ID` in `EdgeIdentityApplication.kt`.
-2. Select the `app` runnable with the desired emulator and run the program.
+If you are seeing any build failures when running the project for the first time on your M1 machine, check out the [troubleshooting guides](Documentation/troubleshooting-guide.md).
 
-> **Note**
-> To enable GAID related advertising identifier features, follow the [documentation](Documentation/advertising-identifier.md) for the required setup steps.
-
-**View the platform events with Assurance**
-
-Configure a new Assurance session by setting the Base URL to `testapp://main` and launch Assurance in the demo app by running the following command in your terminal:
-
-```bash
-$ adb shell am start -W -a  android.intent.action.VIEW -d "testapp://main?adb_validation_sessionid=ADD_YOUR_SESSION_ID_HERE" com.adobe.marketing.mobile.testapp
-```
-
-Note: replace ADD_YOUR_SESSION_ID_HERE with your Assurance session identifier.
-
-Once the connection is established and the events list starts getting populated, you can filter the events for this extension by typing `Edge Identity` in the `Search Events` search box.
-
-**Development on M1 Macs**  
-M1 Macs may run into errors during the build process, specifically finding the npm installation directory. 
-
-```
-Execution failed for task ':spotlessInternalRegisterDependencies'.
-
-Can't automatically determine npm executable and none was specifically supplied!
-
-Spotless tries to find your npm executable automatically. It looks for npm in the following places:
-- An executable referenced by the java system property 'npm.exec' - if such a system property exists.
-- The environment variable 'NVM_BIN' - if such an environment variable exists.
-- The environment variable 'NVM_SYMLINK' - if such an environment variable exists.
-- The environment variable 'NODE_PATH' - if such an environment variable exists.
-- In your 'PATH' environment variable
-
-If autodiscovery fails for your system, try to set one of the environment variables correctly or
-try setting the system property 'npm.exec' in the build process to override autodiscovery.
-```
-
-To address this: 
-- Update Android Studio to the latest version (minimum version Bumblebee Patch 1 should address this issue) 
-- Update the Android Gradle Plugin to the latest version (7.x.x as of this writing)  
-
-If that does not address the issue, try installing node using the installer and not through homebrew: https://nodejs.org/en/download/ 
-
-Please make sure that these build configuration changes are kept local; any build process dependencies (ex: Gradle version, packages) that are updated in this process should **not** be included in any PRs that are not specifically for updating the project's build configuration.
-
-### Code Format
+#### Code Format
 
 This project uses the code formatting tools [Spotless](https://github.com/diffplug/spotless/tree/main/plugin-gradle) with [Prettier](https://prettier.io/) and [ktlint](https://github.com/pinterest/ktlint). Formatting is applied when the project is built from Gradle and is checked when changes are submitted to the CI build system.
 
@@ -95,6 +39,10 @@ make init
 
 | Project                                                      | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| [AEPCore Extensions](https://github.com/adobe/aepsdk-core-android) | The AEPCore represents the foundation of the Adobe Experience Platform SDK.                |
+| [AEPEdge Extension](https://github.com/adobe/aepsdk-edge-android) | Provides support to the Experience Platform Edge.                |
+| [AEPConsent Extension](https://github.com/adobe/aepsdk-edgeconsent-android) | The AEPConsent extension enables consent preferences collection from your mobile app when using the AEP Mobile SDK and the Edge Network extension.              |
+| [AEP Assurance SDK for Android](https://github.com/adobe/aepsdk-sample-app-android) | Provides support to inspect and validate AEP SDK by integrating with Adobe Experience Platform Assurance.                |
 | [AEP SDK Sample App for Android](https://github.com/adobe/aepsdk-sample-app-android) | Contains Android sample app for the AEP SDK.                 |
 
 ## Documentation
