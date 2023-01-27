@@ -1,6 +1,6 @@
-## Troubleshooting Guides
+## Troubleshooting Guide
 
-### M1 issue
+### Development on M1 Macs
 
 M1 Macs may run into errors during the build process, specifically finding the npm installation directory. 
 

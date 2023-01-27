@@ -138,7 +138,7 @@ Registers the Identity for Edge Network extension with the Mobile Core extension
 > Deprecated as of 2.0.0. Use the [MobileCore.registerExtensions API](https://github.com/adobe/aepsdk-core-android) instead.
 
 > **Note**
-> If your use-case covers both Edge Network and Adobe Experience Cloud Solutions extensions, you need to register Identity for Edge Network and Identity for Experience Cloud Identity Service from Mobile Core extensions. For more details, see the [frequently asked questions](https://developer.adobe.com/client-sdks/documentation/identity-for-edge-network/faq).
+> If your use-case covers both Edge Network and Adobe Experience Cloud Solutions extensions, you need to register Identity for Edge Network and Identity for Experience Cloud Identity Service from Mobile Core extensions. For more details, see the [frequently asked questions](./frequently-asked-questions.md).
 
 #### Java
 
@@ -200,7 +200,7 @@ This API is not recommended for:
 * Removing a previously synced advertising identifier after the advertising tracking settings were changed by the user; use the [`setAdvertisingIdentifier`](#setadvertisingidentifier) API instead.
 
 > **Warning**
->The Identity for Edge Network extension does not read the Mobile SDK's privacy status, and therefore setting the SDK's privacy status to opt-out will not automatically clear the identities from the Identity for Edge Network extension. See [`MobileCore.resetIdentities`](https://github.com/adobe/aepsdk-core-android/blob/staging/Documentation/Usage/MobileCore.md) for more details.
+>The Identity for Edge Network extension does not read the Mobile SDK's privacy status, and therefore setting the SDK's privacy status to opt-out will not automatically clear the identities from the Identity for Edge Network extension. See [`MobileCore.resetIdentities`](https://github.com/adobe/aepsdk-core-android/blob/main/Documentation/Usage/MobileCore.md) for more details.
 
 ------
 
@@ -380,7 +380,7 @@ Defines a map containing a set of end user identities, keyed on either namespace
 
 The format of the IdentityMap class is defined by the [XDM Identity Map Schema](https://github.com/adobe/xdm/blob/master/docs/reference/mixins/shared/identitymap.schema.md).
 
-For more information, please read an overview of the [AEP Identity Service](https://experienceleague.adobe.com/docs/experience-platform/identity/home.html).
+For more information, please read an overview of the [Adobe Experience Platform Identity Service](https://experienceleague.adobe.com/docs/experience-platform/identity/home.html).
 
 ```text
 "identityMap" : {
