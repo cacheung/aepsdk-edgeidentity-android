@@ -20,11 +20,6 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
 
-                <!-- Accepts URIs that begin with "testapp://main”-->
-                <data
-                    android:scheme="testapp"
-                    android:host="main" />
-
             </intent-filter>
         </activity>
         <meta-data
