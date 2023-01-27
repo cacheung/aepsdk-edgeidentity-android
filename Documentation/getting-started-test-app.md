@@ -4,12 +4,24 @@
 
 The test app needs to be configured with the following edge extensions before it can be used:
 - [Mobile Core](https://github.com/adobe/aepsdk-core-android) (installed by default)
-- [Edge](https://github.com/adobe/aepsdk-edge-android)
+- [Edge Network](https://github.com/adobe/aepsdk-edge-android)
 - [Edge Identity](https://github.com/adobe/aepsdk-edgeidentity-android)
 - [Edge Consent](https://github.com/adobe/aepsdk-edgeconsent-android) (recommended when using the setAdvertisingIdentifier API)
 
 1. In the test app, set your `ENVIRONMENT_FILE_ID` in `EdgeIdentityApplication.kt`. Refer to [getting started](getting-started.md) for how to get the ENVIRONMENT_FILE_ID.
 2. Select the `app` runnable with the desired emulator and run the program.
+
+## Validation with Assurance
+
+Configure a new Assurance session by setting the Base URL to `testapp://main` and launch Assurance in the demo app by running the following command in your terminal:
+
+```bash
+$ adb shell am start -W -a  android.intent.action.VIEW -d "testapp://main?adb_validation_sessionid=ADD_YOUR_SESSION_ID_HERE" com.adobe.marketing.mobile.testapp
+```
+
+Note: replace `ADD_YOUR_SESSION_ID_HERE` with your Assurance session identifier.
+
+Once the connection is established and the events list starts getting populated, you can filter the events for this extension by typing `Edge Identity` in the `Search Events` search box.
 
 ## Testing with advertising identifier
 
@@ -95,28 +107,15 @@ In other Android environments, the ad ID tracking authorization is controlled us
 [<img src="./assets/new_adid_setting_optin.png" alt="New ad ID settings page - opt-in state" width="210"/>](./assets/new_adid_setting_optin.png)
 [<img src="./assets/new_adid_setting_optout.png" alt="New ad ID settings page - opt-out state" width="210"/>](./assets/new_adid_setting_optout.png)
 
-## Validation with Assurance
+#### Android Ads SDKs
 
-Configure a new Assurance session by setting the Base URL to `testapp://main` and launch Assurance in the demo app by running the following command in your terminal:
-
-```bash
-$ adb shell am start -W -a  android.intent.action.VIEW -d "testapp://main?adb_validation_sessionid=ADD_YOUR_SESSION_ID_HERE" com.adobe.marketing.mobile.testapp
-```
-
-Note: replace `ADD_YOUR_SESSION_ID_HERE` with your Assurance session identifier.
-
-Once the connection is established and the events list starts getting populated, you can filter the events for this extension by typing `Edge Identity` in the `Search Events` search box.
-
-
-
-## Android Ads SDKs
-## Google Mobile Ads Lite SDK
+##### Google Mobile Ads Lite SDK
 The [Google Mobile Ads Lite SDK](https://developers.google.com/admob/android/lite-sdk) is a way to use ads APIs without including the full size [Google Mobile Ads SDK](https://developers.google.com/admob/android/quick-start).  
 See API reference for [`AdvertisingIdClient`](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient) and [`AdvertisingIdClient.Info`](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info); the latter provides the APIs for getting the ad ID value and tracking authorization status.
 
 The Google AdMob SDK requires an application ID specified in the `AndroidManifest.xml` when the SDK is included in the build, otherwise the app will crash. However, for just ad ID testing purposes, the SDK doesn't have to be initialized. See Google's [quick start guide](https://developers.google.com/admob/android/quick-start#import_the_mobile_ads_sdk) for a detailed implementation guide (and a free sample app ID provided by Google for testing purposes in step 3).
 
-#### Implementation example
+##### Implementation example
 Using a getter to return the ad ID value. Key points to note:
 - Use of a background coroutine scope from the call site.
 - Checking the ad tracking authorization status to return the appropriate ad ID value.
@@ -173,7 +172,7 @@ Required normal permissions to use ad ID (Android 13 and above):
 ```
 For more specifics on the use of this permission in the context of Android version requirements and permission merging through SDKs, see the [AdvertisingIdClient.Info documentation](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info).
 
-## AndroidX Ads SDK
+##### AndroidX Ads SDK
 Overview: https://developer.android.com/jetpack/androidx/releases/ads  
 See the overview for official releases; the latest version is still in alpha and may not be fully supported.  
 `AdvertisingIdClient` API reference: https://developer.android.com/reference/androidx/ads/identifier/AdvertisingIdClient  

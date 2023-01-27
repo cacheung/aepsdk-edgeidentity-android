@@ -78,7 +78,7 @@ The Identity for Edge Network extension and the Identity for Experience Cloud ID
 
 The Identity for Edge Network extension does not clear its stored identities or regenerate the ECID due to privacy status changes. Instead, use the [MobileCore.resetIdentities](https://github.com/adobe/aepsdk-core-android/blob/main/Documentation/Usage/MobileCore.md) API. Note this API does not clear the ECID but instead generates a new ECID.
 
-Each identity extension has its own API to retrieve their respective ECIDs as well. Use [Identity.getExperienceCloudId](https://github.com/adobe/aepsdk-edge-android/blob/main/Documentation/api-reference.md) to get the Identity for Edge Network extension's ECID, and [Identity.getExperienceCloudId](https://github.com/adobe/aepsdk-core-android/blob/main/Documentation/Usage/Identity.md) to get the Identity for Experience Cloud ID Service extension's ECID.
+Each identity extension has its own API to retrieve their respective ECIDs as well. Use [Identity.getExperienceCloudId](api-reference.md) to get the Identity for Edge Network extension's ECID, and [Identity.getExperienceCloudId](https://github.com/adobe/aepsdk-core-android/blob/main/Documentation/Usage/Identity.md) to get the Identity for Experience Cloud ID Service extension's ECID.
 
 ### Q: How can I get all the identifiers used by the SDK when using both AEP Edge extensions and Adobe Solutions extensions?
 

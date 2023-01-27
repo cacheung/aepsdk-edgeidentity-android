@@ -138,7 +138,7 @@ Registers the Identity for Edge Network extension with the Mobile Core extension
 > Deprecated as of 2.0.0. Use the [MobileCore.registerExtensions API](https://github.com/adobe/aepsdk-core-android) instead.
 
 > **Note**
-> If your use-case covers both Edge Network and Adobe Experience Cloud Solutions extensions, you need to register Identity for Edge Network and Identity for Experience Cloud Identity Service from Mobile Core extensions. For more details, see the [frequently asked questions](./frequently-asked-questions.md).
+> If your use-case covers both Edge Network and Adobe Experience Cloud Solutions extensions, you need to register Identity for Edge Network and Identity for Experience Cloud Identity Service from Mobile Core extensions. For more details, see the [frequently asked questions](frequently-asked-questions.md).
 
 #### Java
 
@@ -211,7 +211,7 @@ When this API is called with a valid advertising identifier, the Identity for Ed
 The GAID is preserved between app upgrades, is saved and restored during the standard application backup process, and is removed at uninstall.
 
 > **Warning**  
-> In order to enable collection of the user's current advertising tracking authorization selection for the provided advertising identifier, you need to install and register the [AEPEdgeConsent](https://github.com/adobe/aepsdk-edgeconsent-android) extension and update the [AEPEdge](https://github.com/adobe/aepsdk-edge-android) dependency to minimum 1.3.2.
+> In order to enable collection of the user's current advertising tracking authorization selection for the provided advertising identifier, you need to install and register the [Consent](https://github.com/adobe/aepsdk-edgeconsent-android) extension and update the [Edge](https://github.com/adobe/aepsdk-edge-android) dependency to minimum 1.3.2.
 
 > **Note**  
 > These examples require Google Play Services to be configured in your mobile application, and use the Google Mobile Ads Lite SDK. For instructions on how to import the SDK and configure your `ApplicationManifest.xml` file, see [Google Mobile Ads Lite SDK setup](https://developers.google.com/admob/android/lite-sdk).

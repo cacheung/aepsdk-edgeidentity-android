@@ -8,7 +8,7 @@ The Adobe Experience Platform Identity for Edge Network mobile extension enables
 
 ### Installation
 
-Integrate the Adobe Experience Platform Edge Identity Mobile extension into your app by following the [getting started guide](Documentation/getting-started.md).
+Integrate the Identity for Edge Network mobile extension into your app by following the [getting started guide](Documentation/getting-started.md).
 
 ### Development
 

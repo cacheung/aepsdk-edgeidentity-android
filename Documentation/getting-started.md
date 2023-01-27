@@ -10,14 +10,14 @@ The Adobe Experience Platform Identity for Edge Network mobile extension enables
 5. There are no configuration settings for **Identity**.
 6. Follow the publishing process to update SDK configuration.
 
-## Add the Adobe Experience Identity extension to your app
-
-### Download and import the Identity extension
+## Add the Identity extension to your app
 
 The Adobe Experience Platform Identity for Edge Network extension depends on the following extensions:
 
 - [Mobile Core](https://github.com/adobe/aepsdk-core-android)
 - [Edge Network](https://github.com/adobe/aepsdk-edge-android) (required for handling requests to Adobe Edge Network)
+
+### Download and import the Identity extension
 
 > **Note** The following instructions are for configuring an application using Adobe Experience Platform Edge mobile extensions. If an application will include both Edge Network and Adobe Solution extensions, both the Identity for Edge Network and Identity for Experience Cloud ID Service extensions are required. Find more details in the [Frequently Asked Questions](frequently-asked-questions.md) page.
 
