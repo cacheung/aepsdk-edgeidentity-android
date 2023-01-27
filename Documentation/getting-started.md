@@ -1,7 +1,6 @@
-## Getting started
+## Adobe Experience Platform Edge Identity Mobile Extension
 
-The Adobe Experience Platform Identity for Edge Network extension has the following peer dependency, which must be installed prior to installing the identity extension:
-- [Mobile Core](https://github.com/adobe/aepsdk-core-android)
+The Adobe Experience Platform Identity for Edge Network mobile extension enables identity management from your mobile app when using the Adobe Experience Platform Mobile SDK and the Edge Network extension.
 
 ## Configure the Identity extension in Data Collection UI
 1. Log into [Adobe Experience Platform Data Collection](https://experience.adobe.com/data-collection).
@@ -9,11 +8,15 @@ The Adobe Experience Platform Identity for Edge Network extension has the follow
 3. In your mobile property, select **Extensions** tab.
 4. On the **Catalog** tab, locate or search for the **Identity** extension, and select **Install**.
 5. There are no configuration settings for **Identity**.
-6. Follow the [publishing process](https://developer.adobe.com/client-sdks/documentation/getting-started/create-a-mobile-property) to update SDK configuration.
+6. Follow the publishing process to update SDK configuration.
 
 ## Add the Adobe Experience Identity extension to your app
 
 ### Download and import the Identity extension
+
+The Adobe Experience Platform Identity for Edge Network extension has the following peer dependency, which must be installed prior to installing the identity extension:
+- [Mobile Core](https://github.com/adobe/aepsdk-core-android)
+- [Edge](https://github.com/adobe/aepsdk-edge-android) (recommended for event processing to Edge)
 
 > **Note** The following instructions are for configuring an application using Adobe Experience Platform Edge mobile extensions. If an application will include both Edge Network and Adobe Solution extensions, both the Identity for Edge Network and Identity for Experience Cloud ID Service extensions are required. Find more details in the [Frequently Asked Questions](frequently-asked-questions.md) page.
 
