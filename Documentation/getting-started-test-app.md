@@ -8,7 +8,7 @@ The test app needs to be configured with the following edge extensions before it
 - [Edge Identity](https://github.com/adobe/aepsdk-edgeidentity-android)
 - [Edge Consent](https://github.com/adobe/aepsdk-edgeconsent-android) (recommended when using the setAdvertisingIdentifier API)
 
-1. In the test app, set your `ENVIRONMENT_FILE_ID` in `EdgeIdentityApplication.kt`. Refer to [getting started](./getting-started.md) for how to get the ENVIRONMENT_FILE_ID.
+1. In the test app, set your `ENVIRONMENT_FILE_ID` in `EdgeIdentityApplication.kt`. Refer to [getting started](getting-started.md) for how to get the ENVIRONMENT_FILE_ID.
 2. Select the `app` runnable with the desired emulator and run the program.
 
 ## Testing with advertising identifier

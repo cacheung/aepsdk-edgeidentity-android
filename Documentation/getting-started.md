@@ -14,28 +14,37 @@ The Adobe Experience Platform Identity for Edge Network mobile extension enables
 
 ### Download and import the Identity extension
 
-The Adobe Experience Platform Identity for Edge Network extension has the following peer dependency, which must be installed prior to installing the identity extension:
+The Adobe Experience Platform Identity for Edge Network extension depends on the following extensions:
+
 - [Mobile Core](https://github.com/adobe/aepsdk-core-android)
-- [Edge](https://github.com/adobe/aepsdk-edge-android) (recommended for event processing to Edge)
+- [Edge Network](https://github.com/adobe/aepsdk-edge-android) (required for handling requests to Adobe Edge Network)
 
 > **Note** The following instructions are for configuring an application using Adobe Experience Platform Edge mobile extensions. If an application will include both Edge Network and Adobe Solution extensions, both the Identity for Edge Network and Identity for Experience Cloud ID Service extensions are required. Find more details in the [Frequently Asked Questions](frequently-asked-questions.md) page.
 
 1. Add the Mobile Core, Edge, and Edge Identity extensions to your project using the app's Gradle file:
-
-   ```java
-   implementation 'com.adobe.marketing.mobile:core:2.+'
-   implementation 'com.adobe.marketing.mobile:edge:2.+'
-   implementation 'com.adobe.marketing.mobile:edgeidentity:2.+'
+  
+```java
+implementation 'com.adobe.marketing.mobile:core:2.+'
+implementation 'com.adobe.marketing.mobile:edge:2.+'
+implementation 'com.adobe.marketing.mobile:edgeidentity:2.+'
    ```
 > **Warning**
 > Using dynamic dependency versions is not recommended for production apps. Refer to this [page](https://github.com/adobe/aepsdk-core-android/blob/main/Documentation/GradleDependencies.md) for managing gradle dependencies.
 
-2. Import the Mobile Core and Edge extensions in your Application class.
-   ```java
-    import com.adobe.marketing.mobile.MobileCore;
-    import com.adobe.marketing.mobile.Edge;
-    import com.adobe.marketing.mobile.edge.identity.Identity;
-   ```
+2. Import the libraries:
+#### Java
+```java
+import com.adobe.marketing.mobile.MobileCore;
+import com.adobe.marketing.mobile.Edge;
+import com.adobe.marketing.mobile.edge.identity.Identity;
+```
+#### Kotlin
+```kotlin
+import com.adobe.marketing.mobile.MobileCore
+import com.adobe.marketing.mobile.Edge
+import com.adobe.marketing.mobile.edge.identity.Identity
+```
+
 
 ### Register the Identity for Edge Extension with MobileCore
 
