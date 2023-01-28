@@ -200,7 +200,7 @@ This API is not recommended for:
 * Removing a previously synced advertising identifier after the advertising tracking settings were changed by the user; use the [`setAdvertisingIdentifier`](#setadvertisingidentifier) API instead.
 
 > **Warning**
->The Identity for Edge Network extension does not read the Mobile SDK's privacy status, and therefore setting the SDK's privacy status to opt-out will not automatically clear the identities from the Identity for Edge Network extension. See [`MobileCore.resetIdentities`](https://github.com/adobe/aepsdk-core-android/blob/main/Documentation/Usage/MobileCore.md) for more details.
+>The Identity for Edge Network extension does not read the Mobile SDK's privacy status, and therefore setting the SDK's privacy status to opt-out will not automatically clear the identities from the Identity for Edge Network extension. See [`MobileCore.resetIdentities`](https://github.com/adobe/aepsdk-core-android/blob/main/Documentation/MobileCore/api-reference.md) for more details.
 
 ------
 
