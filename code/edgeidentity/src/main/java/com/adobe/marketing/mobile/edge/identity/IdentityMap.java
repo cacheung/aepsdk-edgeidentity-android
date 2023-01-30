@@ -15,6 +15,7 @@ import static com.adobe.marketing.mobile.edge.identity.IdentityConstants.LOG_TAG
 
 import com.adobe.marketing.mobile.services.Log;
 import com.adobe.marketing.mobile.util.DataReader;
+import com.adobe.marketing.mobile.util.MapUtils;
 import com.adobe.marketing.mobile.util.StringUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -265,7 +266,7 @@ public class IdentityMap {
 	 * @return {@code Map<String,Object>} XDM format representation of IdentityMap
 	 */
 	static IdentityMap fromXDMMap(final Map<String, Object> map) {
-		if (Utils.isNullOrEmpty(map)) {
+		if (MapUtils.isNullOrEmpty(map)) {
 			return null;
 		}
 
