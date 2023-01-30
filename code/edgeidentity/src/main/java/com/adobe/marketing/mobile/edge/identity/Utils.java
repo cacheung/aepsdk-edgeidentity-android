@@ -12,21 +12,10 @@
 package com.adobe.marketing.mobile.edge.identity;
 
 import java.util.List;
-import java.util.Map;
 
 class Utils {
 
 	private Utils() {}
-
-	/**
-	 * Checks if the {@code Map<String, Object>} provided is null or empty.
-	 *
-	 * @param map the {@code Map<String, Object>} to verify
-	 * @return true if the {@code Map<String, Object>} provided is null or empty; false otherwise
-	 */
-	static boolean isNullOrEmpty(final Map<String, Object> map) {
-		return map == null || map.isEmpty();
-	}
 
 	/**
 	 * Checks if the {@code List} provided is null or empty.

@@ -17,26 +17,10 @@ import static junit.framework.TestCase.assertTrue;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import org.junit.Test;
 
 @SuppressWarnings("unchecked")
 public class UtilsTests {
-
-	@Test
-	public void test_isNullOrEmpty_nullMap() {
-		assertTrue(Utils.isNullOrEmpty((Map<String, Object>) null));
-	}
-
-	@Test
-	public void test_isNullOrEmpty_emptyMap() {
-		assertTrue(Utils.isNullOrEmpty(Collections.EMPTY_MAP));
-	}
-
-	@Test
-	public void test_isNullOrEmpty_nonEmptyNonNullMap() {
-		assertFalse(Utils.isNullOrEmpty(Collections.singletonMap("someKey", "someValue")));
-	}
 
 	@Test
 	public void test_isNullOrEmpty_nullList() {

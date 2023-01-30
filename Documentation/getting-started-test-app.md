@@ -1,6 +1,82 @@
 # Getting started with the test app
 
-## Testing tips for Android advertising identifier
+## Data Collection mobile property prerequisites
+
+The test app needs to be configured with the following edge extensions before it can be used:
+- [Mobile Core](https://github.com/adobe/aepsdk-core-android) (installed by default)
+- [Edge Network](https://github.com/adobe/aepsdk-edge-android)
+- [Edge Identity](https://github.com/adobe/aepsdk-edgeidentity-android)
+- [Edge Consent](https://github.com/adobe/aepsdk-edgeconsent-android) (recommended when using the setAdvertisingIdentifier API)
+
+1. In the test app, set your `ENVIRONMENT_FILE_ID` in `EdgeIdentityApplication.kt`. Refer to [getting started](getting-started.md) for how to get the ENVIRONMENT_FILE_ID.
+2. Select the `app` runnable with the desired emulator and run the program.
+
+## Validation with Assurance
+
+Configure a new Assurance session by setting the Base URL to `testapp://main` and launch Assurance in the demo app by running the following command in your terminal:
+
+```bash
+$ adb shell am start -W -a  android.intent.action.VIEW -d "testapp://main?adb_validation_sessionid=ADD_YOUR_SESSION_ID_HERE" com.adobe.marketing.edge.identity.app
+```
+
+Note: replace `ADD_YOUR_SESSION_ID_HERE` with your Assurance session identifier.
+
+Once the connection is established and the events list starts getting populated, you can filter the events for this extension by typing `Edge Identity` in the `Search Events` search box.
+
+## Testing with advertising identifier
+
+To enable advertising identifier features in the test app, follow these steps:
+1. Update the value for key `gms_ads_app_id` located in the `secrets.xml` at [aepsdk-edgeidentity-android/code/app/src/main/res/values](../code/app/src/main/res/values/secrets.xml) with a valid Google AdMob app ID.
+    - See Google's [quick start reference](https://developers.google.com/admob/android/quick-start) on how to get your AdMob app ID. See step 3 of the [Configure your app](https://developers.google.com/admob/android/quick-start#import_the_mobile_ads_sdk) section for a free public test app ID from Google.
+    - Any real key values in the `secrets.xml` file should **not** be committed to the repository.
+2. By default, the ad ID features are commented out in the sample app. To enable these features, uncomment the implemention code using [find and replace all](https://www.jetbrains.com/help/idea/finding-and-replacing-text-in-project.html#replace_search_string_in_project) to replace all instances of:
+```java
+/* Ad ID implementation
+```
+with:
+```java
+//* Ad ID implementation
+```
+Each code block has a pair of block comments wrapped around it to enable this behavior:
+```java
+/* Ad ID implementation (pt. 1/4)
+<commented implementation code...>
+/* Ad ID implementation (pt. 1/4) */
+```
+
+After replacement it will become:
+```java
+//* Ad ID implementation (pt. 1/4)
+<active implementation code!>
+//* Ad ID implementation (pt. 1/4) */
+```
+
+For convenience, these are the default find and replace shortcuts in Android Studio:  
+[<img src="./assets/find-and-replace-shortcuts.png" alt="Default shortcuts for find and replace" width="500"/>](./assets/find-and-replace-shortcuts.png)  
+
+The shortcut should open a window that looks like the following:
+[<img src="./assets/find-and-replace-all-example.png" alt="Example of find and replace" width="500"/>](./assets/find-and-replace-all-example.png)  
+There should be 5 pairs of special comment blocks (10 total matches) across two files:
+`app/build.gradle`, `CustomIdentityFragment.kt`, and `SharedViewModel.kt` 
+
+3. With the implementation code and gradle files uncommented with new dependencies, sync the project with the Gradle file changes using: File -> Sync Project with Gradle Files
+
+[<img src="./assets/sync-project-gradle-example.png" alt="Example of find and replace" width="500"/>](./assets/sync-project-gradle-example.png)  
+
+The app should now be properly configured to use advertising identifier features.
+
+To **disable** these features, follow these steps:
+1. [Find and replace](https://www.jetbrains.com/help/idea/finding-and-replacing-text-in-project.html#replace_search_string_in_project) all instances of:
+```java
+//* Ad ID implementation
+```
+with:
+```java
+/* Ad ID implementation
+```
+2. Sync Project with Gradle files using: File -> Sync Project with Gradle Files
+
+### Testing tips for Android advertising identifier
 See Google's [Advertising ID help article](https://support.google.com/googleplay/android-developer/answer/6048248?hl=en) for the latest requirements to access ad ID through `AdvertisingIdClient` APIs.
 
 Developers using ad ID should get the value from the API each time it is used, as permissions for ad tracking and/or the value of the ID itself may be changed at any time.
@@ -31,14 +107,15 @@ In other Android environments, the ad ID tracking authorization is controlled us
 [<img src="./assets/new_adid_setting_optin.png" alt="New ad ID settings page - opt-in state" width="210"/>](./assets/new_adid_setting_optin.png)
 [<img src="./assets/new_adid_setting_optout.png" alt="New ad ID settings page - opt-out state" width="210"/>](./assets/new_adid_setting_optout.png)
 
-## Android Ads SDKs
-## Google Mobile Ads Lite SDK
+#### Android Ads SDKs
+
+##### Google Mobile Ads Lite SDK
 The [Google Mobile Ads Lite SDK](https://developers.google.com/admob/android/lite-sdk) is a way to use ads APIs without including the full size [Google Mobile Ads SDK](https://developers.google.com/admob/android/quick-start).  
 See API reference for [`AdvertisingIdClient`](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient) and [`AdvertisingIdClient.Info`](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info); the latter provides the APIs for getting the ad ID value and tracking authorization status.
 
 The Google AdMob SDK requires an application ID specified in the `AndroidManifest.xml` when the SDK is included in the build, otherwise the app will crash. However, for just ad ID testing purposes, the SDK doesn't have to be initialized. See Google's [quick start guide](https://developers.google.com/admob/android/quick-start#import_the_mobile_ads_sdk) for a detailed implementation guide (and a free sample app ID provided by Google for testing purposes in step 3).
 
-#### Implementation example
+##### Implementation example
 Using a getter to return the ad ID value. Key points to note:
 - Use of a background coroutine scope from the call site.
 - Checking the ad tracking authorization status to return the appropriate ad ID value.
@@ -95,7 +172,7 @@ Required normal permissions to use ad ID (Android 13 and above):
 ```
 For more specifics on the use of this permission in the context of Android version requirements and permission merging through SDKs, see the [AdvertisingIdClient.Info documentation](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info).
 
-## AndroidX Ads SDK
+##### AndroidX Ads SDK
 Overview: https://developer.android.com/jetpack/androidx/releases/ads  
 See the overview for official releases; the latest version is still in alpha and may not be fully supported.  
 `AdvertisingIdClient` API reference: https://developer.android.com/reference/androidx/ads/identifier/AdvertisingIdClient  
