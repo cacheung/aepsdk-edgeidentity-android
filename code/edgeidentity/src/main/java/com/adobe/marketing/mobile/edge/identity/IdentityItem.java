@@ -13,8 +13,11 @@ package com.adobe.marketing.mobile.edge.identity;
 
 import static com.adobe.marketing.mobile.edge.identity.IdentityConstants.LOG_TAG;
 
-import com.adobe.marketing.mobile.LoggingMode;
-import com.adobe.marketing.mobile.MobileCore;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.adobe.marketing.mobile.services.Log;
+import com.adobe.marketing.mobile.util.DataReader;
+import com.adobe.marketing.mobile.util.DataReaderException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -27,6 +30,8 @@ import java.util.Objects;
  */
 public final class IdentityItem {
 
+	private static final String LOG_SOURCE = "IdentityItem";
+
 	private final String id;
 	private final AuthenticatedState authenticatedState;
 	private final boolean primary;
@@ -34,12 +39,16 @@ public final class IdentityItem {
 	/**
 	 * Creates a new {@link IdentityItem}
 	 *
-	 * @param id                 id for the item
-	 * @param authenticatedState {@link AuthenticatedState} for the item
+	 * @param id                 id for the item; should not be null
+	 * @param authenticatedState {@link AuthenticatedState} for the item; if none is provided {@link AuthenticatedState#AMBIGUOUS} is used as default
 	 * @param primary            primary flag for the item
 	 * @throws IllegalArgumentException if id is null
 	 */
-	public IdentityItem(final String id, final AuthenticatedState authenticatedState, final boolean primary) {
+	public IdentityItem(
+		@NonNull final String id,
+		@Nullable final AuthenticatedState authenticatedState,
+		final boolean primary
+	) {
 		if (id == null) {
 			throw new IllegalArgumentException("id must be non-null");
 		}
@@ -54,18 +63,18 @@ public final class IdentityItem {
 	 * {@code authenticatedState) is set to AMBIGUOUS
 	 * (@code primary} is set to false
 	 *
-	 * @param id the id for this {@link IdentityItem}
+	 * @param id the id for this {@link IdentityItem}; should not be null
 	 */
-	public IdentityItem(final String id) {
+	public IdentityItem(@NonNull final String id) {
 		this(id, AuthenticatedState.AMBIGUOUS, false);
 	}
 
 	/**
 	 * Creates a copy of item.
 	 *
-	 * @param item A {@link IdentityItem} to be copied
+	 * @param item A {@link IdentityItem} to be copied; should not be null
 	 */
-	public IdentityItem(final IdentityItem item) {
+	public IdentityItem(@NonNull final IdentityItem item) {
 		this(item.id, item.authenticatedState, item.primary);
 	}
 
@@ -74,6 +83,7 @@ public final class IdentityItem {
 	 *
 	 * @return The id for this identity item
 	 */
+	@NonNull
 	public String getId() {
 		return id;
 	}
@@ -83,6 +93,7 @@ public final class IdentityItem {
 	 *
 	 * @return Current {@link AuthenticatedState} for this item
 	 */
+	@NonNull
 	public AuthenticatedState getAuthenticatedState() {
 		return authenticatedState;
 	}
@@ -97,6 +108,7 @@ public final class IdentityItem {
 		return primary;
 	}
 
+	@NonNull
 	@Override
 	public String toString() {
 		// format:off
@@ -166,24 +178,21 @@ public final class IdentityItem {
 		}
 
 		try {
-			final String id = (String) data.get(IdentityConstants.XDMKeys.ID);
-			AuthenticatedState authenticatedState = AuthenticatedState.fromString(
-				(String) data.get(IdentityConstants.XDMKeys.AUTHENTICATED_STATE)
+			final String id = DataReader.getString(data, IdentityConstants.XDMKeys.ID);
+
+			final AuthenticatedState authenticatedState = AuthenticatedState.fromString(
+				DataReader.optString(
+					data,
+					IdentityConstants.XDMKeys.AUTHENTICATED_STATE,
+					AuthenticatedState.AMBIGUOUS.getName()
+				)
 			);
 
-			if (authenticatedState == null) {
-				authenticatedState = AuthenticatedState.AMBIGUOUS;
-			}
-
-			boolean primary = false;
-
-			if (data.get(IdentityConstants.XDMKeys.PRIMARY) != null) {
-				primary = (boolean) data.get(IdentityConstants.XDMKeys.PRIMARY);
-			}
+			final boolean primary = DataReader.optBoolean(data, IdentityConstants.XDMKeys.PRIMARY, false);
 
 			return new IdentityItem(id, authenticatedState, primary);
-		} catch (ClassCastException e) {
-			MobileCore.log(LoggingMode.DEBUG, LOG_TAG, "IdentityItem - Failed to create IdentityItem from data.");
+		} catch (final DataReaderException e) {
+			Log.debug(LOG_TAG, LOG_SOURCE, "Failed to create IdentityItem from data.");
 			return null;
 		}
 	}

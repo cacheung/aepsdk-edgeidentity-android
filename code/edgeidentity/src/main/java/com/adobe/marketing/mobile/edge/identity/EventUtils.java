@@ -11,11 +11,9 @@
 
 package com.adobe.marketing.mobile.edge.identity;
 
-import static com.adobe.marketing.mobile.edge.identity.IdentityConstants.LOG_TAG;
-
 import com.adobe.marketing.mobile.Event;
-import com.adobe.marketing.mobile.LoggingMode;
-import com.adobe.marketing.mobile.MobileCore;
+import com.adobe.marketing.mobile.util.DataReader;
+import com.adobe.marketing.mobile.util.StringUtils;
 import java.util.Map;
 
 /**
@@ -35,99 +33,15 @@ final class EventUtils {
 	}
 
 	/**
-	 * Checks if the provided {@code event} is of type {@link IdentityConstants.EventType#EDGE_IDENTITY} and source {@link IdentityConstants.EventSource#REMOVE_IDENTITY}
-	 *
-	 * @param event the event to verify
-	 * @return true if both type and source match
-	 */
-	static boolean isRemoveIdentityEvent(final Event event) {
-		return (
-			event != null &&
-			IdentityConstants.EventType.EDGE_IDENTITY.equalsIgnoreCase(event.getType()) &&
-			IdentityConstants.EventSource.REMOVE_IDENTITY.equalsIgnoreCase(event.getSource())
-		);
-	}
-
-	/**
-	 * Checks if the provided {@code event} is of type {@link IdentityConstants.EventType#EDGE_IDENTITY} and source {@link IdentityConstants.EventSource#UPDATE_IDENTITY}
-	 *
-	 * @param event the event to verify
-	 * @return true if both type and source match
-	 */
-	static boolean isUpdateIdentityEvent(final Event event) {
-		return (
-			event != null &&
-			IdentityConstants.EventType.EDGE_IDENTITY.equalsIgnoreCase(event.getType()) &&
-			IdentityConstants.EventSource.UPDATE_IDENTITY.equalsIgnoreCase(event.getSource())
-		);
-	}
-
-	/**
-	 * Checks if the provided {@code event} is of type {@link IdentityConstants.EventType#EDGE_IDENTITY} and source {@link IdentityConstants.EventSource#REQUEST_IDENTITY}
-	 *
-	 * @param event the event to verify
-	 * @return true if both type and source match
-	 */
-	static boolean isRequestIdentityEvent(final Event event) {
-		return (
-			event != null &&
-			IdentityConstants.EventType.EDGE_IDENTITY.equalsIgnoreCase(event.getType()) &&
-			IdentityConstants.EventSource.REQUEST_IDENTITY.equalsIgnoreCase(event.getSource())
-		);
-	}
-
-	/**
-	 * Checks if the provided {@code event} is of type {@link IdentityConstants.EventType#GENERIC_IDENTITY} and source {@link IdentityConstants.EventSource#REQUEST_CONTENT}
-	 *
-	 * @param event the event to verify
-	 * @return true if both type and source match
-	 */
-	static boolean isRequestContentEvent(final Event event) {
-		return (
-			event != null &&
-			IdentityConstants.EventType.GENERIC_IDENTITY.equalsIgnoreCase(event.getType()) &&
-			IdentityConstants.EventSource.REQUEST_CONTENT.equalsIgnoreCase(event.getSource())
-		);
-	}
-
-	/**
 	 * Reads the url variables flag from the event data, returns false if not present
 	 * Note: This API needs to be used with isRequestIdentityEvent API to determine the correct event type and event source
 	 * @param event the event to verify
 	 * @return true if urlVariables key is present in the event data and has a value of true
 	 */
 	static boolean isGetUrlVariablesRequestEvent(final Event event) {
-		if (event == null || event.getEventData() == null) {
-			return false;
-		}
-		boolean getUrlVariablesFlag = false;
-
-		try {
-			Object urlVariablesFlagObject = event.getEventData().get(IdentityConstants.EventDataKeys.URL_VARIABLES);
-			getUrlVariablesFlag = urlVariablesFlagObject != null && (boolean) urlVariablesFlagObject;
-		} catch (ClassCastException e) {
-			MobileCore.log(
-				LoggingMode.WARNING,
-				LOG_TAG,
-				"EventUtils - Failed to read urlvariables value, expected boolean: " + e.getLocalizedMessage()
-			);
-			return false;
-		}
-
-		return getUrlVariablesFlag;
-	}
-
-	/**
-	 * Checks if the provided {@code event} is of type {@link IdentityConstants.EventType#GENERIC_IDENTITY} and source {@link IdentityConstants.EventSource#REQUEST_RESET}
-	 *
-	 * @param event the event to verify
-	 * @return true if both type and source match
-	 */
-	static boolean isRequestResetEvent(final Event event) {
 		return (
 			event != null &&
-			IdentityConstants.EventType.GENERIC_IDENTITY.equalsIgnoreCase(event.getType()) &&
-			IdentityConstants.EventSource.REQUEST_RESET.equalsIgnoreCase(event.getSource())
+			DataReader.optBoolean(event.getEventData(), IdentityConstants.EventDataKeys.URL_VARIABLES, false)
 		);
 	}
 
@@ -139,18 +53,15 @@ final class EventUtils {
 	 * @return {@code boolean} indicating if it is the shared state update for the provided {@code stateOwnerName}
 	 */
 	static boolean isSharedStateUpdateFor(final String stateOwnerName, final Event event) {
-		if (Utils.isNullOrEmpty(stateOwnerName) || event == null) {
+		if (StringUtils.isNullOrEmpty(stateOwnerName) || event == null) {
 			return false;
 		}
 
-		String stateOwner;
-
-		try {
-			stateOwner = (String) event.getEventData().get(IdentityConstants.EventDataKeys.STATE_OWNER);
-		} catch (ClassCastException e) {
-			return false;
-		}
-
+		final String stateOwner = DataReader.optString(
+			event.getEventData(),
+			IdentityConstants.EventDataKeys.STATE_OWNER,
+			""
+		);
 		return stateOwnerName.equals(stateOwner);
 	}
 
@@ -169,23 +80,9 @@ final class EventUtils {
 	 */
 	static String getAdId(final Event event) {
 		final Map<String, Object> data = event.getEventData();
-		String adID;
+		final String adID = DataReader.optString(data, IdentityConstants.EventDataKeys.ADVERTISING_IDENTIFIER, null);
 
-		try {
-			adID = (String) data.get(IdentityConstants.EventDataKeys.ADVERTISING_IDENTIFIER);
-		} catch (ClassCastException e) {
-			MobileCore.log(
-				LoggingMode.DEBUG,
-				LOG_TAG,
-				"EventUtils - Failed to extract ad ID from event, expected String: " + e.getLocalizedMessage()
-			);
-			return "";
-		}
-
-		if (adID == null || IdentityConstants.Default.ZERO_ADVERTISING_ID.equals(adID)) {
-			return "";
-		}
-		return adID;
+		return (adID == null || IdentityConstants.Default.ZERO_ADVERTISING_ID.equals(adID) ? "" : adID);
 	}
 
 	/**
@@ -195,23 +92,12 @@ final class EventUtils {
 	 * @return the ECID or null if not found or unable to parse the payload
 	 */
 	static ECID getECID(final Map<String, Object> identityDirectSharedState) {
-		ECID legacyEcid = null;
-
-		try {
-			final String legacyEcidString = (String) identityDirectSharedState.get(
-				IdentityConstants.SharedState.IdentityDirect.ECID
-			);
-			legacyEcid = legacyEcidString == null ? null : new ECID(legacyEcidString);
-		} catch (ClassCastException e) {
-			MobileCore.log(
-				LoggingMode.DEBUG,
-				LOG_TAG,
-				"EventUtils - Failed to extract ECID from Identity direct shared state, expected String: " +
-				e.getLocalizedMessage()
-			);
-		}
-
-		return legacyEcid;
+		final String legacyEcidString = DataReader.optString(
+			identityDirectSharedState,
+			IdentityConstants.SharedState.IdentityDirect.ECID,
+			null
+		);
+		return (legacyEcidString == null ? null : new ECID(legacyEcidString));
 	}
 
 	/**
@@ -221,26 +107,10 @@ final class EventUtils {
 	 * @return the Experience Cloud Org Id or null if not found or unable to parse the payload
 	 */
 	static String getOrgId(final Map<String, Object> configurationSharedState) {
-		String orgId = null;
-
-		if (configurationSharedState == null) {
-			return orgId;
-		}
-
-		try {
-			orgId =
-				(String) configurationSharedState.get(
-					IdentityConstants.SharedState.Configuration.EXPERIENCE_CLOUD_ORGID
-				);
-		} catch (ClassCastException e) {
-			MobileCore.log(
-				LoggingMode.DEBUG,
-				LOG_TAG,
-				"EventUtils - Failed to extract Experience ORG ID from Configuration shared state, expected String: " +
-				e.getLocalizedMessage()
-			);
-		}
-
-		return orgId;
+		return DataReader.optString(
+			configurationSharedState,
+			IdentityConstants.SharedState.Configuration.EXPERIENCE_CLOUD_ORGID,
+			null
+		);
 	}
 }

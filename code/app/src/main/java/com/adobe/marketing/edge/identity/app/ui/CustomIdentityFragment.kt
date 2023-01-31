@@ -94,10 +94,12 @@ class CustomIdentityFragment : Fragment() {
             val authenticatedState: AuthenticatedState? = sharedViewModel.authenticatedState.value
             val isPrimary: Boolean = sharedViewModel.isPrimary.value ?: false
 
-            val item = IdentityItem(identifier, authenticatedState, isPrimary)
-            val map = IdentityMap()
-            map.addItem(item, namespace)
-            Identity.updateIdentities(map)
+            if (identifier != null && namespace != null) {
+                val item = IdentityItem(identifier, authenticatedState, isPrimary)
+                val map = IdentityMap()
+                map.addItem(item, namespace)
+                Identity.updateIdentities(map)
+            }
         }
 
         root.findViewById<Button>(R.id.btn_remove_identities).setOnClickListener {
@@ -106,8 +108,10 @@ class CustomIdentityFragment : Fragment() {
             val authenticatedState: AuthenticatedState? = sharedViewModel.authenticatedState.value
             val isPrimary: Boolean = sharedViewModel.isPrimary.value ?: false
 
-            val item = IdentityItem(identifier, authenticatedState, isPrimary)
-            Identity.removeIdentity(item, namespace)
+            if (identifier != null && namespace != null) {
+                val item = IdentityItem(identifier, authenticatedState, isPrimary)
+                Identity.removeIdentity(item, namespace)
+            }
         }
 
         // Advertising identifier features
@@ -121,7 +125,7 @@ class CustomIdentityFragment : Fragment() {
 
         // Default hint for how to enable ad ID features; overwritten by actual implementation when ad ID features are enabled.
         root.findViewById<Button>(R.id.btn_get_gaid).setOnClickListener {
-            Log.d(LOG_TAG, "For complete instructions on how to enable ad ID features, please see ./Documentation/README.md#advertising-identifier")
+            Log.d(LOG_TAG, "For complete instructions on how to enable ad ID features, please see ./Documentation/advertising-identifier.md")
         }
 
         /* Ad ID implementation (pt. 5/5)

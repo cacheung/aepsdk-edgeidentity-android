@@ -11,37 +11,33 @@
 
 package com.adobe.marketing.mobile.edge.identity;
 
-import static com.adobe.marketing.mobile.TestHelper.getDispatchedEventsWith;
-import static com.adobe.marketing.mobile.TestHelper.getXDMSharedStateFor;
-import static com.adobe.marketing.mobile.edge.identity.IdentityFunctionalTestUtil.registerEdgeIdentityExtension;
-import static com.adobe.marketing.mobile.edge.identity.IdentityFunctionalTestUtil.setEdgeIdentityPersistence;
-import static com.adobe.marketing.mobile.edge.identity.IdentityTestUtil.createXDMIdentityMap;
-import static com.adobe.marketing.mobile.edge.identity.IdentityTestUtil.flattenMap;
+import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.*;
+import static com.adobe.marketing.mobile.edge.identity.util.TestHelper.*;
 import static org.junit.Assert.assertEquals;
 
-import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.adobe.marketing.mobile.Event;
-import com.adobe.marketing.mobile.ExtensionError;
-import com.adobe.marketing.mobile.ExtensionErrorCallback;
+import com.adobe.marketing.mobile.EventSource;
+import com.adobe.marketing.mobile.EventType;
 import com.adobe.marketing.mobile.MobileCore;
-import com.adobe.marketing.mobile.TestHelper;
-import com.adobe.marketing.mobile.TestPersistenceHelper;
+import com.adobe.marketing.mobile.edge.identity.util.MonitorExtension;
+import com.adobe.marketing.mobile.edge.identity.util.TestPersistenceHelper;
+import com.adobe.marketing.mobile.util.JSONUtils;
+import com.adobe.marketing.mobile.util.StringUtils;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.json.JSONObject;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
 
 public class IdentityAdIdTest {
 
 	@Rule
-	public RuleChain rule = RuleChain
-		.outerRule(new TestHelper.SetupCoreRule())
-		.around(new TestHelper.RegisterMonitorExtensionRule());
+	public TestRule rule = new SetupCoreRule();
 
 	@Test
 	public void testGenericIdentityRequest_whenValidAdId_thenNewValidAdId() throws Exception {
@@ -50,16 +46,14 @@ public class IdentityAdIdTest {
 		String initialAdId = "fa181743-2520-4ebc-b125-626baf1e3db8";
 		String newAdId = "8d9ca5ff-7e74-44ac-bbcd-7aee7baf4f6c";
 		setEdgeIdentityPersistence(
-			createXDMIdentityMap(
-				new IdentityTestUtil.TestItem("ECID", "primaryECID"),
-				new IdentityTestUtil.TestItem("GAID", initialAdId)
-			)
+			createXDMIdentityMap(new TestItem("ECID", "primaryECID"), new TestItem("GAID", initialAdId))
 		);
-		registerEdgeIdentityExtension();
+
+		registerExtensions(Arrays.asList(MonitorExtension.EXTENSION, Identity.EXTENSION), null);
 
 		MobileCore.setAdvertisingIdentifier(newAdId);
 		// After sending mobile core event, give a wait time to allow for processing
-		TestHelper.waitForThreads(2000);
+		waitForThreads(2000);
 		// Verify dispatched events
 		// Edge Consent event should not be dispatched; valid -> valid does not signal change in consent
 		verifyDispatchedEvents(true, null);
@@ -73,7 +67,7 @@ public class IdentityAdIdTest {
 			IdentityConstants.DataStoreKey.DATASTORE_NAME,
 			IdentityConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
-		Map<String, String> persistedMap = flattenMap(IdentityTestUtil.toMap(new JSONObject(persistedJson)));
+		Map<String, String> persistedMap = flattenMap(JSONUtils.toMap(new JSONObject(persistedJson)));
 		verifyFlatIdentityMap(persistedMap, newAdId);
 	}
 
@@ -82,16 +76,13 @@ public class IdentityAdIdTest {
 		// Test
 		String initialAdId = "fa181743-2520-4ebc-b125-626baf1e3db8";
 		setEdgeIdentityPersistence(
-			createXDMIdentityMap(
-				new IdentityTestUtil.TestItem("ECID", "primaryECID"),
-				new IdentityTestUtil.TestItem("GAID", initialAdId)
-			)
+			createXDMIdentityMap(new TestItem("ECID", "primaryECID"), new TestItem("GAID", initialAdId))
 		);
-		registerEdgeIdentityExtension();
+		registerExtensions(Arrays.asList(MonitorExtension.EXTENSION, Identity.EXTENSION), null);
 
 		dispatchGenericIdentityNonAdIdEvent();
 
-		TestHelper.waitForThreads(2000);
+		waitForThreads(2000);
 		// Verify dispatched events
 		// Edge Consent event should not be dispatched; valid -> (unchanged) valid does not signal change in consent
 		verifyDispatchedEvents(false, null);
@@ -105,7 +96,7 @@ public class IdentityAdIdTest {
 			IdentityConstants.DataStoreKey.DATASTORE_NAME,
 			IdentityConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
-		Map<String, String> persistedMap = flattenMap(IdentityTestUtil.toMap(new JSONObject(persistedJson)));
+		Map<String, String> persistedMap = flattenMap(JSONUtils.toMap(new JSONObject(persistedJson)));
 		verifyFlatIdentityMap(persistedMap, initialAdId);
 	}
 
@@ -115,15 +106,12 @@ public class IdentityAdIdTest {
 		String initialAdId = "fa181743-2520-4ebc-b125-626baf1e3db8";
 		String newAdId = "fa181743-2520-4ebc-b125-626baf1e3db8";
 		setEdgeIdentityPersistence(
-			createXDMIdentityMap(
-				new IdentityTestUtil.TestItem("ECID", "primaryECID"),
-				new IdentityTestUtil.TestItem("GAID", initialAdId)
-			)
+			createXDMIdentityMap(new TestItem("ECID", "primaryECID"), new TestItem("GAID", initialAdId))
 		);
-		registerEdgeIdentityExtension();
+		registerExtensions(Arrays.asList(MonitorExtension.EXTENSION, Identity.EXTENSION), null);
 
 		MobileCore.setAdvertisingIdentifier(newAdId);
-		TestHelper.waitForThreads(2000);
+		waitForThreads(2000);
 		// Verify dispatched events
 		// Edge Consent event should not be dispatched; valid -> valid does not signal change in consent
 		verifyDispatchedEvents(true, null);
@@ -137,7 +125,7 @@ public class IdentityAdIdTest {
 			IdentityConstants.DataStoreKey.DATASTORE_NAME,
 			IdentityConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
-		Map<String, String> persistedMap = flattenMap(IdentityTestUtil.toMap(new JSONObject(persistedJson)));
+		Map<String, String> persistedMap = flattenMap(JSONUtils.toMap(new JSONObject(persistedJson)));
 		verifyFlatIdentityMap(persistedMap, newAdId);
 	}
 
@@ -147,15 +135,12 @@ public class IdentityAdIdTest {
 		String initialAdId = "fa181743-2520-4ebc-b125-626baf1e3db8";
 		String newAdId = "";
 		setEdgeIdentityPersistence(
-			createXDMIdentityMap(
-				new IdentityTestUtil.TestItem("ECID", "primaryECID"),
-				new IdentityTestUtil.TestItem("GAID", initialAdId)
-			)
+			createXDMIdentityMap(new TestItem("ECID", "primaryECID"), new TestItem("GAID", initialAdId))
 		);
-		registerEdgeIdentityExtension();
+		registerExtensions(Arrays.asList(MonitorExtension.EXTENSION, Identity.EXTENSION), null);
 
 		MobileCore.setAdvertisingIdentifier(newAdId);
-		TestHelper.waitForThreads(2000);
+		waitForThreads(2000);
 		// Verify dispatched events
 		// Edge Consent event should be dispatched; valid -> invalid signals change in consent
 		verifyDispatchedEvents(true, "n");
@@ -169,7 +154,7 @@ public class IdentityAdIdTest {
 			IdentityConstants.DataStoreKey.DATASTORE_NAME,
 			IdentityConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
-		Map<String, String> persistedMap = flattenMap(IdentityTestUtil.toMap(new JSONObject(persistedJson)));
+		Map<String, String> persistedMap = flattenMap(JSONUtils.toMap(new JSONObject(persistedJson)));
 		verifyFlatIdentityMap(persistedMap, null);
 	}
 
@@ -179,15 +164,12 @@ public class IdentityAdIdTest {
 		String initialAdId = "fa181743-2520-4ebc-b125-626baf1e3db8";
 		String newAdId = "00000000-0000-0000-0000-000000000000";
 		setEdgeIdentityPersistence(
-			createXDMIdentityMap(
-				new IdentityTestUtil.TestItem("ECID", "primaryECID"),
-				new IdentityTestUtil.TestItem("GAID", initialAdId)
-			)
+			createXDMIdentityMap(new TestItem("ECID", "primaryECID"), new TestItem("GAID", initialAdId))
 		);
-		registerEdgeIdentityExtension();
+		registerExtensions(Arrays.asList(MonitorExtension.EXTENSION, Identity.EXTENSION), null);
 
 		MobileCore.setAdvertisingIdentifier(newAdId);
-		TestHelper.waitForThreads(2000);
+		waitForThreads(2000);
 		// Verify dispatched events
 		// Edge Consent event should be dispatched; valid -> invalid signals change in consent
 		verifyDispatchedEvents(true, "n");
@@ -201,7 +183,7 @@ public class IdentityAdIdTest {
 			IdentityConstants.DataStoreKey.DATASTORE_NAME,
 			IdentityConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
-		Map<String, String> persistedMap = flattenMap(IdentityTestUtil.toMap(new JSONObject(persistedJson)));
+		Map<String, String> persistedMap = flattenMap(JSONUtils.toMap(new JSONObject(persistedJson)));
 		verifyFlatIdentityMap(persistedMap, null);
 	}
 
@@ -209,11 +191,11 @@ public class IdentityAdIdTest {
 	public void testGenericIdentityRequest_whenNoAdId_thenNewValidAdId() throws Exception {
 		// Test
 		String newAdId = "8d9ca5ff-7e74-44ac-bbcd-7aee7baf4f6c";
-		setEdgeIdentityPersistence(createXDMIdentityMap(new IdentityTestUtil.TestItem("ECID", "primaryECID")));
-		registerEdgeIdentityExtension();
+		setEdgeIdentityPersistence(createXDMIdentityMap(new TestItem("ECID", "primaryECID")));
+		registerExtensions(Arrays.asList(MonitorExtension.EXTENSION, Identity.EXTENSION), null);
 
 		MobileCore.setAdvertisingIdentifier(newAdId);
-		TestHelper.waitForThreads(2000);
+		waitForThreads(2000);
 		// Verify dispatched events
 		// Generic Identity event containing advertisingIdentifier should be dispatched
 		// Edge Consent event should not be dispatched; valid -> valid does not signal change in consent
@@ -228,19 +210,19 @@ public class IdentityAdIdTest {
 			IdentityConstants.DataStoreKey.DATASTORE_NAME,
 			IdentityConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
-		Map<String, String> persistedMap = flattenMap(IdentityTestUtil.toMap(new JSONObject(persistedJson)));
+		Map<String, String> persistedMap = flattenMap(JSONUtils.toMap(new JSONObject(persistedJson)));
 		verifyFlatIdentityMap(persistedMap, newAdId);
 	}
 
 	@Test
 	public void testGenericIdentityRequest_whenNoAdId_thenNonAdId() throws Exception {
 		// Test
-		setEdgeIdentityPersistence(createXDMIdentityMap(new IdentityTestUtil.TestItem("ECID", "primaryECID")));
-		registerEdgeIdentityExtension();
+		setEdgeIdentityPersistence(createXDMIdentityMap(new TestItem("ECID", "primaryECID")));
+		registerExtensions(Arrays.asList(MonitorExtension.EXTENSION, Identity.EXTENSION), null);
 
 		dispatchGenericIdentityNonAdIdEvent();
 
-		TestHelper.waitForThreads(2000);
+		waitForThreads(2000);
 		// Verify dispatched events
 		// Edge Consent event should not be dispatched; valid -> valid does not signal change in consent
 		verifyDispatchedEvents(false, null);
@@ -254,7 +236,7 @@ public class IdentityAdIdTest {
 			IdentityConstants.DataStoreKey.DATASTORE_NAME,
 			IdentityConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
-		Map<String, String> persistedMap = flattenMap(IdentityTestUtil.toMap(new JSONObject(persistedJson)));
+		Map<String, String> persistedMap = flattenMap(JSONUtils.toMap(new JSONObject(persistedJson)));
 		verifyFlatIdentityMap(persistedMap, null);
 	}
 
@@ -262,11 +244,11 @@ public class IdentityAdIdTest {
 	public void testGenericIdentityRequest_whenNoAdId_thenEmptyAdId() throws Exception {
 		// Test
 		String newAdId = "";
-		setEdgeIdentityPersistence(createXDMIdentityMap(new IdentityTestUtil.TestItem("ECID", "primaryECID")));
-		registerEdgeIdentityExtension();
+		setEdgeIdentityPersistence(createXDMIdentityMap(new TestItem("ECID", "primaryECID")));
+		registerExtensions(Arrays.asList(MonitorExtension.EXTENSION, Identity.EXTENSION), null);
 
 		MobileCore.setAdvertisingIdentifier(newAdId);
-		TestHelper.waitForThreads(2000);
+		waitForThreads(2000);
 		// Verify dispatched events
 		// Edge Consent event should not be dispatched; invalid -> invalid does not signal change in consent
 		verifyDispatchedEvents(true, null);
@@ -280,7 +262,7 @@ public class IdentityAdIdTest {
 			IdentityConstants.DataStoreKey.DATASTORE_NAME,
 			IdentityConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
-		Map<String, String> persistedMap = flattenMap(IdentityTestUtil.toMap(new JSONObject(persistedJson)));
+		Map<String, String> persistedMap = flattenMap(JSONUtils.toMap(new JSONObject(persistedJson)));
 		verifyFlatIdentityMap(persistedMap, null);
 	}
 
@@ -288,11 +270,11 @@ public class IdentityAdIdTest {
 	public void testGenericIdentityRequest_whenNoAdId_thenAllZerosAdIdTwice() throws Exception {
 		// Test
 		String newAdId = "00000000-0000-0000-0000-000000000000";
-		setEdgeIdentityPersistence(createXDMIdentityMap(new IdentityTestUtil.TestItem("ECID", "primaryECID")));
-		registerEdgeIdentityExtension();
+		setEdgeIdentityPersistence(createXDMIdentityMap(new TestItem("ECID", "primaryECID")));
+		registerExtensions(Arrays.asList(MonitorExtension.EXTENSION, Identity.EXTENSION), null);
 
 		MobileCore.setAdvertisingIdentifier(newAdId);
-		TestHelper.waitForThreads(2000);
+		waitForThreads(2000);
 		// Verify dispatched events
 		// Edge Consent event should not be dispatched; invalid -> invalid does not signal change in consent
 		verifyDispatchedEvents(true, null);
@@ -306,14 +288,14 @@ public class IdentityAdIdTest {
 			IdentityConstants.DataStoreKey.DATASTORE_NAME,
 			IdentityConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
-		Map<String, String> persistedMap = flattenMap(IdentityTestUtil.toMap(new JSONObject(persistedJson)));
+		Map<String, String> persistedMap = flattenMap(JSONUtils.toMap(new JSONObject(persistedJson)));
 		verifyFlatIdentityMap(persistedMap, null);
 
 		// Reset wildcard listener
-		TestHelper.resetTestExpectations();
+		resetTestExpectations();
 		// Test all zeros sent again
 		MobileCore.setAdvertisingIdentifier(newAdId);
-		TestHelper.waitForThreads(2000);
+		waitForThreads(2000);
 		// Verify dispatched events
 		// Edge Consent event should not be dispatched; invalid -> invalid does not signal change in consent
 		verifyDispatchedEvents(true, null);
@@ -327,16 +309,16 @@ public class IdentityAdIdTest {
 			IdentityConstants.DataStoreKey.DATASTORE_NAME,
 			IdentityConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
-		Map<String, String> persistedMap2 = flattenMap(IdentityTestUtil.toMap(new JSONObject(persistedJson2)));
+		Map<String, String> persistedMap2 = flattenMap(JSONUtils.toMap(new JSONObject(persistedJson2)));
 		verifyFlatIdentityMap(persistedMap2, null);
 	}
 
 	/**
-	 * Verifies that the expected events from the {@link MobileCore#setAdvertisingIdentifier(String)} or {@link MobileCore#dispatchEvent(Event, ExtensionErrorCallback)}
+	 * Verifies that the expected events from the {@link MobileCore#setAdvertisingIdentifier(String)} or {@link MobileCore#dispatchEvent(Event)}
 	 * APIs are properly dispatched. Verifies:
 	 * 1. Event type and source
 	 * 2. Event data/properties as required for proper ad ID functionality
-	 * @param isGenericIdentityEventAdIdEvent true if the expected {@link com.adobe.marketing.mobile.edge.identity.IdentityConstants.EventType#GENERIC_IDENTITY}
+	 * @param isGenericIdentityEventAdIdEvent true if the expected {@link EventType#GENERIC_IDENTITY}
 	 *                                           event should be an ad ID event, false otherwise
 	 * @param expectedConsentValue the expected consent value in the format {@link IdentityConstants.XDMKeys.Consent#YES}
 	 *                                or {@link IdentityConstants.XDMKeys.Consent#NO}; however, if consent event should not be dispatched, use null
@@ -346,20 +328,17 @@ public class IdentityAdIdTest {
 		throws Exception {
 		// Check the event type and source
 		List<Event> dispatchedGenericIdentityEvents = getDispatchedEventsWith(
-			IdentityConstants.EventType.GENERIC_IDENTITY,
-			IdentityConstants.EventSource.REQUEST_CONTENT
+			EventType.GENERIC_IDENTITY,
+			EventSource.REQUEST_CONTENT
 		);
 		// Verify Generic Identity event
 		assertEquals(1, dispatchedGenericIdentityEvents.size());
 		Event genericIdentityEvent = dispatchedGenericIdentityEvents.get(0);
-		assertEquals(isGenericIdentityEventAdIdEvent ? true : false, EventUtils.isAdIdEvent(genericIdentityEvent));
+		assertEquals(isGenericIdentityEventAdIdEvent, EventUtils.isAdIdEvent(genericIdentityEvent));
 		// Verify Edge Consent event
-		List<Event> dispatchedConsentEvents = getDispatchedEventsWith(
-			IdentityConstants.EventType.EDGE_CONSENT,
-			IdentityConstants.EventSource.UPDATE_CONSENT
-		);
-		assertEquals(Utils.isNullOrEmpty(expectedConsentValue) ? 0 : 1, dispatchedConsentEvents.size());
-		if (!Utils.isNullOrEmpty(expectedConsentValue)) {
+		List<Event> dispatchedConsentEvents = getDispatchedEventsWith(EventType.CONSENT, EventSource.UPDATE_CONSENT);
+		assertEquals(StringUtils.isNullOrEmpty(expectedConsentValue) ? 0 : 1, dispatchedConsentEvents.size());
+		if (!StringUtils.isNullOrEmpty(expectedConsentValue)) {
 			Map<String, String> consentDataMap = flattenMap(dispatchedConsentEvents.get(0).getEventData());
 			assertEquals("GAID", consentDataMap.get("consents.adID.idType"));
 			assertEquals(expectedConsentValue, consentDataMap.get("consents.adID.val"));
@@ -389,12 +368,11 @@ public class IdentityAdIdTest {
 		assertEquals("false", flatIdentityMap.get("identityMap.ECID[0].primary"));
 		assertEquals(expectedECID, flatIdentityMap.get("identityMap.ECID[0].id"));
 		assertEquals("ambiguous", flatIdentityMap.get("identityMap.ECID[0].authenticatedState"));
-		return;
 	}
 
 	/**
-	 * Dispatches an event using the MobileCore dispatchEvent API. Event has type {@link com.adobe.marketing.mobile.edge.identity.IdentityConstants.EventType#GENERIC_IDENTITY}
-	 * and source {@link com.adobe.marketing.mobile.edge.identity.IdentityConstants.EventSource#REQUEST_CONTENT}.
+	 * Dispatches an event using the MobileCore dispatchEvent API. Event has type {@link EventType#GENERIC_IDENTITY}
+	 * and source {@link EventSource#REQUEST_CONTENT}.
 	 * This is the combination of event type and source that the ad ID listener will capture, and this
 	 * method helps set up test cases that verify the ad ID is not modified if the advertisingIdentifier
 	 * property is not present in the correct format
@@ -402,8 +380,8 @@ public class IdentityAdIdTest {
 	private void dispatchGenericIdentityNonAdIdEvent() {
 		Event genericIdentityNonAdIdEvent = new Event.Builder(
 			"Test event",
-			IdentityConstants.EventType.GENERIC_IDENTITY,
-			IdentityConstants.EventSource.REQUEST_CONTENT
+			EventType.GENERIC_IDENTITY,
+			EventSource.REQUEST_CONTENT
 		)
 			.setEventData(
 				new HashMap<String, Object>() {
@@ -413,14 +391,6 @@ public class IdentityAdIdTest {
 				}
 			)
 			.build();
-		MobileCore.dispatchEvent(
-			genericIdentityNonAdIdEvent,
-			new ExtensionErrorCallback<ExtensionError>() {
-				@Override
-				public void error(ExtensionError extensionError) {
-					Log.e("IdentityAdIdTest", "Failed to dispatch event." + extensionError.toString());
-				}
-			}
-		);
+		MobileCore.dispatchEvent(genericIdentityNonAdIdEvent);
 	}
 }

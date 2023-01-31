@@ -1,4 +1,4 @@
-# Adobe Experience Platform Identity for Edge Network Extension - Android
+# Adobe Experience Platform Identity for Edge Network Extension Android API Reference
 
 ## Prerequisites
 
@@ -35,13 +35,25 @@ public static String extensionVersion()
 ```java
 String extensionVersion = Identity.extensionVersion();
 ```
+
+#### Kotlin
+
+##### Syntax
+```kotlin
+fun extensionVersion(): String
+```
+
+##### Example
+```kotlin
+val extensionVersion = Identity.extensionVersion()
+```
 ------
 
 ### getExperienceCloudId
 
 This API retrieves the Experience Cloud ID (ECID) that was generated when the app was initially launched. This ID is preserved between app upgrades, is saved and restored during the standard application backup process, and is removed at uninstall.
 
-> **Note**
+> **Note** 
 > The ECID value is returned via the `AdobeCallback`. When `AdobeCallbackWithError` is provided to this API, the timeout value is 500ms. If the operation times out or an unexpected error occurs, the `fail` method is called with the appropriate `AdobeError`.
 
 #### Java
@@ -61,6 +73,20 @@ Identity.getExperienceCloudId(new AdobeCallback<String>() {
          //Handle the ID returned here    
     }
 });
+```
+
+#### Kotlin
+
+##### Syntax
+```kotlin
+fun getExperienceCloudId(callback: AdobeCallback<String>)
+```
+
+##### Example
+```kotlin
+Identity.getExperienceCloudId { id ->
+    //Handle the ID returned here
+}
 ```
 
 ------
@@ -88,6 +114,20 @@ Identity.getIdentities(new AdobeCallback<IdentityMap>() {
          //Handle the IdentityMap returned here    
     }
 });
+```
+
+#### Kotlin
+
+##### Syntax
+```kotlin
+fun getIdentities(callback: AdobeCallback<IdentityMap>)
+```
+
+##### Example
+```kotlin
+Identity.getIdentities { identityMap ->
+  //Handle the IdentityMap returned here        
+}
 ```
 
 ------
@@ -128,14 +168,34 @@ Identity.getUrlVariables(new AdobeCallback<String>() {
 });
 ```
 
+#### Kotlin
+
+##### Syntax
+```kotlin
+fun getUrlVariables(callback: AdobeCallback<String>)
+```
+
+##### Example
+```kotlin
+Identity.getUrlVariables { urlVariablesString ->
+  //handle the URL query parameter string here
+  //For example, open the URL in a webView      
+  val webView = findViewById<WebView>(R.id.your_webview) // initialize with your webView
+  webView.loadUrl("http://www.example.com?" + urlVariablesString)    
+}
+```
+
 ------
 
 ### registerExtension
 
 Registers the Identity for Edge Network extension with the Mobile Core extension.
 
+> **Warning**
+> Deprecated as of 2.0.0. Use the [MobileCore.registerExtensions API](https://github.com/adobe/aepsdk-core-android/blob/main/Documentation/MobileCore/api-reference.md) instead.
+
 > **Note**
-> If your use-case covers both Edge Network and Adobe Experience Cloud Solutions extensions, you need to register Identity for Edge Network and Identity for Experience Cloud Identity Service from Mobile Core extensions. For more details, see the [frequently asked questions](https://aep-sdks.gitbook.io/docs/foundation-extensions/identity-for-edge-network/identity-faq#q-i-am-using-aep-edge-and-adobe-solutions-extensions-which-identity-extension-should-i-install-and-register).
+> If your use-case covers both Edge Network and Adobe Experience Cloud Solutions extensions, you need to register Identity for Edge Network and Identity for Experience Cloud Identity Service from Mobile Core extensions. For more details, see the [frequently asked questions](frequently-asked-questions.md).
 
 #### Java
 
@@ -150,6 +210,18 @@ import com.adobe.marketing.mobile.edge.identity.Identity
 
 ...
 Identity.registerExtension();
+```
+
+#### Kotlin
+
+##### Syntax
+```kotlin
+fun registerExtension()
+```
+
+##### Example
+```kotlin
+Identity.registerExtension()
 ```
 
 ------
@@ -179,6 +251,19 @@ IdentityItem item = new IdentityItem("user@example.com");
 Identity.removeIdentity(item, "Email");
 ```
 
+#### Kotlin
+
+##### Syntax
+```kotlin
+fun removeIdentity(item: IdentityItem, namespace: String)
+```
+
+##### Example
+```kotlin
+val item = IdentityItem("user@example.com")
+Identity.removeIdentity(item, "Email")
+```
+
 ------
 
 ### resetIdentities
@@ -192,12 +277,12 @@ Some example use cases for this API are:
 * A last-resort reset for when an ECID should no longer be used.
 
 This API is not recommended for:
-* Resetting a user's consent and privacy settings; see [Privacy and GDPR](https://aep-sdks.gitbook.io/docs/resources/privacy-and-gdpr).
+* Resetting a user's consent and privacy settings; see [Privacy and GDPR](https://developer.adobe.com/client-sdks/documentation/privacy-and-gdpr).
 * Removing existing custom identifiers; use the [`removeIdentity`](#removeidentity) API instead.
-* Removing a previously synced advertising identifier after the advertising tracking settings were changed by the user; use the [`setAdvertisingIdentifier`](https://aep-sdks.gitbook.io/docs/foundation-extensions/mobile-core/identity/identity-api-reference#setadvertisingidentifier) API instead.
+* Removing a previously synced advertising identifier after the advertising tracking settings were changed by the user; use the [`setAdvertisingIdentifier`](#setadvertisingidentifier) API instead.
 
 > **Warning**
->The Identity for Edge Network extension does not read the Mobile SDK's privacy status, and therefore setting the SDK's privacy status to opt-out will not automatically clear the identities from the Identity for Edge Network extension. See [`MobileCore.resetIdentities`](https://aep-sdks.gitbook.io/docs/foundation-extensions/mobile-core/mobile-core-api-reference#resetidentities) for more details.
+>The Identity for Edge Network extension does not read the Mobile SDK's privacy status, and therefore setting the SDK's privacy status to opt-out will not automatically clear the identities from the Identity for Edge Network extension. See [`MobileCore.resetIdentities`](https://github.com/adobe/aepsdk-core-android/blob/main/Documentation/MobileCore/api-reference.md) for more details.
 
 ------
 
@@ -208,7 +293,7 @@ When this API is called with a valid advertising identifier, the Identity for Ed
 The GAID is preserved between app upgrades, is saved and restored during the standard application backup process, and is removed at uninstall.
 
 > **Warning**  
-> In order to enable collection of the user's current advertising tracking authorization selection for the provided advertising identifier, you need to install and register the [AEPEdgeConsent](https://aep-sdks.gitbook.io/docs/foundation-extensions/consent-for-edge-network) extension and update the [AEPEdge](https://aep-sdks.gitbook.io/docs/foundation-extensions/experience-platform-extension) dependency to minimum 1.3.2.
+> In order to enable collection of the user's current advertising tracking authorization selection for the provided advertising identifier, you need to install and register the [Consent](https://github.com/adobe/aepsdk-edgeconsent-android) extension and update the [Edge](https://github.com/adobe/aepsdk-edge-android) dependency to minimum 1.3.2.
 
 > **Note**  
 > These examples require Google Play Services to be configured in your mobile application, and use the Google Mobile Ads Lite SDK. For instructions on how to import the SDK and configure your `ApplicationManifest.xml` file, see [Google Mobile Ads Lite SDK setup](https://developers.google.com/admob/android/lite-sdk).
@@ -367,6 +452,22 @@ identityMap.addItem(item, "Email")
 Identity.updateIdentities(identityMap);
 ```
 
+
+#### Kotlin
+
+##### Syntax
+```kotlin
+fun updateIdentities(identityMap: IdentityMap)
+```
+
+##### Example
+```kotlin
+val item = IdentityItem("user@example.com")
+val identityMap = IdentityMap()
+identityMap.addItem(item, "Email")
+Identity.updateIdentities(identityMap)
+```
+
 ------
 
 ## Public Classes
@@ -377,7 +478,7 @@ Defines a map containing a set of end user identities, keyed on either namespace
 
 The format of the IdentityMap class is defined by the [XDM Identity Map Schema](https://github.com/adobe/xdm/blob/master/docs/reference/mixins/shared/identitymap.schema.md).
 
-For more information, please read an overview of the [AEP Identity Service](https://experienceleague.adobe.com/docs/experience-platform/identity/home.html).
+For more information, please read an overview of the [Adobe Experience Platform Identity Service](https://experienceleague.adobe.com/docs/experience-platform/identity/home.html).
 
 ```text
 "identityMap" : {
@@ -412,6 +513,8 @@ For more information, please read an overview of the [AEP Identity Service](http
 
 **Example**
 
+#### Java
+
 ```java
 // Construct
 IdentityMap identityMap = new IdentityMap();
@@ -434,6 +537,30 @@ List<String> namespaces = identityMap.getNamespaces();
 boolean hasNotIdentities = identityMap.isEmpty();
 ```
 
+#### Kotlin
+
+```kotlin
+// Construct
+val identityMap = IdentityMap()
+
+// Add an item
+val item = IdentityItem("user@example.com")
+identityMap.addItem(item, "Email")
+
+// Remove an item
+val item = IdentityItem("user@example.com")
+identityMap.removeItem(item, "Email")
+
+// Get a list of items for a given namespace
+val items = identityMap.getIdentityItemsForNamespace("Email")
+
+// Get a list of all namespaces used in current IdentityMap
+val namespaces = identityMap.getNamespaces()
+
+// Check if IdentityMap has no identities
+val hasNotIdentities = identityMap.isEmpty()
+```
+
 ------
 
 ### IdentityItem
@@ -443,6 +570,8 @@ Defines an identity to be included in an [IdentityMap](#identitymap).
 The format of the IdentityItem class is defined by the [XDM Identity Item Schema](https://github.com/adobe/xdm/blob/master/docs/reference/datatypes/identityitem.schema.md).
 
 **Example**
+
+#### Java
 
 ```java
 // Construct
@@ -459,11 +588,27 @@ AuthenticatedState state = item.getAuthenticatedState();
 boolean primary = item.isPrimary();
 ```
 
+#### Kotlin
+
+```kotlin
+// Construct
+val item = IdentityItem("identifier")
+
+val item = IdentityItem("identifier", AuthenticatedState.AUTHENTICATED, false)
+
+// Getters
+val id = item.id
+
+val state = item.authenticatedState
+
+val primary = item.isPrimary
+```
+
 ------
 
 ### AuthenticatedState
 
-Defines the state an [Identity Item](api-reference.md#identityitem) is authenticated for.
+Defines the state an [Identity Item](#identityitem) is authenticated for.
 
 The possible authenticated states are:
 
@@ -473,10 +618,21 @@ The possible authenticated states are:
 
 **Syntax**
 
+#### Java
+
 ```java
 public enum AuthenticatedState {
     AMBIGUOUS("ambiguous"),
     AUTHENTICATED("authenticated"),
     LOGGED_OUT("loggedOut");
+}
+```
+#### Kotlin
+
+```kotlin
+enum class AuthenticatedState(val name: String) {
+    AMBIGUOUS("ambiguous"),
+    AUTHENTICATED("authenticated"),
+    LOGGED_OUT("loggedOut")
 }
 ```

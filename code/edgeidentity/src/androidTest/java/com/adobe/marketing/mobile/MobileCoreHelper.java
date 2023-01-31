@@ -9,21 +9,18 @@
   governing permissions and limitations under the License.
 */
 
-package com.adobe.marketing.mobile.edge.identity;
+package com.adobe.marketing.mobile;
 
-import java.util.List;
-
-class Utils {
-
-	private Utils() {}
+/**
+ * Helper class that exists as a way to access test helper methods provided in core
+ * within the package com.adobe.marketing.mobile
+ */
+public class MobileCoreHelper {
 
 	/**
-	 * Checks if the {@code List} provided is null or empty.
-	 *
-	 * @param list the {@code List} to verify
-	 * @return true if the {@code List} provided is null or empty; false otherwise
+	 * Wrapper around {@link MobileCore#resetSDK()}
 	 */
-	static boolean isNullOrEmpty(final List<?> list) {
-		return list == null || list.isEmpty();
+	public static void resetSDK() {
+		MobileCore.resetSDK();
 	}
 }
