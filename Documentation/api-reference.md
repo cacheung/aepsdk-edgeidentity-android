@@ -585,12 +585,3 @@ public enum AuthenticatedState {
     LOGGED_OUT("loggedOut");
 }
 ```
-#### Kotlin
-
-```kotlin
-enum class AuthenticatedState(val name: String) {
-    AMBIGUOUS("ambiguous"),
-    AUTHENTICATED("authenticated"),
-    LOGGED_OUT("loggedOut")
-}
-```
