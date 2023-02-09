@@ -38,11 +38,6 @@ String extensionVersion = Identity.extensionVersion();
 
 #### Kotlin
 
-##### Syntax
-```kotlin
-fun extensionVersion(): String
-```
-
 ##### Example
 ```kotlin
 val extensionVersion = Identity.extensionVersion()
@@ -76,11 +71,6 @@ Identity.getExperienceCloudId(new AdobeCallback<String>() {
 ```
 
 #### Kotlin
-
-##### Syntax
-```kotlin
-fun getExperienceCloudId(callback: AdobeCallback<String>)
-```
 
 ##### Example
 ```kotlin
@@ -117,11 +107,6 @@ Identity.getIdentities(new AdobeCallback<IdentityMap>() {
 ```
 
 #### Kotlin
-
-##### Syntax
-```kotlin
-fun getIdentities(callback: AdobeCallback<IdentityMap>)
-```
 
 ##### Example
 ```kotlin
@@ -170,11 +155,6 @@ Identity.getUrlVariables(new AdobeCallback<String>() {
 
 #### Kotlin
 
-##### Syntax
-```kotlin
-fun getUrlVariables(callback: AdobeCallback<String>)
-```
-
 ##### Example
 ```kotlin
 Identity.getUrlVariables { urlVariablesString ->
@@ -214,11 +194,6 @@ Identity.registerExtension();
 
 #### Kotlin
 
-##### Syntax
-```kotlin
-fun registerExtension()
-```
-
 ##### Example
 ```kotlin
 Identity.registerExtension()
@@ -252,11 +227,6 @@ Identity.removeIdentity(item, "Email");
 ```
 
 #### Kotlin
-
-##### Syntax
-```kotlin
-fun removeIdentity(item: IdentityItem, namespace: String)
-```
 
 ##### Example
 ```kotlin
@@ -360,12 +330,6 @@ public void onResume() {
 
 #### Kotlin
 
-##### Syntax
-```kotlin
-public fun setAdvertisingIdentifier(advertisingIdentifier: String)
-```
-- _advertisingIdentifier_ is an ID string that provides developers with a simple, standard system to continue to track ads throughout their apps.
-
 ##### Example
 <details>
   <summary><code>import ...</code></summary>
@@ -452,13 +416,7 @@ identityMap.addItem(item, "Email")
 Identity.updateIdentities(identityMap);
 ```
 
-
 #### Kotlin
-
-##### Syntax
-```kotlin
-fun updateIdentities(identityMap: IdentityMap)
-```
 
 ##### Example
 ```kotlin
@@ -625,14 +583,5 @@ public enum AuthenticatedState {
     AMBIGUOUS("ambiguous"),
     AUTHENTICATED("authenticated"),
     LOGGED_OUT("loggedOut");
-}
-```
-#### Kotlin
-
-```kotlin
-enum class AuthenticatedState(val name: String) {
-    AMBIGUOUS("ambiguous"),
-    AUTHENTICATED("authenticated"),
-    LOGGED_OUT("loggedOut")
 }
 ```
