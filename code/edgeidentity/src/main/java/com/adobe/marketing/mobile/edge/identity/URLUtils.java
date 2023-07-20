@@ -17,7 +17,7 @@ import com.adobe.marketing.mobile.services.Log;
 import com.adobe.marketing.mobile.util.StringUtils;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 
 class URLUtils {
 
@@ -54,9 +54,10 @@ class URLUtils {
 				// No need to encode
 				urlFragment.append("null");
 			} else {
-				urlFragment.append(URLEncoder.encode(theIdString, StandardCharsets.UTF_8.toString()));
+				urlFragment.append(URLEncoder.encode(theIdString, Charset.forName("UTF-8").name()));
 			}
-		} catch (UnsupportedEncodingException e) {
+		} catch (UnsupportedEncodingException | IllegalArgumentException e) {
+			urlFragment.append("null");
 			Log.debug(LOG_TAG, LOG_SOURCE, String.format("Failed to encode urlVariable string: %s", e));
 		}
 		return urlFragment.toString();
