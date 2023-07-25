@@ -38,11 +38,6 @@ String extensionVersion = Identity.extensionVersion();
 
 #### Kotlin
 
-##### Syntax
-```kotlin
-fun extensionVersion(): String
-```
-
 ##### Example
 ```kotlin
 val extensionVersion = Identity.extensionVersion()
@@ -76,11 +71,6 @@ Identity.getExperienceCloudId(new AdobeCallback<String>() {
 ```
 
 #### Kotlin
-
-##### Syntax
-```kotlin
-fun getExperienceCloudId(callback: AdobeCallback<String>)
-```
 
 ##### Example
 ```kotlin
@@ -117,11 +107,6 @@ Identity.getIdentities(new AdobeCallback<IdentityMap>() {
 ```
 
 #### Kotlin
-
-##### Syntax
-```kotlin
-fun getIdentities(callback: AdobeCallback<IdentityMap>)
-```
 
 ##### Example
 ```kotlin
@@ -170,11 +155,6 @@ Identity.getUrlVariables(new AdobeCallback<String>() {
 
 #### Kotlin
 
-##### Syntax
-```kotlin
-fun getUrlVariables(callback: AdobeCallback<String>)
-```
-
 ##### Example
 ```kotlin
 Identity.getUrlVariables { urlVariablesString ->
@@ -214,11 +194,6 @@ Identity.registerExtension();
 
 #### Kotlin
 
-##### Syntax
-```kotlin
-fun registerExtension()
-```
-
 ##### Example
 ```kotlin
 Identity.registerExtension()
@@ -252,11 +227,6 @@ Identity.removeIdentity(item, "Email");
 ```
 
 #### Kotlin
-
-##### Syntax
-```kotlin
-fun removeIdentity(item: IdentityItem, namespace: String)
-```
 
 ##### Example
 ```kotlin
@@ -360,12 +330,6 @@ public void onResume() {
 
 #### Kotlin
 
-##### Syntax
-```kotlin
-public fun setAdvertisingIdentifier(advertisingIdentifier: String)
-```
-- _advertisingIdentifier_ is an ID string that provides developers with a simple, standard system to continue to track ads throughout their apps.
-
 ##### Example
 <details>
   <summary><code>import ...</code></summary>
@@ -452,13 +416,7 @@ identityMap.addItem(item, "Email")
 Identity.updateIdentities(identityMap);
 ```
 
-
 #### Kotlin
-
-##### Syntax
-```kotlin
-fun updateIdentities(identityMap: IdentityMap)
-```
 
 ##### Example
 ```kotlin
@@ -474,9 +432,9 @@ Identity.updateIdentities(identityMap)
 
 ### IdentityMap
 
-Defines a map containing a set of end user identities, keyed on either namespace integration code or the namespace ID of the identity. The values of the map are an array, meaning that more than one identity of each namespace may be carried.
+Defines a map containing a set of end user identities, keyed on either namespace integration code or the namespace ID of the identity. The values of the map are an array of [`IdentityItem`](#identityitem)s, meaning that more than one identity of each namespace may be carried. Each `IdentityItem` should have a valid, non-null and non-empty identifier, otherwise it will be ignored.
 
-The format of the IdentityMap class is defined by the [XDM Identity Map Schema](https://github.com/adobe/xdm/blob/master/docs/reference/mixins/shared/identitymap.schema.md).
+The format of the `IdentityMap` class is defined by the [XDM Identity Map Schema](https://github.com/adobe/xdm/blob/master/docs/reference/mixins/shared/identitymap.schema.md).
 
 For more information, please read an overview of the [Adobe Experience Platform Identity Service](https://experienceleague.adobe.com/docs/experience-platform/identity/home.html).
 
@@ -565,9 +523,9 @@ val hasNotIdentities = identityMap.isEmpty()
 
 ### IdentityItem
 
-Defines an identity to be included in an [IdentityMap](#identitymap).
+ Defines an identity to be included in an [`IdentityMap`](#identitymap). `IdentityItem`s may not have null or empty identifiers and are ignored when added to an [`IdentityMap`](#identitymap) instance.
 
-The format of the IdentityItem class is defined by the [XDM Identity Item Schema](https://github.com/adobe/xdm/blob/master/docs/reference/datatypes/identityitem.schema.md).
+ The format of the `IdentityItem` class is defined by the [XDM Identity Item Schema](https://github.com/adobe/xdm/blob/master/docs/reference/datatypes/identityitem.schema.md).
 
 **Example**
 
@@ -608,7 +566,7 @@ val primary = item.isPrimary
 
 ### AuthenticatedState
 
-Defines the state an [Identity Item](#identityitem) is authenticated for.
+Defines the authentication state for an [`IdentityItem`](#identityitem).
 
 The possible authenticated states are:
 
@@ -625,14 +583,5 @@ public enum AuthenticatedState {
     AMBIGUOUS("ambiguous"),
     AUTHENTICATED("authenticated"),
     LOGGED_OUT("loggedOut");
-}
-```
-#### Kotlin
-
-```kotlin
-enum class AuthenticatedState(val name: String) {
-    AMBIGUOUS("ambiguous"),
-    AUTHENTICATED("authenticated"),
-    LOGGED_OUT("loggedOut")
 }
 ```
