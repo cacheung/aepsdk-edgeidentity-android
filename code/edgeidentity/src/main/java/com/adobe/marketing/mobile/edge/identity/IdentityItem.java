@@ -37,12 +37,15 @@ public final class IdentityItem {
 	private final boolean primary;
 
 	/**
-	 * Creates a new {@link IdentityItem}
+	 * Creates a new {@link IdentityItem}.
+	 * An {@code IdentityItem} should not have an empty or null {@code id} value. An {@link IdentityMap}
+	 * will reject {@code IdentityItem}s with null or empty identifiers.
+	 *
 	 *
 	 * @param id                 id for the item; should not be null
 	 * @param authenticatedState {@link AuthenticatedState} for the item; if none is provided {@link AuthenticatedState#AMBIGUOUS} is used as default
 	 * @param primary            primary flag for the item
-	 * @throws IllegalArgumentException if id is null
+	 * @throws IllegalArgumentException if {@code id} is null
 	 */
 	public IdentityItem(
 		@NonNull final String id,
@@ -62,8 +65,11 @@ public final class IdentityItem {
 	 * Creates a new {@link IdentityItem} with default values
 	 * {@code authenticatedState) is set to AMBIGUOUS
 	 * (@code primary} is set to false
+	 * An {@code IdentityItem} should not have an empty or null {@code id} value. An {@link IdentityMap}
+	 * will reject {@code IdentityItem}s with null or empty identifiers.
 	 *
 	 * @param id the id for this {@link IdentityItem}; should not be null
+	 * @throws IllegalArgumentException if {@code id} is null
 	 */
 	public IdentityItem(@NonNull final String id) {
 		this(id, AuthenticatedState.AMBIGUOUS, false);
@@ -193,7 +199,15 @@ public final class IdentityItem {
 			return new IdentityItem(id, authenticatedState, primary);
 		} catch (final DataReaderException e) {
 			Log.debug(LOG_TAG, LOG_SOURCE, "Failed to create IdentityItem from data.");
-			return null;
+		} catch (final IllegalArgumentException e) {
+			Log.debug(
+				LOG_TAG,
+				LOG_SOURCE,
+				"Failed to create IdentityItem from data as 'id' is null. %s",
+				e.getLocalizedMessage()
+			);
 		}
+
+		return null;
 	}
 }
