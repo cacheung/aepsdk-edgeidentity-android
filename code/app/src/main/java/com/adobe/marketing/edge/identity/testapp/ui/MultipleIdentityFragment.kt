@@ -9,7 +9,7 @@
   governing permissions and limitations under the License.
 */
 
-package com.adobe.marketing.edge.identity.app.ui
+package com.adobe.marketing.edge.identity.testapp.ui
 
 import android.content.Context
 import android.os.Bundle
@@ -21,8 +21,8 @@ import android.widget.RadioButton
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import com.adobe.marketing.edge.identity.app.R
-import com.adobe.marketing.edge.identity.app.model.SharedViewModel
+import com.adobe.marketing.edge.identity.testapp.R
+import com.adobe.marketing.edge.identity.testapp.model.SharedViewModel
 import com.adobe.marketing.mobile.Edge
 import com.adobe.marketing.mobile.ExperienceEvent
 import com.adobe.marketing.mobile.MobileCore

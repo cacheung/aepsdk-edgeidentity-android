@@ -51,25 +51,6 @@ public class IdentityPublicAPITest {
 	// Tests for Register extension API
 	// --------------------------------------------------------------------------------------------
 	@Test
-	public void testRegisterExtensionAPI() throws InterruptedException {
-		// test
-		//noinspection deprecation
-		Identity.registerExtension();
-
-		// now register monitor extension and start the hub
-		registerExtensions(Arrays.asList(MonitorExtension.EXTENSION), null);
-
-		// verify that the extension is registered with the correct version details
-		Map<String, String> sharedStateMap = flattenMap(
-			getSharedStateFor(IdentityTestConstants.SharedStateName.EVENT_HUB, 5000)
-		);
-		assertEquals(
-			IdentityConstants.EXTENSION_VERSION,
-			sharedStateMap.get("extensions.com.adobe.edge.identity.version")
-		);
-	}
-
-	@Test
 	public void testRegisterExtension_withClass() throws InterruptedException {
 		// test
 		registerExtensions(Arrays.asList(MonitorExtension.EXTENSION, Identity.EXTENSION), null);

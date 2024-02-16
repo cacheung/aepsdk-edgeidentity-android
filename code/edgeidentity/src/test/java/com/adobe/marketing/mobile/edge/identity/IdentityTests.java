@@ -28,8 +28,6 @@ import com.adobe.marketing.mobile.AdobeError;
 import com.adobe.marketing.mobile.Event;
 import com.adobe.marketing.mobile.EventSource;
 import com.adobe.marketing.mobile.EventType;
-import com.adobe.marketing.mobile.ExtensionError;
-import com.adobe.marketing.mobile.ExtensionErrorCallback;
 import com.adobe.marketing.mobile.MobileCore;
 import com.adobe.marketing.mobile.util.JSONUtils;
 import java.util.ArrayList;
@@ -64,33 +62,6 @@ public class IdentityTests {
 			IdentityConstants.EXTENSION_VERSION,
 			extensionVersion
 		);
-	}
-
-	// ========================================================================================
-	// registerExtension
-	// ========================================================================================
-	@Test
-	public void testRegistration() {
-		try (MockedStatic<MobileCore> mockedStaticMobileCore = Mockito.mockStatic(MobileCore.class)) {
-			// test
-			Identity.registerExtension();
-
-			// verify
-			final ArgumentCaptor<ExtensionErrorCallback> callbackCaptor = ArgumentCaptor.forClass(
-				ExtensionErrorCallback.class
-			);
-			mockedStaticMobileCore.verify(() ->
-				MobileCore.registerExtension(eq(IdentityExtension.class), callbackCaptor.capture())
-			);
-
-			final ExtensionErrorCallback extensionErrorCallback = callbackCaptor.getValue();
-			assertNotNull("The extension callback should not be null", extensionErrorCallback);
-
-			// verify that the callback invocation does not throw an exception
-			extensionErrorCallback.error(ExtensionError.UNEXPECTED_ERROR);
-		} catch (final Exception e) {
-			fail(e.getMessage());
-		}
 	}
 
 	// ========================================================================================
