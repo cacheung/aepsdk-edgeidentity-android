@@ -67,9 +67,9 @@ jobs:
       - store_artifacts:
           path: code/edgeidentity/build/docs/javadoc
 
-      - run:
-          name: Assemble Phone
-          command: make assemble-phone
+      # - run:
+      #     name: Assemble Phone
+      #     command: make assemble-phone
 
       - run:
           name: Assemble App
