@@ -14,8 +14,6 @@ package com.adobe.marketing.mobile.edge.identity;
 import com.adobe.marketing.mobile.Event;
 import com.adobe.marketing.mobile.EventSource;
 import com.adobe.marketing.mobile.EventType;
-import com.adobe.marketing.mobile.LoggingMode;
-import com.adobe.marketing.mobile.MobileCore;
 import com.adobe.marketing.mobile.services.Log;
 import com.adobe.marketing.mobile.util.JSONUtils;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -37,6 +35,7 @@ import org.json.JSONObject;
  * Util class used by both Functional and Unit tests
  */
 class IdentityTestUtil {
+
 	private static final String LOG_SOURCE = "IdentityTestUtil";
 	private static final String LOG_TAG = "FunctionalTestUtils";
 
