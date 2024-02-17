@@ -71,9 +71,9 @@ jobs:
           name: Assemble Phone
           command: make assemble-phone
 
-      # - run:
-      #     name: Assemble App
-      #     command: make assemble-app
+      - run:
+          name: Assemble App
+          command: make assemble-app
 
       - android/run-tests:
           test-command: make unit-test-coverage

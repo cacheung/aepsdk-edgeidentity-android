@@ -22,7 +22,7 @@ android {
     compileSdk = BuildConstants.Versions.COMPILE_SDK_VERSION
 
     defaultConfig {
-        applicationId = "com.adobe.marketing.edge.identity.testapp"
+        applicationId = "com.adobe.marketing.edge.identity.tester"
         minSdk = BuildConstants.Versions.MIN_SDK_VERSION
         compileSdk = BuildConstants.Versions.COMPILE_SDK_VERSION
         targetSdk = BuildConstants.Versions.TARGET_SDK_VERSION
@@ -61,11 +61,12 @@ dependencies {
     implementation("com.adobe.marketing.mobile:core:$mavenCoreVersion-SNAPSHOT")
     implementation("com.adobe.marketing.mobile:identity:2.+")
     implementation("com.adobe.marketing.mobile:edgeconsent:2.0.0") {
-    exclude(group = "com.adobe.marketing.mobile", module = "edge")
+        exclude(group = "com.adobe.marketing.mobile", module = "edge")
     }
     implementation("com.adobe.marketing.mobile:assurance:2.+")
     implementation("com.adobe.marketing.mobile:edge:2.0.0") {
         exclude(group = "com.adobe.marketing.mobile", module = "core")
+        exclude(group = "com.adobe.marketing.mobile", module = "edgeidentity")
     }
     implementation("androidx.core:core-ktx:1.3.2")
     implementation("androidx.appcompat:appcompat:1.2.0")
