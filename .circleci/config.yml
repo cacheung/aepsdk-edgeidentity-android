@@ -43,13 +43,13 @@ jobs:
 
       - android/restore-build-cache
 
-      # - run:
-      #     name: Check Format
-      #     command: make checkformat
+      - run:
+          name: Check Format
+          command: make checkformat
 
-      # - run:
-      #     name: Lint
-      #     command: make lint
+      - run:
+          name: Lint
+          command: make lint
 
       - android/save-gradle-cache
 
