@@ -39,9 +39,6 @@ class IdentityTestUtil {
 	private static final String LOG_SOURCE = "IdentityTestUtil";
 	private static final String LOG_TAG = "FunctionalTestUtils";
 
-	private static final String LOG_SOURCE = "IdentityTestUtil";
-	private static final String LOG_TAG = "FunctionalTestUtils";
-
 	/**
 	 * Helper method to create IdentityXDM Map using {@link TestItem}s
 	 */
