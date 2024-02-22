@@ -45,8 +45,7 @@ public class IdentityMap {
 	 * @param namespace namespace for the list of identities to retrieve
 	 * @return IdentityItem for the namespace
 	 */
-	@NonNull
-	public List<IdentityItem> getIdentityItemsForNamespace(@NonNull final String namespace) {
+	@NonNull public List<IdentityItem> getIdentityItemsForNamespace(@NonNull final String namespace) {
 		final List<IdentityItem> copyItems = new ArrayList<>();
 
 		if (StringUtils.isNullOrEmpty(namespace)) {
@@ -71,8 +70,7 @@ public class IdentityMap {
 	 *
 	 * @return a list of all the namespaces for this {@link IdentityMap}, or an empty string if this {@code IdentityMap} is empty
 	 */
-	@NonNull
-	public List<String> getNamespaces() {
+	@NonNull public List<String> getNamespaces() {
 		return new ArrayList<>(identityItems.keySet());
 	}
 
@@ -117,8 +115,7 @@ public class IdentityMap {
 		return identityItems.isEmpty();
 	}
 
-	@NonNull
-	@Override
+	@NonNull @Override
 	public String toString() {
 		final StringBuilder b = new StringBuilder();
 		b.append("{\"").append(IdentityConstants.XDMKeys.IDENTITY_MAP).append("\": {");

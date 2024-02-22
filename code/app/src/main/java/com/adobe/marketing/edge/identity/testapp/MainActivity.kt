@@ -9,7 +9,7 @@
   governing permissions and limitations under the License.
 */
 
-package com.adobe.marketing.edge.identity.app
+package com.adobe.marketing.edge.identity.testapp
 
 import android.os.Bundle
 import android.view.Menu
