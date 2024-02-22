@@ -89,8 +89,7 @@ public final class IdentityItem {
 	 *
 	 * @return The id for this identity item
 	 */
-	@NonNull
-	public String getId() {
+	@NonNull public String getId() {
 		return id;
 	}
 
@@ -99,8 +98,7 @@ public final class IdentityItem {
 	 *
 	 * @return Current {@link AuthenticatedState} for this item
 	 */
-	@NonNull
-	public AuthenticatedState getAuthenticatedState() {
+	@NonNull public AuthenticatedState getAuthenticatedState() {
 		return authenticatedState;
 	}
 
@@ -114,8 +112,7 @@ public final class IdentityItem {
 		return primary;
 	}
 
-	@NonNull
-	@Override
+	@NonNull @Override
 	public String toString() {
 		// format:off
         return "{"

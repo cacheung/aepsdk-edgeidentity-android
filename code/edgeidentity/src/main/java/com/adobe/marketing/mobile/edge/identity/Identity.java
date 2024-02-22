@@ -46,8 +46,7 @@ public class Identity {
 	 *
 	 * @return The version as {@code String}
 	 */
-	@NonNull
-	public static String extensionVersion() {
+	@NonNull public static String extensionVersion() {
 		return IdentityConstants.EXTENSION_VERSION;
 	}
 

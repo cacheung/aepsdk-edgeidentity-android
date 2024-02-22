@@ -68,20 +68,17 @@ class IdentityExtension extends Extension {
 		this.state = state;
 	}
 
-	@NonNull
-	@Override
+	@NonNull @Override
 	protected String getName() {
 		return IdentityConstants.EXTENSION_NAME;
 	}
 
-	@NonNull
-	@Override
+	@NonNull @Override
 	protected String getFriendlyName() {
 		return IdentityConstants.EXTENSION_FRIENDLY_NAME;
 	}
 
-	@NonNull
-	@Override
+	@NonNull @Override
 	protected String getVersion() {
 		return IdentityConstants.EXTENSION_VERSION;
 	}
