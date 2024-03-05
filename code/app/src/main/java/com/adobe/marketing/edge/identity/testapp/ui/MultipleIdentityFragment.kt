@@ -32,7 +32,6 @@ import com.adobe.marketing.mobile.VisitorID
 import java.util.Arrays
 import kotlin.random.Random
 
-
 class MultipleIdentityFragment : Fragment() {
 
     override fun onCreateView(
@@ -81,9 +80,9 @@ class MultipleIdentityFragment : Fragment() {
             // There is no API to unregister an extension, so only handle registration case
             if (sharedViewModel.isDirectIdentityRegistered.value == false) {
                 val extensions: List<Class<out Extension?>> = Arrays.asList(
-                        com.adobe.marketing.mobile.Identity.EXTENSION,
+                    com.adobe.marketing.mobile.Identity.EXTENSION,
                 )
-                MobileCore.registerExtensions(extensions){}
+                MobileCore.registerExtensions(extensions) {}
                 sharedViewModel.toggleDirectIdentityRegistration()
             }
         }
