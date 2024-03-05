@@ -25,10 +25,13 @@ import com.adobe.marketing.edge.identity.testapp.R
 import com.adobe.marketing.edge.identity.testapp.model.SharedViewModel
 import com.adobe.marketing.mobile.Edge
 import com.adobe.marketing.mobile.ExperienceEvent
+import com.adobe.marketing.mobile.Extension
 import com.adobe.marketing.mobile.MobileCore
 import com.adobe.marketing.mobile.MobilePrivacyStatus
 import com.adobe.marketing.mobile.VisitorID
+import java.util.Arrays
 import kotlin.random.Random
+
 
 class MultipleIdentityFragment : Fragment() {
 
@@ -77,7 +80,10 @@ class MultipleIdentityFragment : Fragment() {
         directRegisteredRadioButton.setOnClickListener {
             // There is no API to unregister an extension, so only handle registration case
             if (sharedViewModel.isDirectIdentityRegistered.value == false) {
-                com.adobe.marketing.mobile.Identity.registerExtension()
+                val extensions: List<Class<out Extension?>> = Arrays.asList(
+                        com.adobe.marketing.mobile.Identity.EXTENSION,
+                )
+                MobileCore.registerExtensions(extensions){}
                 sharedViewModel.toggleDirectIdentityRegistration()
             }
         }

@@ -23,11 +23,12 @@ The Adobe Experience Platform Identity for Edge Network extension depends on the
 
 1. Add the Mobile Core, Edge, and Edge Identity extensions to your project using the app's Gradle file:
   
-```gradle
-implementation 'com.adobe.marketing.mobile:core:2.+'
-implementation 'com.adobe.marketing.mobile:edge:2.+'
-implementation 'com.adobe.marketing.mobile:edgeidentity:2.+'
-   ```
+```kotlin
+implementation(platform("com.adobe.marketing.mobile:sdk-bom:3.+"))
+implementation("com.adobe.marketing.mobile:core")
+implementation("com.adobe.marketing.mobile:edge")
+implementation("com.adobe.marketing.mobile:edgeidentity")   
+```
 > **Warning**
 > Using dynamic dependency versions is not recommended for production apps. Refer to this [page](https://github.com/adobe/aepsdk-core-android/blob/main/Documentation/MobileCore/gradle-dependencies.md) for managing gradle dependencies.
 

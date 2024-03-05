@@ -14,6 +14,7 @@ plugins {
 }
 
 val mavenCoreVersion: String by project
+val functionalTestIdentityVersion: String by project
 
 aepLibrary {
     namespace = "com.adobe.marketing.mobile.edge.identity"
@@ -40,5 +41,8 @@ dependencies {
     // ANDROIDX_TEST_EXT_JUNIT, ESPRESSO_CORE
 
     androidTestImplementation ("com.fasterxml.jackson.core:jackson-databind:2.12.7")
-    androidTestImplementation ("com.adobe.marketing.mobile:identity:2.+")
+    androidTestImplementation("com.adobe.marketing.mobile:identity:$functionalTestIdentityVersion-SNAPSHOT")
+    {
+        exclude(group = "com.adobe.marketing.mobile", module = "core")
+    }
 }
