@@ -57,8 +57,7 @@ class IdentityState {
 	/**
 	 * @return The current {@link IdentityProperties} for this identity state
 	 */
-	@NonNull
-	IdentityProperties getIdentityProperties() {
+	@NonNull IdentityProperties getIdentityProperties() {
 		return identityProperties;
 	}
 

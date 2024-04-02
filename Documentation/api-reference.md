@@ -12,7 +12,6 @@ Refer to the [Getting Started Guide](getting-started.md)
 | [getExperienceCloudId](#getExperienceCloudId)         |
 | [getIdentities](#getIdentities)                       |
 | [getUrlVariables](#getUrlVariables)                   |
-| [registerExtension](#registerExtension)               |
 | [removeIdentity](#removeIdentity)                     |
 | [resetIdentities](#resetIdentities)                   |
 | [setAdvertisingIdentifier](#setAdvertisingIdentifier) |
@@ -163,40 +162,6 @@ Identity.getUrlVariables { urlVariablesString ->
   val webView = findViewById<WebView>(R.id.your_webview) // initialize with your webView
   webView.loadUrl("http://www.example.com?" + urlVariablesString)    
 }
-```
-
-------
-
-### registerExtension
-
-Registers the Identity for Edge Network extension with the Mobile Core extension.
-
-> **Warning**
-> Deprecated as of 2.0.0. Use the [MobileCore.registerExtensions API](https://github.com/adobe/aepsdk-core-android/blob/main/Documentation/MobileCore/api-reference.md) instead.
-
-> **Note**
-> If your use-case covers both Edge Network and Adobe Experience Cloud Solutions extensions, you need to register Identity for Edge Network and Identity for Experience Cloud Identity Service from Mobile Core extensions. For more details, see the [frequently asked questions](frequently-asked-questions.md).
-
-#### Java
-
-##### Syntax
-```java
-public static void registerExtension()
-```
-
-##### Example
-```java
-import com.adobe.marketing.mobile.edge.identity.Identity
-
-...
-Identity.registerExtension();
-```
-
-#### Kotlin
-
-##### Example
-```kotlin
-Identity.registerExtension()
 ```
 
 ------

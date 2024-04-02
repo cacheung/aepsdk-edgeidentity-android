@@ -9,7 +9,7 @@
   governing permissions and limitations under the License.
 */
 
-package com.adobe.marketing.edge.identity.app.model
+package com.adobe.marketing.edge.identity.testapp.model
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
