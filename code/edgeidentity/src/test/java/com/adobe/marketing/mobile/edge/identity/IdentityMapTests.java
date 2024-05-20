@@ -14,11 +14,11 @@ package com.adobe.marketing.mobile.edge.identity;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import com.adobe.marketing.mobile.util.JSONAsserts;
-import com.adobe.marketing.mobile.util.CollectionEqualCount;
-import com.adobe.marketing.mobile.util.NodeConfig;
-import com.adobe.marketing.mobile.util.JSONUtils;
 
+import com.adobe.marketing.mobile.util.CollectionEqualCount;
+import com.adobe.marketing.mobile.util.JSONAsserts;
+import com.adobe.marketing.mobile.util.JSONUtils;
+import com.adobe.marketing.mobile.util.NodeConfig;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -37,10 +37,15 @@ public class IdentityMapTests {
 		// verify
 		String expected = "{\"identityMap\":{\"location\":[{\"id\":\"California\"}]}}";
 		JSONAsserts.assertExactMatch(
-				expected,
-				map.asXDMMap(false),
-				new CollectionEqualCount(NodeConfig.Scope.Subtree),
-				new CollectionEqualCount(Collections.singletonList("identityMap.location[0]"), false, NodeConfig.Scope.Subtree));
+			expected,
+			map.asXDMMap(false),
+			new CollectionEqualCount(NodeConfig.Scope.Subtree),
+			new CollectionEqualCount(
+				Collections.singletonList("identityMap.location[0]"),
+				false,
+				NodeConfig.Scope.Subtree
+			)
+		);
 	}
 
 	@Test
@@ -164,17 +169,18 @@ public class IdentityMapTests {
 		newMap.addItem(new IdentityItem("California", AuthenticatedState.AUTHENTICATED, true), "location");
 		baseMap.merge(newMap);
 
-		String expected = "{\n" +
-				"  \"identityMap\": {\n" +
-				"    \"location\": [\n" +
-				"      {\n" +
-				"        \"id\": \"California\",\n" +
-				"        \"authenticatedState\": \"authenticated\",\n" +
-				"        \"primary\": true\n" +
-				"      }\n" +
-				"    ]\n" +
-				"  }\n" +
-				"}";
+		String expected =
+			"{\n" +
+			"  \"identityMap\": {\n" +
+			"    \"location\": [\n" +
+			"      {\n" +
+			"        \"id\": \"California\",\n" +
+			"        \"authenticatedState\": \"authenticated\",\n" +
+			"        \"primary\": true\n" +
+			"      }\n" +
+			"    ]\n" +
+			"  }\n" +
+			"}";
 
 		JSONAsserts.assertEquals(expected, baseMap.asXDMMap(false));
 	}
@@ -359,17 +365,17 @@ public class IdentityMapTests {
 
 		// verify
 		final String expected =
-				"{\n" +
-						"      \"identityMap\": {\n" +
-						"        \"ECID\": [\n" +
-						"          {\n" +
-						"            \"id\": \"randomECID\",\n" +
-						"            \"authenticatedState\": \"ambiguous\",\n" +
-						"            \"primary\": true\n" +
-						"          }\n" +
-						"        ]\n" +
-						"      }\n" +
-						"}";
+			"{\n" +
+			"      \"identityMap\": {\n" +
+			"        \"ECID\": [\n" +
+			"          {\n" +
+			"            \"id\": \"randomECID\",\n" +
+			"            \"authenticatedState\": \"ambiguous\",\n" +
+			"            \"primary\": true\n" +
+			"          }\n" +
+			"        ]\n" +
+			"      }\n" +
+			"}";
 
 		JSONAsserts.assertEquals(expected, map.asXDMMap(false));
 	}
@@ -404,17 +410,17 @@ public class IdentityMapTests {
 
 		// verify
 		final String expected =
-				"{\n" +
-						"      \"identityMap\": {\n" +
-						"        \"ECID\": [\n" +
-						"          {\n" +
-						"            \"id\": \"randomECID\",\n" +
-						"            \"authenticatedState\": \"ambiguous\",\n" +
-						"            \"primary\": true\n" +
-						"          }\n" +
-						"        ]\n" +
-						"      }\n" +
-						"}";
+			"{\n" +
+			"      \"identityMap\": {\n" +
+			"        \"ECID\": [\n" +
+			"          {\n" +
+			"            \"id\": \"randomECID\",\n" +
+			"            \"authenticatedState\": \"ambiguous\",\n" +
+			"            \"primary\": true\n" +
+			"          }\n" +
+			"        ]\n" +
+			"      }\n" +
+			"}";
 
 		JSONAsserts.assertEquals(expected, map.asXDMMap(false));
 	}

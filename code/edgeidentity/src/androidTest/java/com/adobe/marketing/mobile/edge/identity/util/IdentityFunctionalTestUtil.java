@@ -29,6 +29,7 @@ import com.adobe.marketing.mobile.edge.identity.IdentityItem;
 import com.adobe.marketing.mobile.edge.identity.IdentityMap;
 import com.adobe.marketing.mobile.services.Log;
 import com.adobe.marketing.mobile.util.JSONUtils;
+import com.adobe.marketing.mobile.util.TestPersistenceHelper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -354,6 +355,7 @@ public class IdentityFunctionalTestUtil {
 			getXDMSharedStateFor(IdentityTestConstants.EXTENSION_NAME, 1000)
 		);
 		assertNotNull(xdmSharedState.get("identityMap.ECID[0].id"));
+		//JSONAsserts.assertEquals(expected, IdentityTestConstants.EXTENSION_NAME);
 	}
 
 	/**

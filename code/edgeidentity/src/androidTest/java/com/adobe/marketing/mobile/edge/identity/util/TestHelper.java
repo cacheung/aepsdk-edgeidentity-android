@@ -27,6 +27,7 @@ import com.adobe.marketing.mobile.MobileCoreHelper;
 import com.adobe.marketing.mobile.edge.identity.util.MonitorExtension.EventSpec;
 import com.adobe.marketing.mobile.services.Log;
 import com.adobe.marketing.mobile.services.ServiceProvider;
+import com.adobe.marketing.mobile.util.TestPersistenceHelper;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;

@@ -12,7 +12,6 @@
 package com.adobe.marketing.mobile.edge.identity;
 
 import static com.adobe.marketing.mobile.edge.identity.IdentityTestUtil.createXDMIdentityMap;
-import com.adobe.marketing.mobile.util.JSONAsserts;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -35,6 +34,7 @@ import com.adobe.marketing.mobile.SharedStateResult;
 import com.adobe.marketing.mobile.SharedStateStatus;
 import com.adobe.marketing.mobile.services.DataStoring;
 import com.adobe.marketing.mobile.services.NamedCollection;
+import com.adobe.marketing.mobile.util.JSONAsserts;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -755,17 +755,21 @@ public class IdentityStateTests {
 
 				final Event consentEvent = consentEventCaptor.getValue();
 
-				String expected = "{\n" +
-						"  \"consents\": {\n" +
-						"    \"adID\": {\n" +
-						"      \"val\": \"" + expectedConsent + "\",\n" +
-						"      \"idType\": \"GAID\"\n" +
-						"    }\n" +
-						"  }\n" +
-						"}";
+				String expected =
+					"{\n" +
+					"  \"consents\": {\n" +
+					"    \"adID\": {\n" +
+					"      \"val\": \"" +
+					expectedConsent +
+					"\",\n" +
+					"      \"idType\": \"GAID\"\n" +
+					"    }\n" +
+					"  }\n" +
+					"}";
 
-				JSONAsserts.assertEquals(expected, consentEvent.getEventData() );
-			}}
+				JSONAsserts.assertEquals(expected, consentEvent.getEventData());
+			}
+		}
 
 		if (isSharedStateUpdateExpected) {
 			final ArgumentCaptor<IdentityProperties> identityPropertiesArgumentCaptor = ArgumentCaptor.forClass(
@@ -820,24 +824,29 @@ public class IdentityStateTests {
 		@NonNull final String expectedECID
 	) {
 		if (expectedAdId != null) {
-			String json = "{\n" +
-					"  \"identityMap\": {\n" +
-					"    \"GAID\": [\n" +
-					"      {\n" +
-					"        \"id\": \"" + expectedAdId + "\",\n" +
-					"        \"authenticatedState\": \"ambiguous\",\n" +
-					"        \"primary\": false\n" +
-					"      }\n" +
-					"    ],\n" +
-					"    \"ECID\": [\n" +
-					"      {\n" +
-					"        \"id\": \"" + expectedECID + "\",\n" +
-					"        \"authenticatedState\": \"ambiguous\",\n" +
-					"        \"primary\": false\n" +
-					"      }\n" +
-					"    ]\n" +
-					"  }\n" +
-					"}";
+			String json =
+				"{\n" +
+				"  \"identityMap\": {\n" +
+				"    \"GAID\": [\n" +
+				"      {\n" +
+				"        \"id\": \"" +
+				expectedAdId +
+				"\",\n" +
+				"        \"authenticatedState\": \"ambiguous\",\n" +
+				"        \"primary\": false\n" +
+				"      }\n" +
+				"    ],\n" +
+				"    \"ECID\": [\n" +
+				"      {\n" +
+				"        \"id\": \"" +
+				expectedECID +
+				"\",\n" +
+				"        \"authenticatedState\": \"ambiguous\",\n" +
+				"        \"primary\": false\n" +
+				"      }\n" +
+				"    ]\n" +
+				"  }\n" +
+				"}";
 
 			JSONAsserts.assertEquals(json, IdentityMap);
 		}

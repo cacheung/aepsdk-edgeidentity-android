@@ -36,4 +36,5 @@ dependencies {
 
     androidTestImplementation ("com.fasterxml.jackson.core:jackson-databind:2.12.7")
     androidTestImplementation("com.adobe.marketing.mobile:identity:$functionalTestIdentityVersion")
+    androidTestImplementation("com.github.adobe:aepsdk-testutils-android:ba5aa1e477")
 }
