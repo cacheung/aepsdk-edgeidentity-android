@@ -11,10 +11,10 @@
 
 package com.adobe.marketing.mobile.edge.identity;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import com.adobe.marketing.mobile.util.JSONAsserts;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,9 +31,13 @@ public class IdentityItemTests {
 		Map<String, Object> data = item.toObjectMap();
 
 		// verify
-		assertEquals("id", (String) data.get("id"));
-		assertEquals("authenticated", (String) data.get("authenticatedState"));
-		assertEquals(true, (boolean) data.get("primary"));
+		String expected = "{\n" +
+				"  \"id\": \"id\",\n" +
+				"  \"authenticatedState\": \"authenticated\",\n" +
+				"  \"primary\": true\n" +
+				"}";
+
+		JSONAsserts.assertEquals(expected, data);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -46,9 +50,13 @@ public class IdentityItemTests {
 		IdentityItem item = new IdentityItem("", AuthenticatedState.AUTHENTICATED, true);
 
 		// For backward compatibility, an IdentityItem can contain empty identifiers.
-		assertEquals("", item.getId());
-		assertEquals("authenticated", item.getAuthenticatedState().getName());
-		assertTrue(item.isPrimary());
+		String expected = "{\n" +
+				"  \"id\": \"\",\n" +
+				"  \"authenticatedState\": \"authenticated\",\n" +
+				"  \"primary\": true\n" +
+				"}";
+
+		JSONAsserts.assertEquals(expected, item.toObjectMap());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -61,9 +69,13 @@ public class IdentityItemTests {
 		IdentityItem item = new IdentityItem("");
 
 		// For backward compatibility, an IdentityItem can contain empty identifiers.
-		assertEquals("", item.getId());
-		assertEquals("ambiguous", item.getAuthenticatedState().getName());
-		assertFalse(item.isPrimary());
+		String expected = "{\n" +
+				"  \"id\": \"\",\n" +
+				"  \"authenticatedState\": \"ambiguous\",\n" +
+				"  \"primary\": false\n" +
+				"}";
+
+		JSONAsserts.assertEquals(expected, item.toObjectMap());
 	}
 
 	@Test
@@ -75,9 +87,13 @@ public class IdentityItemTests {
 		Map<String, Object> data = item.toObjectMap();
 
 		// verify
-		assertEquals("id", (String) data.get("id"));
-		assertEquals("ambiguous", (String) data.get("authenticatedState"));
-		assertEquals(true, (boolean) data.get("primary"));
+		String expected = "{\n" +
+				"  \"id\": \"id\",\n" +
+				"  \"authenticatedState\": \"ambiguous\",\n" +
+				"  \"primary\": true\n" +
+				"}";
+
+		JSONAsserts.assertEquals(expected, item.toObjectMap());
 	}
 
 	@Test
@@ -92,9 +108,13 @@ public class IdentityItemTests {
 		IdentityItem item = IdentityItem.fromData(map);
 
 		// verify
-		assertEquals("test-id", item.getId());
-		assertEquals("loggedOut", item.getAuthenticatedState().getName());
-		assertEquals(true, item.isPrimary());
+		String expected = "{\n" +
+				"  \"id\": \"test-id\",\n" +
+				"  \"authenticatedState\": \"loggedOut\",\n" +
+				"  \"primary\": true\n" +
+				"}";
+
+		JSONAsserts.assertEquals(expected, item.toObjectMap());
 	}
 
 	@Test
@@ -108,9 +128,13 @@ public class IdentityItemTests {
 		IdentityItem item = IdentityItem.fromData(map);
 
 		// verify
-		assertEquals("test-id", item.getId());
-		assertEquals("ambiguous", item.getAuthenticatedState().getName());
-		assertEquals(true, item.isPrimary());
+		String expected = "{\n" +
+				"  \"id\": \"test-id\",\n" +
+				"  \"authenticatedState\": \"ambiguous\",\n" +
+				"  \"primary\": true\n" +
+				"}";
+
+		JSONAsserts.assertEquals(expected, item.toObjectMap());
 	}
 
 	@Test
@@ -124,9 +148,13 @@ public class IdentityItemTests {
 		IdentityItem item = IdentityItem.fromData(map);
 
 		// verify
-		assertEquals("test-id", item.getId());
-		assertEquals("loggedOut", item.getAuthenticatedState().getName());
-		assertEquals(false, item.isPrimary());
+		String expected = "{\n" +
+				"  \"id\": \"test-id\",\n" +
+				"  \"authenticatedState\": \"loggedOut\",\n" +
+				"  \"primary\": false\n" +
+				"}";
+
+		JSONAsserts.assertEquals(expected, item.toObjectMap());
 	}
 
 	@Test
@@ -161,9 +189,13 @@ public class IdentityItemTests {
 		IdentityItem item = IdentityItem.fromData(map);
 
 		// For backward compatibility, an IdentityItem can contain empty identifiers.
-		assertEquals("", item.getId());
-		assertEquals("loggedOut", item.getAuthenticatedState().getName());
-		assertFalse(item.isPrimary());
+		String expected = "{\n" +
+				"  \"id\": \"\",\n" +
+				"  \"authenticatedState\": \"loggedOut\",\n" +
+				"  \"primary\": false\n" +
+				"}";
+
+		JSONAsserts.assertEquals(expected, item.toObjectMap());
 	}
 
 	@Test
