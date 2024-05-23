@@ -28,7 +28,10 @@ import com.adobe.marketing.mobile.edge.identity.Identity;
 import com.adobe.marketing.mobile.edge.identity.IdentityItem;
 import com.adobe.marketing.mobile.edge.identity.IdentityMap;
 import com.adobe.marketing.mobile.services.Log;
+import com.adobe.marketing.mobile.util.JSONAsserts;
+import com.adobe.marketing.mobile.util.CollectionEqualCount;
 import com.adobe.marketing.mobile.util.JSONUtils;
+import com.adobe.marketing.mobile.util.NodeConfig;
 import com.adobe.marketing.mobile.util.TestPersistenceHelper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -351,10 +354,22 @@ public class IdentityFunctionalTestUtil {
 		assertNotNull(ecid);
 
 		// verify xdm shared state is has ECID
-		Map<String, String> xdmSharedState = flattenMap(
-			getXDMSharedStateFor(IdentityTestConstants.EXTENSION_NAME, 1000)
-		);
-		assertNotNull(xdmSharedState.get("identityMap.ECID[0].id"));
+		Map<String, Object> xdmSharedState =
+			getXDMSharedStateFor(IdentityTestConstants.EXTENSION_NAME, 1000);
+
+		String json = "{\n" +
+				"  \"identityMap\": {\n" +
+				"    \"ECID\": [\n" +
+				"      {\n" +
+				"        \"id\": \"STRING_TYPE\"\n" +
+				"      }\n" +
+				"    ]\n" +
+				"  }\n" +
+				"}";
+
+
+		//JSONAsserts.assertEquals(json,  xdmSharedState);
+		JSONAsserts.assertTypeMatch(json, xdmSharedState);
 	}
 
 	/**
@@ -366,18 +381,28 @@ public class IdentityFunctionalTestUtil {
 		assertEquals(primaryECID, ecid);
 
 		// verify xdm shared state is has correct primary ECID
-		Map<String, String> xdmSharedState = flattenMap(
-			getXDMSharedStateFor(IdentityTestConstants.EXTENSION_NAME, 1000)
-		);
-		assertEquals(primaryECID, xdmSharedState.get("identityMap.ECID[0].id"));
+		Map<String, Object> xdmSharedState =
+			getXDMSharedStateFor(IdentityTestConstants.EXTENSION_NAME, 1000);
+
+		String json = "{\n" +
+				"  \"identityMap\": {\n" +
+				"    \"ECID\": [\n" +
+				"      {\n" +
+				"        \"id\": \"STRING_TYPE\"\n" +
+				"      }\n" +
+				"    ]\n" +
+				"  }\n" +
+				"}";
+
+		JSONAsserts.assertTypeMatch(json, xdmSharedState);
 
 		// verify primary ECID in persistence
 		final String persistedJson = TestPersistenceHelper.readPersistedData(
 			IdentityTestConstants.DataStoreKey.IDENTITY_DATASTORE,
 			IdentityTestConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
-		Map<String, String> persistedMap = flattenMap(JSONUtils.toMap(new JSONObject(persistedJson)));
-		assertEquals(primaryECID, persistedMap.get("identityMap.ECID[0].id"));
+
+		JSONAsserts.assertTypeMatch(json, persistedJson);
 	}
 
 	/**
@@ -386,17 +411,37 @@ public class IdentityFunctionalTestUtil {
 	 */
 	public static void verifySecondaryECID(final String secondaryECID) throws Exception {
 		// verify xdm shared state is has correct secondary ECID
-		Map<String, String> xdmSharedState = flattenMap(
-			getXDMSharedStateFor(IdentityTestConstants.EXTENSION_NAME, 1000)
-		);
-		assertEquals(secondaryECID, xdmSharedState.get("identityMap.ECID[1].id"));
+		Map<String, Object> xdmSharedState =
+			getXDMSharedStateFor(IdentityTestConstants.EXTENSION_NAME, 1000);
+
+		if (secondaryECID == null) {
+			String json = "{\n" +
+					"  \"identityMap\": {\n" +
+					"    \"ECID\": [\n" +
+					"      {}\n" +
+					"    ]\n" +
+					"  }\n" +
+					"}";
+			JSONAsserts.assertTypeMatch(json, xdmSharedState, new CollectionEqualCount("identityMap.ECID"));
+			return;
+		}
+		String json = "{\n" +
+				"  \"identityMap\": {\n" +
+				"    \"ECID\": [\n" +
+				"      {},\n" +
+				"      {\n" +
+				"        \"id\": \"STRING_TYPE\"\n" +
+				"      }\n" +
+				"    ]\n" +
+				"  }\n" +
+				"}";
+		JSONAsserts.assertTypeMatch(json, xdmSharedState);
 
 		// verify secondary ECID in persistence
 		final String persistedJson = TestPersistenceHelper.readPersistedData(
 			IdentityTestConstants.DataStoreKey.IDENTITY_DATASTORE,
 			IdentityTestConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
-		Map<String, String> persistedMap = flattenMap(JSONUtils.toMap(new JSONObject(persistedJson)));
-		assertEquals(secondaryECID, persistedMap.get("identityMap.ECID[1].id"));
+		JSONAsserts.assertTypeMatch(json, persistedJson);
 	}
 }

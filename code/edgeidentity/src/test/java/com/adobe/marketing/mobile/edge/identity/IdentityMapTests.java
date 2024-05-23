@@ -51,9 +51,9 @@ public class IdentityMapTests {
 			map.asXDMMap(false),
 			new CollectionEqualCount(NodeConfig.Scope.Subtree),
 			new CollectionEqualCount(
-				Collections.singletonList("identityMap.location[0]"),
 				false,
-				NodeConfig.Scope.Subtree
+				NodeConfig.Scope.Subtree,
+				Collections.singletonList("identityMap.location[0]")
 			)
 		);
 	}

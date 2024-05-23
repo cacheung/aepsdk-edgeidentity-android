@@ -20,6 +20,7 @@ import com.adobe.marketing.mobile.EventSource;
 import com.adobe.marketing.mobile.EventType;
 import com.adobe.marketing.mobile.MobileCore;
 import com.adobe.marketing.mobile.edge.identity.util.MonitorExtension;
+import com.adobe.marketing.mobile.util.JSONAsserts;
 import com.adobe.marketing.mobile.util.JSONUtils;
 import com.adobe.marketing.mobile.util.TestPersistenceHelper;
 import java.util.Arrays;
@@ -73,17 +74,29 @@ public class IdentityResetHandlingTest {
 		assertEquals(1, resetCompleteEvent.size());
 
 		// verify shared state is updated
-		Map<String, String> xdmSharedState = flattenMap(getXDMSharedStateFor(IdentityConstants.EXTENSION_NAME, 1000));
-		assertEquals(3, xdmSharedState.size()); // 3 for ECID still exists
-		assertEquals(newECID, xdmSharedState.get("identityMap.ECID[0].id"));
+		Map<String, Object> xdmSharedState = getXDMSharedStateFor(IdentityConstants.EXTENSION_NAME, 1000);
+
+		String expected = "{\n" +
+				"  \"identityMap\": {\n" +
+				"    \"ECID\": [\n" +
+				"      {\n" +
+				"        \"id\": \"" + newECID + "\",\n" +
+				"        \"authenticatedState\": \"ambiguous\",\n" +
+				"        \"primary\": false\n" +
+				"      }\n" +
+				"    ]\n" +
+				"  }\n" +
+				"}";
+
+		JSONAsserts.assertEquals(expected, xdmSharedState);
 
 		// verify persistence is updated
 		final String persistedJson = TestPersistenceHelper.readPersistedData(
 			IdentityConstants.DataStoreKey.DATASTORE_NAME,
 			IdentityConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
-		Map<String, String> persistedMap = flattenMap(JSONUtils.toMap(new JSONObject(persistedJson)));
-		assertEquals(3, persistedMap.size()); // 3 for ECID
-		assertEquals(newECID, persistedMap.get("identityMap.ECID[0].id"));
+
+		Map<String, Object> persistedMap = JSONUtils.toMap(new JSONObject(persistedJson));
+		JSONAsserts.assertEquals(expected, persistedMap);
 	}
 }
