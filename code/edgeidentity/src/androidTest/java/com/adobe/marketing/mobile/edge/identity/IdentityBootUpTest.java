@@ -18,6 +18,7 @@ import static org.junit.Assert.assertNull;
 
 import com.adobe.marketing.mobile.edge.identity.util.MonitorExtension;
 import com.adobe.marketing.mobile.edge.identity.util.TestHelper;
+import com.adobe.marketing.mobile.util.JSONAsserts;
 import com.adobe.marketing.mobile.util.JSONUtils;
 import com.adobe.marketing.mobile.util.TestPersistenceHelper;
 import java.util.Arrays;
@@ -51,20 +52,48 @@ public class IdentityBootUpTest {
 		registerExtensions(Arrays.asList(MonitorExtension.EXTENSION, Identity.EXTENSION), null);
 
 		// verify xdm shared state
-		Map<String, String> xdmSharedState = flattenMap(getXDMSharedStateFor(IdentityConstants.EXTENSION_NAME, 1000));
-		assertEquals(12, xdmSharedState.size()); // 3 for ECID and 3 for secondaryECID + 6
-		assertEquals("primaryECID", xdmSharedState.get("identityMap.ECID[0].id"));
-		assertEquals("secondaryECID", xdmSharedState.get("identityMap.ECID[1].id"));
-		assertEquals("example@email.com", xdmSharedState.get("identityMap.Email[0].id"));
-		assertEquals("JohnDoe", xdmSharedState.get("identityMap.UserId[0].id"));
+		Map<String, Object> xdmSharedState = getXDMSharedStateFor(IdentityConstants.EXTENSION_NAME, 1000);
+
+		String expected = "{\n" +
+				"  \"identityMap\": {\n" +
+				"    \"UserId\": [\n" +
+				"      {\n" +
+				"        \"id\": \"JohnDoe\",\n" +
+				"        \"authenticatedState\": \"ambiguous\",\n" +
+				"        \"primary\": false\n" +
+				"      }\n" +
+				"    ],\n" +
+				"    \"Email\": [\n" +
+				"      {\n" +
+				"        \"id\": \"example@email.com\",\n" +
+				"        \"authenticatedState\": \"ambiguous\",\n" +
+				"        \"primary\": false\n" +
+				"      }\n" +
+				"    ],\n" +
+				"    \"ECID\": [\n" +
+				"      {\n" +
+				"        \"id\": \"primaryECID\",\n" +
+				"        \"authenticatedState\": \"ambiguous\",\n" +
+				"        \"primary\": false\n" +
+				"      },\n" +
+				"      {\n" +
+				"        \"id\": \"secondaryECID\",\n" +
+				"        \"authenticatedState\": \"ambiguous\",\n" +
+				"        \"primary\": false\n" +
+				"      }\n" +
+				"    ]\n" +
+				"  }\n" +
+				"}";
+
+		JSONAsserts.assertEquals(expected, xdmSharedState); // 3 for ECID and 3 for secondaryECID + 6
 
 		//verify persisted data
 		final String persistedJson = TestPersistenceHelper.readPersistedData(
 			IdentityConstants.DataStoreKey.DATASTORE_NAME,
 			IdentityConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
-		Map<String, String> persistedMap = flattenMap(JSONUtils.toMap(new JSONObject(persistedJson)));
-		assertEquals(12, persistedMap.size()); // 3 for ECID and 3 for secondaryECID + 6
+		Map<String, Object> persistedMap = JSONUtils.toMap(new JSONObject(persistedJson));
+		JSONAsserts.assertEquals(expected, persistedMap);
 	}
 
 	@Test
@@ -82,11 +111,28 @@ public class IdentityBootUpTest {
 		registerExtensions(Arrays.asList(MonitorExtension.EXTENSION, Identity.EXTENSION), null);
 
 		// verify xdm shared state
-		Map<String, String> xdmSharedState = flattenMap(getXDMSharedStateFor(IdentityConstants.EXTENSION_NAME, 1000));
-		assertEquals(6, xdmSharedState.size()); // 3 for ECID and 3 UserId JohnDoe
-		assertEquals("primaryECID", xdmSharedState.get("identityMap.ECID[0].id"));
-		assertEquals("JohnDoe", xdmSharedState.get("identityMap.UserId[0].id"));
-		assertNull(xdmSharedState.get("identityMap.UserId[1].id"));
+		Map<String, Object> xdmSharedState = getXDMSharedStateFor(IdentityConstants.EXTENSION_NAME, 1000);
+
+		String expected = "{\n" +
+				"  \"identityMap\": {\n" +
+				"    \"UserId\": [\n" +
+				"      {\n" +
+				"        \"id\": \"JohnDoe\",\n" +
+				"        \"authenticatedState\": \"ambiguous\",\n" +
+				"        \"primary\": false\n" +
+				"      }\n" +
+				"    ],\n" +
+				"    \"ECID\": [\n" +
+				"      {\n" +
+				"        \"id\": \"primaryECID\",\n" +
+				"        \"authenticatedState\": \"ambiguous\",\n" +
+				"        \"primary\": false\n" +
+				"      }\n" +
+				"    ]\n" +
+				"  }\n" +
+				"}";
+
+		JSONAsserts.assertEquals(expected, xdmSharedState);
 	}
 	// --------------------------------------------------------------------------------------------
 	// All the other bootUp tests with to ECID is coded in IdentityECIDHandling
