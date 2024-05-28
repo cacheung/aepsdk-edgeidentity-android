@@ -170,17 +170,17 @@ public class IdentityMapTests {
 		baseMap.merge(newMap);
 
 		String expected =
-			"{\n" +
-			"  \"identityMap\": {\n" +
-			"    \"location\": [\n" +
-			"      {\n" +
-			"        \"id\": \"California\",\n" +
-			"        \"authenticatedState\": \"authenticated\",\n" +
-			"        \"primary\": true\n" +
-			"      }\n" +
-			"    ]\n" +
-			"  }\n" +
-			"}";
+				"{" +
+				"  \"identityMap\": {" +
+				"    \"location\": [" +
+				"      {" +
+				"        \"id\": \"California\"," +
+				"        \"authenticatedState\": \"authenticated\"," +
+				"        \"primary\": true" +
+				"      }" +
+				"    ]" +
+				"  }" +
+				"}";
 
 		JSONAsserts.assertEquals(expected, baseMap.asXDMMap(false));
 	}
@@ -304,58 +304,51 @@ public class IdentityMapTests {
 	@Test
 	public void test_FromData() throws Exception {
 		// setup
-		final String jsonStr =
-			"{\n" +
-			"      \"identityMap\": {\n" +
-			"        \"ECID\": [\n" +
-			"          {\n" +
-			"            \"id\":randomECID,\n" +
-			"            \"authenticatedState\": \"ambiguous\",\n" +
-			"            \"primary\": true\n" +
-			"          }\n" +
-			"        ],\n" +
-			"        \"USERID\": [\n" +
-			"          {\n" +
-			"            \"id\":someUserID,\n" +
-			"            \"authenticatedState\": \"authenticated\",\n" +
-			"            \"primary\": false\n" +
-			"          }\n" +
-			"        ]\n" +
-			"      }\n" +
-			"}";
+		String json = "{" +
+				"  \"identityMap\": {" +
+				"    \"ECID\": [" +
+				"      {" +
+				"        \"id\": \"randomECID\"," +
+				"        \"authenticatedState\": \"ambiguous\"," +
+				"        \"primary\": true" +
+				"      }" +
+				"    ]" +
+				"  }" +
+				"}";
 
-		final JSONObject jsonObject = new JSONObject(jsonStr);
+
+		final JSONObject jsonObject = new JSONObject(json);
 		final Map<String, Object> xdmData = JSONUtils.toMap(jsonObject);
 
 		// test
 		IdentityMap map = IdentityMap.fromXDMMap(xdmData);
 
-		// verify
-		JSONAsserts.assertEquals(jsonStr, map.asXDMMap(false));
+		// verify  TODO
+		JSONAsserts.assertEquals(json, map.asXDMMap(false));
 	}
 
 	@Test
 	public void test_FromData_removesItem_emptyId() throws Exception {
 		// setup
 		final String jsonStr =
-			"{\n" +
-			"      \"identityMap\": {\n" +
-			"        \"ECID\": [\n" +
-			"          {\n" +
-			"            \"id\":randomECID,\n" +
-			"            \"authenticatedState\": \"ambiguous\",\n" +
-			"            \"primary\": true\n" +
-			"          }\n" +
-			"        ],\n" +
-			"        \"USERID\": [\n" +
-			"          {\n" +
-			"            \"id\":\"\",\n" +
-			"            \"authenticatedState\": \"authenticated\",\n" +
-			"            \"primary\": false\n" +
-			"          }\n" +
-			"        ]\n" +
-			"      }\n" +
-			"}";
+				"{\n" +
+				"      \"identityMap\": {\n" +
+				"        \"ECID\": [\n" +
+				"          {\n" +
+				"            \"id\":randomECID,\n" +
+				"            \"authenticatedState\": \"ambiguous\",\n" +
+				"            \"primary\": true\n" +
+				"          }\n" +
+				"        ],\n" +
+				"        \"USERID\": [\n" +
+				"          {\n" +
+				"            \"id\":\"\",\n" +
+				"            \"authenticatedState\": \"authenticated\",\n" +
+				"            \"primary\": false\n" +
+				"          }\n" +
+				"        ]\n" +
+				"      }\n" +
+				"}";
 
 		final JSONObject jsonObject = new JSONObject(jsonStr);
 		final Map<String, Object> xdmData = JSONUtils.toMap(jsonObject);
@@ -365,17 +358,17 @@ public class IdentityMapTests {
 
 		// verify
 		final String expected =
-			"{\n" +
-			"      \"identityMap\": {\n" +
-			"        \"ECID\": [\n" +
-			"          {\n" +
-			"            \"id\": \"randomECID\",\n" +
-			"            \"authenticatedState\": \"ambiguous\",\n" +
-			"            \"primary\": true\n" +
-			"          }\n" +
-			"        ]\n" +
-			"      }\n" +
-			"}";
+				"{" +
+				"      \"identityMap\": {" +
+				"        \"ECID\": [" +
+				"          {" +
+				"            \"id\": \"randomECID\"," +
+				"            \"authenticatedState\": \"ambiguous\"," +
+				"            \"primary\": true" +
+				"          }" +
+				"        ]" +
+				"      }" +
+				"}";
 
 		JSONAsserts.assertEquals(expected, map.asXDMMap(false));
 	}
@@ -384,23 +377,23 @@ public class IdentityMapTests {
 	public void test_FromData_removesItem_missingId() throws Exception {
 		// setup
 		final String jsonStr =
-			"{\n" +
-			"      \"identityMap\": {\n" +
-			"        \"ECID\": [\n" +
-			"          {\n" +
-			"            \"id\":randomECID,\n" +
-			"            \"authenticatedState\": \"ambiguous\",\n" +
-			"            \"primary\": true\n" +
-			"          }\n" +
-			"        ],\n" +
-			"        \"USERID\": [\n" +
-			"          {\n" +
-			"            \"authenticatedState\": \"authenticated\",\n" +
-			"            \"primary\": false\n" +
-			"          }\n" +
-			"        ]\n" +
-			"      }\n" +
-			"}";
+				"{" +
+				"      \"identityMap\": {" +
+				"        \"ECID\": [" +
+				"          {" +
+				"            \"id\":randomECID," +
+				"            \"authenticatedState\": \"ambiguous\"," +
+				"            \"primary\": true" +
+				"          }" +
+				"        ]," +
+				"        \"USERID\": [" +
+				"          {" +
+				"            \"authenticatedState\": \"authenticated\"," +
+				"            \"primary\": false" +
+				"          }" +
+				"        ]" +
+				"      }" +
+				"}";
 
 		final JSONObject jsonObject = new JSONObject(jsonStr);
 		final Map<String, Object> xdmData = JSONUtils.toMap(jsonObject);
@@ -410,18 +403,17 @@ public class IdentityMapTests {
 
 		// verify
 		final String expected =
-			"{\n" +
-			"      \"identityMap\": {\n" +
-			"        \"ECID\": [\n" +
-			"          {\n" +
-			"            \"id\": \"randomECID\",\n" +
-			"            \"authenticatedState\": \"ambiguous\",\n" +
-			"            \"primary\": true\n" +
-			"          }\n" +
-			"        ]\n" +
-			"      }\n" +
-			"}";
-
+				"{" +
+				"      \"identityMap\": {" +
+				"        \"ECID\": [" +
+				"          {" +
+				"            \"id\": \"randomECID\"," +
+				"            \"authenticatedState\": \"ambiguous\"," +
+				"            \"primary\": true" +
+				"          }" +
+				"        ]" +
+				"      }" +
+				"}";
 		JSONAsserts.assertEquals(expected, map.asXDMMap(false));
 	}
 
@@ -436,15 +428,15 @@ public class IdentityMapTests {
 		// setup
 		// ECID namespace is map instead of list
 		final String invalidJsonStr =
-			"{\n" +
-			"  \"identityMap\": {\n" +
-			"    \"ECID\": {\n" +
-			"        \"id\": \"randomECID\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": true\n" +
-			"    }\n" +
-			"  }\n" +
-			"}";
+		        "{" +
+				"  \"identityMap\": {" +
+				"    \"ECID\": {" +
+				"        \"id\": \"randomECID\"," +
+				"        \"authenticatedState\": \"ambiguous\"," +
+				"        \"primary\": true" +
+				"    }" +
+				"  }" +
+				"}";
 
 		final JSONObject jsonObject = new JSONObject(invalidJsonStr);
 		final Map<String, Object> xdmData = JSONUtils.toMap(jsonObject);
@@ -461,18 +453,18 @@ public class IdentityMapTests {
 		// setup
 		// namespace is an array of arrays instead of an array of identity items
 		final String invalidJsonStr =
-			"{\n" +
-			"  \"identityMap\": {\n" +
-			"    \"ECID\": [{\n" +
-			"        \"id\": \"randomECID\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": true\n" +
-			"    }],\n" +
-			"    \"namespace\": [\n" +
-			"       [ \"arrayInsteadOfMap\", \"invalid\"]\n" +
-			"    ]\n" +
-			"  }\n," +
-			"}";
+				"{" +
+				"  \"identityMap\": {" +
+				"    \"ECID\": [{" +
+				"        \"id\": \"randomECID\"," +
+				"        \"authenticatedState\": \"ambiguous\"," +
+				"        \"primary\": true" +
+				"    }]," +
+				"    \"namespace\": [" +
+				"       [ \"arrayInsteadOfMap\", \"invalid\"]" +
+				"    ]" +
+				"  }," +
+				"}";
 
 		final JSONObject jsonObject = new JSONObject(invalidJsonStr);
 		final Map<String, Object> xdmData = JSONUtils.toMap(jsonObject);
