@@ -11,7 +11,6 @@
 
 package com.adobe.marketing.mobile.edge.identity.util;
 
-import static com.adobe.marketing.mobile.edge.identity.util.IdentityTestConstants.LOG_TAG;
 import static com.adobe.marketing.mobile.edge.identity.util.TestHelper.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -27,8 +26,8 @@ import com.adobe.marketing.mobile.edge.identity.AuthenticatedState;
 import com.adobe.marketing.mobile.edge.identity.Identity;
 import com.adobe.marketing.mobile.edge.identity.IdentityItem;
 import com.adobe.marketing.mobile.edge.identity.IdentityMap;
-import com.adobe.marketing.mobile.util.JSONAsserts;
 import com.adobe.marketing.mobile.util.CollectionEqualCount;
+import com.adobe.marketing.mobile.util.JSONAsserts;
 import com.adobe.marketing.mobile.util.TestPersistenceHelper;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -155,7 +154,6 @@ public class IdentityFunctionalTestUtil {
 		identityMapDict.put(IdentityTestConstants.XDMKeys.IDENTITY_MAP, allItems);
 		return identityMapDict;
 	}
-
 
 	/**
 	 * Class similar to {@link IdentityItem} for a specific namespace used for easier testing.
@@ -284,8 +282,7 @@ public class IdentityFunctionalTestUtil {
 		assertNotNull(ecid);
 
 		// verify xdm shared state is has ECID
-		Map<String, Object> xdmSharedState =
-			getXDMSharedStateFor(IdentityTestConstants.EXTENSION_NAME, 1000);
+		Map<String, Object> xdmSharedState = getXDMSharedStateFor(IdentityTestConstants.EXTENSION_NAME, 1000);
 
 		String expected =
 			"{" +
@@ -310,8 +307,7 @@ public class IdentityFunctionalTestUtil {
 		assertEquals(primaryECID, ecid);
 
 		// verify xdm shared state is has correct primary ECID
-		Map<String, Object> xdmSharedState =
-			getXDMSharedStateFor(IdentityTestConstants.EXTENSION_NAME, 1000);
+		Map<String, Object> xdmSharedState = getXDMSharedStateFor(IdentityTestConstants.EXTENSION_NAME, 1000);
 
 		String json =
 			"{" +
@@ -341,21 +337,15 @@ public class IdentityFunctionalTestUtil {
 	 */
 	public static void verifySecondaryECID(final String secondaryECID) throws Exception {
 		// verify xdm shared state is has correct secondary ECID
-		Map<String, Object> xdmSharedState =
-			getXDMSharedStateFor(IdentityTestConstants.EXTENSION_NAME, 1000);
+		Map<String, Object> xdmSharedState = getXDMSharedStateFor(IdentityTestConstants.EXTENSION_NAME, 1000);
 
 		if (secondaryECID == null) {
-			String json = "{" +
-				"  \"identityMap\": {" +
-				"    \"ECID\": [" +
-				"      {}" +
-				"    ]" +
-				"  }" +
-				"}";
+			String json = "{" + "  \"identityMap\": {" + "    \"ECID\": [" + "      {}" + "    ]" + "  }" + "}";
 			JSONAsserts.assertTypeMatch(json, xdmSharedState, new CollectionEqualCount("identityMap.ECID"));
 			return;
 		}
-		String json = "{" +
+		String json =
+			"{" +
 			"  \"identityMap\": {" +
 			"    \"ECID\": [" +
 			"      {}," +

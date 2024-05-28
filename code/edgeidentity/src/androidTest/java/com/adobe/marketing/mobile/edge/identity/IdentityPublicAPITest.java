@@ -11,9 +11,9 @@
 
 package com.adobe.marketing.mobile.edge.identity;
 
-import static com.adobe.marketing.mobile.util.NodeConfig.Scope.Subtree;
 import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.*;
 import static com.adobe.marketing.mobile.edge.identity.util.TestHelper.*;
+import static com.adobe.marketing.mobile.util.NodeConfig.Scope.Subtree;
 import static org.junit.Assert.*;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -29,7 +29,6 @@ import com.adobe.marketing.mobile.util.NodeConfig;
 import com.adobe.marketing.mobile.util.TestPersistenceHelper;
 import com.adobe.marketing.mobile.util.ValueExactMatch;
 import com.adobe.marketing.mobile.util.ValueNotEqual;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -65,13 +64,9 @@ public class IdentityPublicAPITest {
 		// verify that the extension is registered with the correct version details
 		Map<String, Object> sharedStateMap = getSharedStateFor(IdentityTestConstants.SharedStateName.EVENT_HUB, 5000);
 
-		String json = "{" +
-				"  \"version\": \"3.0.0\"" +
-				"}";
+		String json = "{" + "  \"version\": \"3.0.0\"" + "}";
 
-		JSONAsserts.assertExactMatch(
-			json,
-			sharedStateMap);
+		JSONAsserts.assertExactMatch(json, sharedStateMap);
 	}
 
 	// --------------------------------------------------------------------------------------------
@@ -91,26 +86,36 @@ public class IdentityPublicAPITest {
 		// verify xdm shared state
 		Map<String, Object> xdmSharedState = getXDMSharedStateFor(IdentityConstants.EXTENSION_NAME, 1000);
 
-		String expected = "{" +
-				"  \"identityMap\": {" +
-				"    \"Email\": [" +
-				"      {" +
-				"        \"id\": \"example@email.com\"," +
-				"        \"primary\": true," +
-				"        \"authenticatedState\": \"authenticated\"" +
-				"      }" +
-				"    ]," +
-				"    \"ECID\": [" +
-				"      {" +
-				"        \"id\": \"STRING_TYPE\"," +
-				"        \"authenticatedState\": \"ambiguous\"," +
-				"        \"primary\": false" +
-				"      }" +
-				"    ]" +
-				"  }" +
-				"}";
+		String expected =
+			"{" +
+			"  \"identityMap\": {" +
+			"    \"Email\": [" +
+			"      {" +
+			"        \"id\": \"example@email.com\"," +
+			"        \"primary\": true," +
+			"        \"authenticatedState\": \"authenticated\"" +
+			"      }" +
+			"    ]," +
+			"    \"ECID\": [" +
+			"      {" +
+			"        \"id\": \"STRING_TYPE\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }" +
+			"    ]" +
+			"  }" +
+			"}";
 
-		JSONAsserts.assertTypeMatch(expected, xdmSharedState, new CollectionEqualCount(NodeConfig.Scope.Subtree), new ValueExactMatch("identityMap.Email[0].id", "identityMap.Email[0].primary", "identityMap.ECID[0].authenticatedState"));
+		JSONAsserts.assertTypeMatch(
+			expected,
+			xdmSharedState,
+			new CollectionEqualCount(NodeConfig.Scope.Subtree),
+			new ValueExactMatch(
+				"identityMap.Email[0].id",
+				"identityMap.Email[0].primary",
+				"identityMap.ECID[0].authenticatedState"
+			)
+		);
 
 		// verify persisted data
 		final String persistedJson = TestPersistenceHelper.readPersistedData(
@@ -118,7 +123,16 @@ public class IdentityPublicAPITest {
 			IdentityConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
 		Map<String, Object> persistedMap = JSONUtils.toMap(new JSONObject(persistedJson));
-		JSONAsserts.assertTypeMatch(expected, persistedMap, new CollectionEqualCount(NodeConfig.Scope.Subtree), new ValueExactMatch("identityMap.Email[0].id", "identityMap.Email[0].primary", "identityMap.ECID[0].authenticatedState"));
+		JSONAsserts.assertTypeMatch(
+			expected,
+			persistedMap,
+			new CollectionEqualCount(NodeConfig.Scope.Subtree),
+			new ValueExactMatch(
+				"identityMap.Email[0].id",
+				"identityMap.Email[0].primary",
+				"identityMap.ECID[0].authenticatedState"
+			)
+		);
 	}
 
 	@Test
@@ -136,17 +150,18 @@ public class IdentityPublicAPITest {
 		// verify xdm shared state is not disturbed
 		Map<String, Object> xdmSharedState = getXDMSharedStateFor(IdentityConstants.EXTENSION_NAME, 1000);
 
-		String json = "{" +
-				"  \"identityMap\": {" +
-				"    \"ECID\": [" +
-				"    {" +
-				"        \"id\": \"STRING_TYPE\"," +
-				"        \"authenticatedState\": \"ambiguous\"," +
-				"        \"primary\": false" +
-				"      }" +
-				"    ]" +
-				"  }" +
-				"}";
+		String json =
+			"{" +
+			"  \"identityMap\": {" +
+			"    \"ECID\": [" +
+			"    {" +
+			"        \"id\": \"STRING_TYPE\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }" +
+			"    ]" +
+			"  }" +
+			"}";
 
 		JSONAsserts.assertTypeMatch(json, xdmSharedState, new CollectionEqualCount(Subtree));
 	}
@@ -166,17 +181,18 @@ public class IdentityPublicAPITest {
 		// verify xdm shared state is not disturbed
 		Map<String, Object> xdmSharedState = getXDMSharedStateFor(IdentityConstants.EXTENSION_NAME, 1000);
 
-		String json = "{" +
-				"  \"identityMap\": {" +
-				"    \"ECID\": [" +
-				"    {" +
-				"        \"id\": \"STRING_TYPE\"," +
-				"     \"authenticatedState\": \"ambiguous\"," +
-				"     \"primary\": false" +
-				"      }" +
-				"    ]" +
-				"  }" +
-				"}";
+		String json =
+			"{" +
+			"  \"identityMap\": {" +
+			"    \"ECID\": [" +
+			"    {" +
+			"        \"id\": \"STRING_TYPE\"," +
+			"     \"authenticatedState\": \"ambiguous\"," +
+			"     \"primary\": false" +
+			"      }" +
+			"    ]" +
+			"  }" +
+			"}";
 
 		JSONAsserts.assertTypeMatch(json, xdmSharedState, new CollectionEqualCount(Subtree));
 	}
@@ -196,17 +212,18 @@ public class IdentityPublicAPITest {
 		waitForThreads(2000);
 
 		// verify the final xdm shared state
-		String expected = "{" +
-				"  \"identityMap\": {" +
-				"    \"Email\": [" +
-				"      {" +
-				"        \"id\": \"example@email.com\"," +
-				"        \"authenticatedState\": \"loggedOut\"," +
-				"        \"primary\": false" +
-				"      }" +
-				"    ]" +
-				"  }" +
-				"}";
+		String expected =
+			"{" +
+			"  \"identityMap\": {" +
+			"    \"Email\": [" +
+			"      {" +
+			"        \"id\": \"example@email.com\"," +
+			"        \"authenticatedState\": \"loggedOut\"," +
+			"        \"primary\": false" +
+			"      }" +
+			"    ]" +
+			"  }" +
+			"}";
 
 		Map<String, Object> xdmSharedState = getXDMSharedStateFor(IdentityConstants.EXTENSION_NAME, 1000);
 		JSONAsserts.assertExactMatch(expected, xdmSharedState);
@@ -237,18 +254,19 @@ public class IdentityPublicAPITest {
 		// verify xdm shared state does not get updated
 		Map<String, Object> xdmSharedState = getXDMSharedStateFor(IdentityConstants.EXTENSION_NAME, 1000);
 
-		String json = "{" +
-				"  \"identityMap\": {" +
-				"    \"ECID\": [" +
-				"      {" +
-				"        \"id\": \"newECID\"," +
-				"        \"authenticatedState\": \"ambiguous\"," +
-				"        \"primary\": false" +
-				"      }" +
-				"    ]" +
-				"  }" +
-				"}";
-        JSONAsserts.assertTypeMatch(json, xdmSharedState, new ValueNotEqual("identityMap.ECID[0].id"));
+		String json =
+			"{" +
+			"  \"identityMap\": {" +
+			"    \"ECID\": [" +
+			"      {" +
+			"        \"id\": \"newECID\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }" +
+			"    ]" +
+			"  }" +
+			"}";
+		JSONAsserts.assertTypeMatch(json, xdmSharedState, new ValueNotEqual("identityMap.ECID[0].id"));
 
 		// verify persisted data doesn't change
 		final String persistedJson = TestPersistenceHelper.readPersistedData(
@@ -273,47 +291,57 @@ public class IdentityPublicAPITest {
 		waitForThreads(2000);
 
 		// verify xdm shared state
-		String expected = "{" +
-				"  \"identityMap\": {" +
-				"    \"Email\": [" +
-				"      {" +
-				"        \"id\": \"primary@email.com\"," +
-				"        \"authenticatedState\": \"ambiguous\"," +
-				"        \"primary\": false" +
-				"      }," +
-				"      {" +
-				"        \"id\": \"secondary@email.com\"," +
-				"        \"authenticatedState\": \"ambiguous\"," +
-				"        \"primary\": false" +
-				"      }" +
-				"    ]," +
-				"    \"UserName\": [" +
-				"      {" +
-				"        \"id\": \"John Doe\"," +
-				"        \"authenticatedState\": \"ambiguous\"," +
-				"        \"primary\": false" +
-				"      }" +
-				"    ]," +
-				"    \"UserId\": [" +
-				"      {" +
-				"        \"id\": \"zzzyyyxxx\"," +
-				"        \"authenticatedState\": \"ambiguous\"," +
-				"        \"primary\": false" +
-				"      }" +
-				"    ]," +
-				"    \"ECID\": [" +
-				"      {" +
-				"        \"id\": \"STRING_TYPE\"," +
-				"        \"authenticatedState\": \"ambiguous\"," +
-				"        \"primary\": false" +
-				"      }" +
-				"    ]" +
-				"  }" +
-				"}";
-
+		String expected =
+			"{" +
+			"  \"identityMap\": {" +
+			"    \"Email\": [" +
+			"      {" +
+			"        \"id\": \"primary@email.com\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }," +
+			"      {" +
+			"        \"id\": \"secondary@email.com\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }" +
+			"    ]," +
+			"    \"UserName\": [" +
+			"      {" +
+			"        \"id\": \"John Doe\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }" +
+			"    ]," +
+			"    \"UserId\": [" +
+			"      {" +
+			"        \"id\": \"zzzyyyxxx\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }" +
+			"    ]," +
+			"    \"ECID\": [" +
+			"      {" +
+			"        \"id\": \"STRING_TYPE\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }" +
+			"    ]" +
+			"  }" +
+			"}";
 
 		Map<String, Object> xdmSharedState = getXDMSharedStateFor(IdentityConstants.EXTENSION_NAME, 1000);
-		JSONAsserts.assertTypeMatch(expected, xdmSharedState, new CollectionEqualCount(NodeConfig.Scope.Subtree), new ValueExactMatch("identityMap.Email[0].id", "identityMap.Email[1].id", "identityMap.UserId[0].id", "identityMap.UserName[0].id"));
+		JSONAsserts.assertTypeMatch(
+			expected,
+			xdmSharedState,
+			new CollectionEqualCount(NodeConfig.Scope.Subtree),
+			new ValueExactMatch(
+				"identityMap.Email[0].id",
+				"identityMap.Email[1].id",
+				"identityMap.UserId[0].id",
+				"identityMap.UserName[0].id"
+			)
+		);
 
 		// verify persisted data
 		final String persistedJson = TestPersistenceHelper.readPersistedData(
@@ -321,7 +349,17 @@ public class IdentityPublicAPITest {
 			IdentityConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
 		Map<String, Object> persistedMap = JSONUtils.toMap(new JSONObject(persistedJson));
-		JSONAsserts.assertTypeMatch(expected, persistedMap, new CollectionEqualCount(NodeConfig.Scope.Subtree), new ValueExactMatch("identityMap.Email[0].id", "identityMap.Email[1].id", "identityMap.UserId[0].id", "identityMap.UserName[0].id"));
+		JSONAsserts.assertTypeMatch(
+			expected,
+			persistedMap,
+			new CollectionEqualCount(NodeConfig.Scope.Subtree),
+			new ValueExactMatch(
+				"identityMap.Email[0].id",
+				"identityMap.Email[1].id",
+				"identityMap.UserId[0].id",
+				"identityMap.UserName[0].id"
+			)
+		);
 	}
 
 	@Test
@@ -338,33 +376,39 @@ public class IdentityPublicAPITest {
 		// verify xdm shared state
 		Map<String, Object> xdmSharedState = getXDMSharedStateFor(IdentityConstants.EXTENSION_NAME, 1000);
 
-		String expected = "{"
-				+ "\"identityMap\": {"
-				+ "    \"Email\": ["
-				+ "        {"
-				+ "            \"id\": \"primary@email.com\","
-				+ "            \"authenticatedState\": \"ambiguous\","
-				+ "            \"primary\": false"
-				+ "        }"
-				+ "    ],"
-				+ "    \"ECID\": ["
-				+ "        {"
-				+ "            \"id\": \"STRING_TYPE\","
-				+ "            \"authenticatedState\": \"ambiguous\","
-				+ "            \"primary\": false"
-				+ "        }"
-				+ "    ],"
-				+ "    \"email\": ["
-				+ "        {"
-				+ "            \"id\": \"secondary@email.com\","
-				+ "            \"authenticatedState\": \"ambiguous\","
-				+ "            \"primary\": false"
-				+ "        }"
-				+ "    ]"
-				+ "}"
-				+ "}";
+		String expected =
+			"{" +
+			"\"identityMap\": {" +
+			"    \"Email\": [" +
+			"        {" +
+			"            \"id\": \"primary@email.com\"," +
+			"            \"authenticatedState\": \"ambiguous\"," +
+			"            \"primary\": false" +
+			"        }" +
+			"    ]," +
+			"    \"ECID\": [" +
+			"        {" +
+			"            \"id\": \"STRING_TYPE\"," +
+			"            \"authenticatedState\": \"ambiguous\"," +
+			"            \"primary\": false" +
+			"        }" +
+			"    ]," +
+			"    \"email\": [" +
+			"        {" +
+			"            \"id\": \"secondary@email.com\"," +
+			"            \"authenticatedState\": \"ambiguous\"," +
+			"            \"primary\": false" +
+			"        }" +
+			"    ]" +
+			"}" +
+			"}";
 
-		JSONAsserts.assertTypeMatch(expected, xdmSharedState, new CollectionEqualCount(NodeConfig.Scope.Subtree), new ValueExactMatch("identityMap.Email[0].id", "identityMap.email[0].id"));
+		JSONAsserts.assertTypeMatch(
+			expected,
+			xdmSharedState,
+			new CollectionEqualCount(NodeConfig.Scope.Subtree),
+			new ValueExactMatch("identityMap.Email[0].id", "identityMap.email[0].id")
+		);
 
 		// verify persisted data
 		final String persistedJson = TestPersistenceHelper.readPersistedData(
@@ -372,7 +416,12 @@ public class IdentityPublicAPITest {
 			IdentityConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
 		Map<String, Object> persistedMap = JSONUtils.toMap(new JSONObject(persistedJson));
-		JSONAsserts.assertTypeMatch(expected, persistedMap, new CollectionEqualCount(NodeConfig.Scope.Subtree), new ValueExactMatch("identityMap.Email[0].id", "identityMap.email[0].id"));
+		JSONAsserts.assertTypeMatch(
+			expected,
+			persistedMap,
+			new CollectionEqualCount(NodeConfig.Scope.Subtree),
+			new ValueExactMatch("identityMap.Email[0].id", "identityMap.email[0].id")
+		);
 	}
 
 	// --------------------------------------------------------------------------------------------
@@ -526,26 +575,32 @@ public class IdentityPublicAPITest {
 		// verify xdm shared state
 		Map<String, Object> xdmSharedState = getXDMSharedStateFor(IdentityConstants.EXTENSION_NAME, 1000);
 
-		String expected = "{"
-				+ "\"identityMap\": {"
-				+ "    \"Email\": ["
-				+ "        {"
-				+ "            \"id\": \"secondary@email.com\","
-				+ "            \"authenticatedState\": \"ambiguous\","
-				+ "            \"primary\": false"
-				+ "        }"
-				+ "    ],"
-				+ "    \"ECID\": ["
-				+ "        {"
-				+ "            \"id\": \"STRING_TYPE\","
-				+ "            \"authenticatedState\": \"ambiguous\","
-				+ "            \"primary\": false"
-				+ "        }"
-				+ "    ]"
-				+ "}"
-				+ "}";
+		String expected =
+			"{" +
+			"\"identityMap\": {" +
+			"    \"Email\": [" +
+			"        {" +
+			"            \"id\": \"secondary@email.com\"," +
+			"            \"authenticatedState\": \"ambiguous\"," +
+			"            \"primary\": false" +
+			"        }" +
+			"    ]," +
+			"    \"ECID\": [" +
+			"        {" +
+			"            \"id\": \"STRING_TYPE\"," +
+			"            \"authenticatedState\": \"ambiguous\"," +
+			"            \"primary\": false" +
+			"        }" +
+			"    ]" +
+			"}" +
+			"}";
 
-		JSONAsserts.assertTypeMatch(expected, xdmSharedState, new CollectionEqualCount(NodeConfig.Scope.Subtree), new ValueExactMatch("identityMap.Email[0].id"));
+		JSONAsserts.assertTypeMatch(
+			expected,
+			xdmSharedState,
+			new CollectionEqualCount(NodeConfig.Scope.Subtree),
+			new ValueExactMatch("identityMap.Email[0].id")
+		);
 
 		// test again
 		Identity.removeIdentity(new IdentityItem("secondary@email.com"), "Email");
@@ -554,17 +609,18 @@ public class IdentityPublicAPITest {
 		// verify xdm shared state
 		xdmSharedState = getXDMSharedStateFor(IdentityConstants.EXTENSION_NAME, 1000);
 
-		String expectedWithoutEmail = "{" +
-				"\"identityMap\": {" +
-				"    \"ECID\": [" +
-				"        {" +
-				"            \"id\": \"STRING_TYPE\"," +
-				"            \"authenticatedState\": \"ambiguous\"," +
-				"            \"primary\": false" +
-				"        }" +
-				"    ]" +
-				 "}" +
-				"}";
+		String expectedWithoutEmail =
+			"{" +
+			"\"identityMap\": {" +
+			"    \"ECID\": [" +
+			"        {" +
+			"            \"id\": \"STRING_TYPE\"," +
+			"            \"authenticatedState\": \"ambiguous\"," +
+			"            \"primary\": false" +
+			"        }" +
+			"    ]" +
+			"}" +
+			"}";
 
 		JSONAsserts.assertTypeMatch(expectedWithoutEmail, xdmSharedState, new CollectionEqualCount(Subtree));
 
@@ -588,18 +644,19 @@ public class IdentityPublicAPITest {
 		// verify item is not removed
 		// verify xdm shared state
 		Map<String, Object> xdmSharedState = getXDMSharedStateFor(IdentityConstants.EXTENSION_NAME, 1000);
-		String expected = "{" +
-				" \"identityMap\": " +
-				"  {" +
-				"   \"ECID\": [" +
-				"    {" +
-				"     \"authenticatedState\": \"ambiguous\"," +
-				"     \"id\": \"STRING_TYPE\"," +
-				"     \"primary\": false" +
-				"    }" +
-				"   ]" +
-				"  }" +
-				"}";
+		String expected =
+			"{" +
+			" \"identityMap\": " +
+			"  {" +
+			"   \"ECID\": [" +
+			"    {" +
+			"     \"authenticatedState\": \"ambiguous\"," +
+			"     \"id\": \"STRING_TYPE\"," +
+			"     \"primary\": false" +
+			"    }" +
+			"   ]" +
+			"  }" +
+			"}";
 
 		JSONAsserts.assertTypeMatch(expected, xdmSharedState, new CollectionEqualCount(Subtree));
 
@@ -628,25 +685,26 @@ public class IdentityPublicAPITest {
 		// verify xdm shared state
 		Map<String, Object> xdmSharedState = getXDMSharedStateFor(IdentityConstants.EXTENSION_NAME, 1000);
 
-		String expected = "{" +
-				" \"identityMap\": " +
-				"  {" +
-				"   \"Email\": [" +
-				"    {" +
-				"     \"id\": \"example@email.com\"," +
-				"     \"authenticatedState\": \"ambiguous\"," +
-				"     \"primary\": false" +
-				"    }" +
-				"   ]," +
-				"   \"ECID\": [" +
-				"    {" +
-				"     \"id\": \"STRING_TYPE\"," +
-				"     \"authenticatedState\": \"ambiguous\"," +
-				"     \"primary\": false" +
-				"    }" +
-				"   ]" +
-				"  }" +
-				"}";
+		String expected =
+			"{" +
+			" \"identityMap\": " +
+			"  {" +
+			"   \"Email\": [" +
+			"    {" +
+			"     \"id\": \"example@email.com\"," +
+			"     \"authenticatedState\": \"ambiguous\"," +
+			"     \"primary\": false" +
+			"    }" +
+			"   ]," +
+			"   \"ECID\": [" +
+			"    {" +
+			"     \"id\": \"STRING_TYPE\"," +
+			"     \"authenticatedState\": \"ambiguous\"," +
+			"     \"primary\": false" +
+			"    }" +
+			"   ]" +
+			"  }" +
+			"}";
 
 		JSONAsserts.assertTypeMatch(expected, xdmSharedState, new CollectionEqualCount(Subtree));
 
@@ -675,25 +733,26 @@ public class IdentityPublicAPITest {
 		// verify xdm shared state
 		Map<String, Object> xdmSharedState = getXDMSharedStateFor(IdentityConstants.EXTENSION_NAME, 1000);
 
-		String expected = "{" +
-				" \"identityMap\": " +
-				"  {" +
-				"   \"Email\": [" +
-				"    {" +
-				"     \"id\": \"example@email.com\"," +
-				"     \"primary\": false," +
-				"     \"authenticatedState\": \"ambiguous\"" +
-				"    }" +
-				"   ]," +
-				"   \"ECID\": [" +
-				"    {" +
-				"     \"id\": \"STRING_TYPE\"," +
-				"     \"primary\": false," +
-				"     \"authenticatedState\": \"ambiguous\"" +
-				"    }" +
-				"   ]" +
-				"  }" +
-				"}";
+		String expected =
+			"{" +
+			" \"identityMap\": " +
+			"  {" +
+			"   \"Email\": [" +
+			"    {" +
+			"     \"id\": \"example@email.com\"," +
+			"     \"primary\": false," +
+			"     \"authenticatedState\": \"ambiguous\"" +
+			"    }" +
+			"   ]," +
+			"   \"ECID\": [" +
+			"    {" +
+			"     \"id\": \"STRING_TYPE\"," +
+			"     \"primary\": false," +
+			"     \"authenticatedState\": \"ambiguous\"" +
+			"    }" +
+			"   ]" +
+			"  }" +
+			"}";
 
 		JSONAsserts.assertTypeMatch(expected, xdmSharedState, new CollectionEqualCount(Subtree));
 
@@ -721,18 +780,18 @@ public class IdentityPublicAPITest {
 		// verify xdm shared state
 		Map<String, Object> xdmSharedState = getXDMSharedStateFor(IdentityConstants.EXTENSION_NAME, 1000);
 
-		String expected = "{" +
-				"  \"identityMap\": {" +
-				"    \"ECID\": [" +
-				"      {" +
-				"        \"id\": \"STRING_TYPE\"," +
-				"        \"authenticatedState\": \"ambiguous\"," +
-				"        \"primary\": false" +
-				"      }" +
-				"    ]" +
-				"  }" +
-				"}";
-
+		String expected =
+			"{" +
+			"  \"identityMap\": {" +
+			"    \"ECID\": [" +
+			"      {" +
+			"        \"id\": \"STRING_TYPE\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }" +
+			"    ]" +
+			"  }" +
+			"}";
 
 		JSONAsserts.assertTypeMatch(expected, xdmSharedState, new CollectionEqualCount(Subtree));
 

@@ -71,7 +71,7 @@ public class IdentityPropertiesTests {
 		Map<String, Object> xdmData = props.toXDMData(false);
 
 		String expected =
-        	"{" +
+			"{" +
 			"  \"identityMap\": {" +
 			"    \"ECID\": [" +
 			"      {" +
@@ -199,7 +199,7 @@ public class IdentityPropertiesTests {
 
 		// verify
 		String expected =
-	        "{" +
+			"{" +
 			"  \"identityMap\": {" +
 			"    \"GAID\": [" +
 			"      {" +
@@ -267,7 +267,7 @@ public class IdentityPropertiesTests {
 
 		// verify
 		String expected =
-	        "{" +
+			"{" +
 			"  \"identityMap\": {" +
 			"    \"UserId\": [" +
 			"      {" +
@@ -330,7 +330,7 @@ public class IdentityPropertiesTests {
 
 		// verify
 		String expected2 =
-	        "{" +
+			"{" +
 			"  \"identityMap\": {" +
 			"    \"ECID\": [" +
 			"      {" +
@@ -375,7 +375,7 @@ public class IdentityPropertiesTests {
 
 		// verify
 		String expected1 =
-	        "{" +
+			"{" +
 			"  \"identityMap\": {" +
 			"    \"ECID\": [" +
 			"      {" +
@@ -400,7 +400,7 @@ public class IdentityPropertiesTests {
 
 		// verify
 		String expected2 =
-	        "{" +
+			"{" +
 			"  \"identityMap\": {" +
 			"    \"ECID\": [" +
 			"      {" +
@@ -429,7 +429,7 @@ public class IdentityPropertiesTests {
 		);
 
 		String expected =
-	        "{" +
+			"{" +
 			"  \"identityMap\": {" +
 			"    \"ECID\": [" +
 			"      {" +
@@ -452,7 +452,7 @@ public class IdentityPropertiesTests {
 
 		// test
 		String expected2 =
-        	"{" +
+			"{" +
 			"  \"identityMap\": {" +
 			"    \"ECID\": [" +
 			"      {" +
@@ -495,7 +495,7 @@ public class IdentityPropertiesTests {
 
 		// verify
 		String expected =
-	        "{" +
+			"{" +
 			"  \"identityMap\": {" +
 			"    \"ECID\": [" +
 			"      {" +

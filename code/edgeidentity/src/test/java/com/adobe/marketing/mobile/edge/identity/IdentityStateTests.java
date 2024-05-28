@@ -756,7 +756,7 @@ public class IdentityStateTests {
 				final Event consentEvent = consentEventCaptor.getValue();
 
 				String expected =
-		        	"{" +
+					"{" +
 					"  \"consents\": {" +
 					"    \"adID\": {" +
 					"      \"val\": \"" +
@@ -825,7 +825,7 @@ public class IdentityStateTests {
 	) {
 		if (expectedAdId != null) {
 			String expected =
-		        "{" +
+				"{" +
 				"  \"identityMap\": {" +
 				"    \"GAID\": [" +
 				"      {" +

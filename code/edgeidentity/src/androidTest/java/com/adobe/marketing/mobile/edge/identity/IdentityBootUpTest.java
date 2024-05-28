@@ -13,8 +13,6 @@ package com.adobe.marketing.mobile.edge.identity;
 
 import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.*;
 import static com.adobe.marketing.mobile.edge.identity.util.TestHelper.getXDMSharedStateFor;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import com.adobe.marketing.mobile.edge.identity.util.MonitorExtension;
 import com.adobe.marketing.mobile.edge.identity.util.TestHelper;
@@ -54,36 +52,37 @@ public class IdentityBootUpTest {
 		// verify xdm shared state
 		Map<String, Object> xdmSharedState = getXDMSharedStateFor(IdentityConstants.EXTENSION_NAME, 1000);
 
-		String expected = "{\n" +
-				"  \"identityMap\": {\n" +
-				"    \"UserId\": [\n" +
-				"      {\n" +
-				"        \"id\": \"JohnDoe\",\n" +
-				"        \"authenticatedState\": \"ambiguous\",\n" +
-				"        \"primary\": false\n" +
-				"      }\n" +
-				"    ],\n" +
-				"    \"Email\": [\n" +
-				"      {\n" +
-				"        \"id\": \"example@email.com\",\n" +
-				"        \"authenticatedState\": \"ambiguous\",\n" +
-				"        \"primary\": false\n" +
-				"      }\n" +
-				"    ],\n" +
-				"    \"ECID\": [\n" +
-				"      {\n" +
-				"        \"id\": \"primaryECID\",\n" +
-				"        \"authenticatedState\": \"ambiguous\",\n" +
-				"        \"primary\": false\n" +
-				"      },\n" +
-				"      {\n" +
-				"        \"id\": \"secondaryECID\",\n" +
-				"        \"authenticatedState\": \"ambiguous\",\n" +
-				"        \"primary\": false\n" +
-				"      }\n" +
-				"    ]\n" +
-				"  }\n" +
-				"}";
+		String expected =
+			"{\n" +
+			"  \"identityMap\": {\n" +
+			"    \"UserId\": [\n" +
+			"      {\n" +
+			"        \"id\": \"JohnDoe\",\n" +
+			"        \"authenticatedState\": \"ambiguous\",\n" +
+			"        \"primary\": false\n" +
+			"      }\n" +
+			"    ],\n" +
+			"    \"Email\": [\n" +
+			"      {\n" +
+			"        \"id\": \"example@email.com\",\n" +
+			"        \"authenticatedState\": \"ambiguous\",\n" +
+			"        \"primary\": false\n" +
+			"      }\n" +
+			"    ],\n" +
+			"    \"ECID\": [\n" +
+			"      {\n" +
+			"        \"id\": \"primaryECID\",\n" +
+			"        \"authenticatedState\": \"ambiguous\",\n" +
+			"        \"primary\": false\n" +
+			"      },\n" +
+			"      {\n" +
+			"        \"id\": \"secondaryECID\",\n" +
+			"        \"authenticatedState\": \"ambiguous\",\n" +
+			"        \"primary\": false\n" +
+			"      }\n" +
+			"    ]\n" +
+			"  }\n" +
+			"}";
 
 		JSONAsserts.assertEquals(expected, xdmSharedState); // 3 for ECID and 3 for secondaryECID + 6
 
@@ -113,24 +112,25 @@ public class IdentityBootUpTest {
 		// verify xdm shared state
 		Map<String, Object> xdmSharedState = getXDMSharedStateFor(IdentityConstants.EXTENSION_NAME, 1000);
 
-		String expected = "{\n" +
-				"  \"identityMap\": {\n" +
-				"    \"UserId\": [\n" +
-				"      {\n" +
-				"        \"id\": \"JohnDoe\",\n" +
-				"        \"authenticatedState\": \"ambiguous\",\n" +
-				"        \"primary\": false\n" +
-				"      }\n" +
-				"    ],\n" +
-				"    \"ECID\": [\n" +
-				"      {\n" +
-				"        \"id\": \"primaryECID\",\n" +
-				"        \"authenticatedState\": \"ambiguous\",\n" +
-				"        \"primary\": false\n" +
-				"      }\n" +
-				"    ]\n" +
-				"  }\n" +
-				"}";
+		String expected =
+			"{\n" +
+			"  \"identityMap\": {\n" +
+			"    \"UserId\": [\n" +
+			"      {\n" +
+			"        \"id\": \"JohnDoe\",\n" +
+			"        \"authenticatedState\": \"ambiguous\",\n" +
+			"        \"primary\": false\n" +
+			"      }\n" +
+			"    ],\n" +
+			"    \"ECID\": [\n" +
+			"      {\n" +
+			"        \"id\": \"primaryECID\",\n" +
+			"        \"authenticatedState\": \"ambiguous\",\n" +
+			"        \"primary\": false\n" +
+			"      }\n" +
+			"    ]\n" +
+			"  }\n" +
+			"}";
 
 		JSONAsserts.assertEquals(expected, xdmSharedState);
 	}
