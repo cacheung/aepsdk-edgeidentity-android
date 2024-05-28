@@ -76,17 +76,20 @@ public class IdentityResetHandlingTest {
 		// verify shared state is updated
 		Map<String, Object> xdmSharedState = getXDMSharedStateFor(IdentityConstants.EXTENSION_NAME, 1000);
 
-		String expected = "{" +
-				"  \"identityMap\": {" +
-				"    \"ECID\": [" +
-				"      {" +
-				"        \"id\": \"" + newECID + "\"," +
-				"        \"authenticatedState\": \"ambiguous\"," +
-				"        \"primary\": false" +
-				"      }" +
-				"    ]" +
-				"  }" +
-				"}";
+		String expected =
+			"{" +
+			"  \"identityMap\": {" +
+			"    \"ECID\": [" +
+			"      {" +
+			"        \"id\": \"" +
+			newECID +
+			"\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }" +
+			"    ]" +
+			"  }" +
+			"}";
 
 		JSONAsserts.assertEquals(expected, xdmSharedState);
 
