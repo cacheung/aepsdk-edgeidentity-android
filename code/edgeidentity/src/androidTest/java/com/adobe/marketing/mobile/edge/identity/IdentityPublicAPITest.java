@@ -34,7 +34,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.json.JSONObject;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
@@ -545,7 +544,6 @@ public class IdentityPublicAPITest {
 				+ "    ]"
 				+ "}"
 				+ "}";
-
 
 		JSONAsserts.assertTypeMatch(expected, xdmSharedState, new CollectionEqualCount(NodeConfig.Scope.Subtree), new ValueExactMatch("identityMap.Email[0].id"));
 
