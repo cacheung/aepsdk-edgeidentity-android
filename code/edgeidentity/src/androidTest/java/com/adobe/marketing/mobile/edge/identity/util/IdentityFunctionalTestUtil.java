@@ -355,7 +355,6 @@ public class IdentityFunctionalTestUtil {
 			getXDMSharedStateFor(IdentityTestConstants.EXTENSION_NAME, 1000)
 		);
 		assertNotNull(xdmSharedState.get("identityMap.ECID[0].id"));
-		//JSONAsserts.assertEquals(expected, IdentityTestConstants.EXTENSION_NAME);
 	}
 
 	/**

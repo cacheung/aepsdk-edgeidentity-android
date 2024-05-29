@@ -35,7 +35,17 @@ public class IdentityMapTests {
 		map.addItem(new IdentityItem("California"), "location");
 
 		// verify
-		String expected = "{\"identityMap\":{\"location\":[{\"id\":\"California\"}]}}";
+		String expected =
+			"{\n" +
+			"  \"identityMap\": {\n" +
+			"    \"location\": [\n" +
+			"      {\n" +
+			"        \"id\": \"California\"\n" +
+			"      }\n" +
+			"    ]\n" +
+			"  }\n" +
+			"}";
+
 		JSONAsserts.assertExactMatch(
 			expected,
 			map.asXDMMap(false),
