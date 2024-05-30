@@ -18,8 +18,8 @@ import static org.junit.Assert.assertNull;
 
 import com.adobe.marketing.mobile.edge.identity.util.MonitorExtension;
 import com.adobe.marketing.mobile.edge.identity.util.TestHelper;
-import com.adobe.marketing.mobile.edge.identity.util.TestPersistenceHelper;
 import com.adobe.marketing.mobile.util.JSONUtils;
+import com.adobe.marketing.mobile.util.TestPersistenceHelper;
 import java.util.Arrays;
 import java.util.Map;
 import org.json.JSONObject;

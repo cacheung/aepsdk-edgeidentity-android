@@ -15,7 +15,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import com.adobe.marketing.mobile.util.CollectionEqualCount;
+import com.adobe.marketing.mobile.util.JSONAsserts;
 import com.adobe.marketing.mobile.util.JSONUtils;
+import com.adobe.marketing.mobile.util.NodeConfig;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +35,27 @@ public class IdentityMapTests {
 		map.addItem(new IdentityItem("California"), "location");
 
 		// verify
-		IdentityTestUtil.flattenMap(map.asXDMMap(false)).get("identityMap.location[0].id");
+		String expected =
+			"{\n" +
+			"  \"identityMap\": {\n" +
+			"    \"location\": [\n" +
+			"      {\n" +
+			"        \"id\": \"California\"\n" +
+			"      }\n" +
+			"    ]\n" +
+			"  }\n" +
+			"}";
+
+		JSONAsserts.assertExactMatch(
+			expected,
+			map.asXDMMap(false),
+			new CollectionEqualCount(NodeConfig.Scope.Subtree),
+			new CollectionEqualCount(
+				Collections.singletonList("identityMap.location[0]"),
+				false,
+				NodeConfig.Scope.Subtree
+			)
+		);
 	}
 
 	@Test
@@ -155,12 +179,20 @@ public class IdentityMapTests {
 		newMap.addItem(new IdentityItem("California", AuthenticatedState.AUTHENTICATED, true), "location");
 		baseMap.merge(newMap);
 
-		// verify the existing identityMap is unchanged
-		Map<String, String> flattenedMap = IdentityTestUtil.flattenMap(baseMap.asXDMMap(false));
-		assertEquals(3, flattenedMap.size());
-		assertEquals("California", flattenedMap.get("identityMap.location[0].id"));
-		assertEquals("authenticated", flattenedMap.get("identityMap.location[0].authenticatedState"));
-		assertEquals("true", flattenedMap.get("identityMap.location[0].primary"));
+		String expected =
+			"{\n" +
+			"  \"identityMap\": {\n" +
+			"    \"location\": [\n" +
+			"      {\n" +
+			"        \"id\": \"California\",\n" +
+			"        \"authenticatedState\": \"authenticated\",\n" +
+			"        \"primary\": true\n" +
+			"      }\n" +
+			"    ]\n" +
+			"  }\n" +
+			"}";
+
+		JSONAsserts.assertEquals(expected, baseMap.asXDMMap(false));
 	}
 
 	@Test
@@ -309,13 +341,7 @@ public class IdentityMapTests {
 		IdentityMap map = IdentityMap.fromXDMMap(xdmData);
 
 		// verify
-		Map<String, String> flattenedMap = IdentityTestUtil.flattenMap(map.asXDMMap(false));
-		assertEquals("randomECID", flattenedMap.get("identityMap.ECID[0].id"));
-		assertEquals("ambiguous", flattenedMap.get("identityMap.ECID[0].authenticatedState"));
-		assertEquals("true", flattenedMap.get("identityMap.ECID[0].primary"));
-		assertEquals("someUserID", flattenedMap.get("identityMap.USERID[0].id"));
-		assertEquals("authenticated", flattenedMap.get("identityMap.USERID[0].authenticatedState"));
-		assertEquals("false", flattenedMap.get("identityMap.USERID[0].primary"));
+		JSONAsserts.assertEquals(jsonStr, map.asXDMMap(false));
 	}
 
 	@Test
@@ -348,13 +374,20 @@ public class IdentityMapTests {
 		IdentityMap map = IdentityMap.fromXDMMap(xdmData);
 
 		// verify
-		Map<String, String> flattenedMap = IdentityTestUtil.flattenMap(map.asXDMMap(false));
-		assertEquals("randomECID", flattenedMap.get("identityMap.ECID[0].id"));
-		assertEquals("ambiguous", flattenedMap.get("identityMap.ECID[0].authenticatedState"));
-		assertEquals("true", flattenedMap.get("identityMap.ECID[0].primary"));
-		assertNull(flattenedMap.get("identityMap.USERID[0].id"));
-		assertNull(flattenedMap.get("identityMap.USERID[0].authenticatedState"));
-		assertNull(flattenedMap.get("identityMap.USERID[0].primary"));
+		final String expected =
+			"{\n" +
+			"      \"identityMap\": {\n" +
+			"        \"ECID\": [\n" +
+			"          {\n" +
+			"            \"id\": \"randomECID\",\n" +
+			"            \"authenticatedState\": \"ambiguous\",\n" +
+			"            \"primary\": true\n" +
+			"          }\n" +
+			"        ]\n" +
+			"      }\n" +
+			"}";
+
+		JSONAsserts.assertEquals(expected, map.asXDMMap(false));
 	}
 
 	@Test
@@ -386,13 +419,20 @@ public class IdentityMapTests {
 		IdentityMap map = IdentityMap.fromXDMMap(xdmData);
 
 		// verify
-		Map<String, String> flattenedMap = IdentityTestUtil.flattenMap(map.asXDMMap(false));
-		assertEquals("randomECID", flattenedMap.get("identityMap.ECID[0].id"));
-		assertEquals("ambiguous", flattenedMap.get("identityMap.ECID[0].authenticatedState"));
-		assertEquals("true", flattenedMap.get("identityMap.ECID[0].primary"));
-		assertNull(flattenedMap.get("identityMap.USERID[0].id"));
-		assertNull(flattenedMap.get("identityMap.USERID[0].authenticatedState"));
-		assertNull(flattenedMap.get("identityMap.USERID[0].primary"));
+		final String expected =
+			"{\n" +
+			"      \"identityMap\": {\n" +
+			"        \"ECID\": [\n" +
+			"          {\n" +
+			"            \"id\": \"randomECID\",\n" +
+			"            \"authenticatedState\": \"ambiguous\",\n" +
+			"            \"primary\": true\n" +
+			"          }\n" +
+			"        ]\n" +
+			"      }\n" +
+			"}";
+
+		JSONAsserts.assertEquals(expected, map.asXDMMap(false));
 	}
 
 	@Test
