@@ -480,6 +480,7 @@ public class IdentityPropertiesTests {
 
 		// verify
 		JSONAsserts.assertEquals("{}", props.toXDMData(false));
+		assertNull(props.getECIDSecondary());
 	}
 
 	@Test
