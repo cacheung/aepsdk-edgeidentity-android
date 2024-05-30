@@ -163,6 +163,7 @@ public class IdentityPropertiesTests {
 			"}";
 
 		JSONAsserts.assertExactMatch(expected, xdmMap);
+		assertEquals("test-ad-id", props.getAdId());
 	}
 
 	@Test
@@ -237,6 +238,8 @@ public class IdentityPropertiesTests {
 			"}";
 
 		JSONAsserts.assertEquals(expected, props.toXDMData(false));
+		assertEquals("primaryECID", props.getECID().toString());
+		assertEquals("secondaryECID", props.getECIDSecondary().toString());
 	}
 
 	@Test
@@ -289,6 +292,8 @@ public class IdentityPropertiesTests {
 			"}";
 
 		JSONAsserts.assertEquals(expected, props.toXDMData(false));
+		assertEquals("primaryECID", props.getECID().toString());
+		assertEquals("secondaryECID", props.getECIDSecondary().toString());
 	}
 
 	// ======================================================================================================================
@@ -318,6 +323,7 @@ public class IdentityPropertiesTests {
 			"}";
 
 		JSONAsserts.assertEquals(expected1, props.toXDMData(false));
+		assertEquals("primary", props.getECID().toString());
 
 		// test 2 - call setECID again to replace the old one
 		props.setECID(new ECID("primaryAgain"));
@@ -337,6 +343,7 @@ public class IdentityPropertiesTests {
 			"}";
 
 		JSONAsserts.assertEquals(expected2, props.toXDMData(false));
+		assertEquals("primaryAgain", props.getECID().toString());
 	}
 
 	@Test
@@ -350,7 +357,7 @@ public class IdentityPropertiesTests {
 
 		// verify
 		JSONAsserts.assertEquals("{}", props.toXDMData(false));
-		assertNull(props.getECIDSecondary());
+		assertNull(props.getECID());
 	}
 
 	// ======================================================================================================================
@@ -386,6 +393,7 @@ public class IdentityPropertiesTests {
 			"}";
 
 		JSONAsserts.assertEquals(expected1, props.toXDMData(false));
+		assertEquals("secondary", props.getECIDSecondary().toString());
 
 		// test 2 - call setECIDSecondary again to replace the old one
 		props.setECIDSecondary(new ECID("secondaryAgain"));
@@ -410,6 +418,7 @@ public class IdentityPropertiesTests {
 			"}";
 
 		JSONAsserts.assertEquals(expected2, props.toXDMData(false));
+		assertEquals("secondaryAgain", props.getECIDSecondary().toString());
 	}
 
 	@Test
@@ -439,6 +448,8 @@ public class IdentityPropertiesTests {
 
 		JSONAsserts.assertEquals(expected, props.toXDMData(false));
 
+		props.setECIDSecondary(null);
+
 		// test
 		String expected2 =
 			"{\n" +
@@ -453,8 +464,8 @@ public class IdentityPropertiesTests {
 			"  }\n" +
 			"}";
 
-		props.setECIDSecondary(null);
 		JSONAsserts.assertEquals(expected2, props.toXDMData(false));
+		assertNull(props.getECIDSecondary());
 	}
 
 	@Test
