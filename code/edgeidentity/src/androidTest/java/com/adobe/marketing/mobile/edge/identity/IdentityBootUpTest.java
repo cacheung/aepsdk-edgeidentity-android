@@ -12,10 +12,10 @@
 package com.adobe.marketing.mobile.edge.identity;
 
 import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.*;
-import static com.adobe.marketing.mobile.edge.identity.util.TestHelper.getXDMSharedStateFor;
+import static com.adobe.marketing.mobile.util.TestHelper.getXDMSharedStateFor;
 
-import com.adobe.marketing.mobile.edge.identity.util.MonitorExtension;
-import com.adobe.marketing.mobile.edge.identity.util.TestHelper;
+import com.adobe.marketing.mobile.util.MonitorExtension;
+import com.adobe.marketing.mobile.util.TestHelper;
 import com.adobe.marketing.mobile.util.JSONAsserts;
 import com.adobe.marketing.mobile.util.JSONUtils;
 import com.adobe.marketing.mobile.util.TestPersistenceHelper;

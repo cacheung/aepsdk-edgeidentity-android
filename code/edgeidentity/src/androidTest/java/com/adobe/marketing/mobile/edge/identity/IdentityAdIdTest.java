@@ -12,7 +12,7 @@
 package com.adobe.marketing.mobile.edge.identity;
 
 import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.*;
-import static com.adobe.marketing.mobile.edge.identity.util.TestHelper.*;
+import static com.adobe.marketing.mobile.util.TestHelper.*;
 import static org.junit.Assert.assertEquals;
 
 import androidx.annotation.NonNull;
@@ -21,12 +21,13 @@ import com.adobe.marketing.mobile.Event;
 import com.adobe.marketing.mobile.EventSource;
 import com.adobe.marketing.mobile.EventType;
 import com.adobe.marketing.mobile.MobileCore;
-import com.adobe.marketing.mobile.edge.identity.util.MonitorExtension;
+import com.adobe.marketing.mobile.util.MonitorExtension;
 import com.adobe.marketing.mobile.util.CollectionEqualCount;
 import com.adobe.marketing.mobile.util.JSONAsserts;
 import com.adobe.marketing.mobile.util.JSONUtils;
 import com.adobe.marketing.mobile.util.NodeConfig;
 import com.adobe.marketing.mobile.util.StringUtils;
+import com.adobe.marketing.mobile.util.TestHelper;
 import com.adobe.marketing.mobile.util.TestPersistenceHelper;
 import com.adobe.marketing.mobile.util.ValueExactMatch;
 import java.util.Arrays;
@@ -41,7 +42,7 @@ import org.junit.rules.TestRule;
 public class IdentityAdIdTest {
 
 	@Rule
-	public TestRule rule = new SetupCoreRule();
+	public TestRule rule = new TestHelper.SetupCoreRule();
 
 	@Test
 	public void testGenericIdentityRequest_whenValidAdId_thenNewValidAdId() throws Exception {
