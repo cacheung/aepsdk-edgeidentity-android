@@ -29,8 +29,10 @@ import com.adobe.marketing.mobile.edge.identity.IdentityMap;
 import com.adobe.marketing.mobile.util.ADBCountDownLatch;
 import com.adobe.marketing.mobile.util.CollectionEqualCount;
 import com.adobe.marketing.mobile.util.JSONAsserts;
+import com.adobe.marketing.mobile.util.NodeConfig;
 import com.adobe.marketing.mobile.util.TestHelper;
 import com.adobe.marketing.mobile.util.TestPersistenceHelper;
+import com.adobe.marketing.mobile.util.ValueTypeMatch;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -288,16 +290,23 @@ public class IdentityFunctionalTestUtil {
 
 		String expected =
 			"{" +
-			"  \"identityMap\": {" +
+			"\"identityMap\": {" +
 			"    \"ECID\": [" +
-			"      {" +
-			"        \"id\": \"STRING_TYPE\"" +
-			"      }" +
+			"        {" +
+			"            \"id\": \"STRING_TYPE\"," +
+			"            \"authenticatedState\": \"ambiguous\"," +
+			"            \"primary\": false" +
+			"        }" +
 			"    ]" +
-			"  }" +
+			"}" +
 			"}";
 
-		JSONAsserts.assertTypeMatch(expected, xdmSharedState);
+		JSONAsserts.assertExactMatch(
+			expected,
+			xdmSharedState,
+			new CollectionEqualCount(NodeConfig.Scope.Subtree),
+			new ValueTypeMatch("identityMap.ECID[0].id")
+		);
 	}
 
 	/**
@@ -311,18 +320,20 @@ public class IdentityFunctionalTestUtil {
 		// verify xdm shared state is has correct primary ECID
 		Map<String, Object> xdmSharedState = getXDMSharedStateFor(IdentityTestConstants.EXTENSION_NAME, 1000);
 
-		String json =
-			"{" +
-			"  \"identityMap\": {" +
-			"    \"ECID\": [" +
-			"      {" +
-			"        \"id\": \"STRING_TYPE\"" +
-			"      }" +
-			"    ]" +
-			"  }" +
+		String expected =
+			"{\n" +
+			"  \"identityMap\": {\n" +
+			"    \"ECID\": [\n" +
+			"      {\n" +
+			"        \"id\": \"" +
+			primaryECID +
+			"\"\n" +
+			"      }\n" +
+			"    ]\n" +
+			"  }\n" +
 			"}";
 
-		JSONAsserts.assertTypeMatch(json, xdmSharedState);
+		JSONAsserts.assertExactMatch(expected, xdmSharedState);
 
 		// verify primary ECID in persistence
 		final String persistedJson = TestPersistenceHelper.readPersistedData(
@@ -330,7 +341,7 @@ public class IdentityFunctionalTestUtil {
 			IdentityTestConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
 
-		JSONAsserts.assertTypeMatch(json, persistedJson);
+		JSONAsserts.assertExactMatch(expected, persistedJson);
 	}
 
 	/**
@@ -346,24 +357,25 @@ public class IdentityFunctionalTestUtil {
 			JSONAsserts.assertTypeMatch(json, xdmSharedState, new CollectionEqualCount("identityMap.ECID"));
 			return;
 		}
-		String json =
-			"{" +
-			"  \"identityMap\": {" +
-			"    \"ECID\": [" +
-			"      {}," +
-			"      {" +
-			"        \"id\": \"STRING_TYPE\"" +
-			"      }" +
-			"    ]" +
-			"  }" +
+		String expected =
+			"{\n" +
+			"  \"identityMap\": {\n" +
+			"    \"ECID\": [\n" +
+			"      {\n" +
+			"        \"id\": \"" +
+			secondaryECID +
+			"\"\n" +
+			"      }\n" +
+			"    ]\n" +
+			"  }\n" +
 			"}";
-		JSONAsserts.assertTypeMatch(json, xdmSharedState);
+		JSONAsserts.assertTypeMatch(expected, xdmSharedState);
 
 		// verify secondary ECID in persistence
 		final String persistedJson = TestPersistenceHelper.readPersistedData(
 			IdentityTestConstants.DataStoreKey.IDENTITY_DATASTORE,
 			IdentityTestConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
-		JSONAsserts.assertTypeMatch(json, persistedJson);
+		JSONAsserts.assertTypeMatch(expected, persistedJson);
 	}
 }

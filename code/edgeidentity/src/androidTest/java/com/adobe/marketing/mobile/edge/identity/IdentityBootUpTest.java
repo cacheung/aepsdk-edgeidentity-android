@@ -12,13 +12,19 @@
 package com.adobe.marketing.mobile.edge.identity;
 
 import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.*;
+import static com.adobe.marketing.mobile.util.JSONAsserts.assertExactMatch;
+import static com.adobe.marketing.mobile.util.JSONAsserts.assertTypeMatch;
+import static com.adobe.marketing.mobile.util.NodeConfig.Scope.Subtree;
 import static com.adobe.marketing.mobile.util.TestHelper.getXDMSharedStateFor;
 
+import com.adobe.marketing.mobile.util.CollectionEqualCount;
+import com.adobe.marketing.mobile.util.ElementCount;
+import com.adobe.marketing.mobile.util.JSONUtils;
+import com.adobe.marketing.mobile.util.KeyMustBeAbsent;
 import com.adobe.marketing.mobile.util.MonitorExtension;
 import com.adobe.marketing.mobile.util.TestHelper;
-import com.adobe.marketing.mobile.util.JSONAsserts;
-import com.adobe.marketing.mobile.util.JSONUtils;
 import com.adobe.marketing.mobile.util.TestPersistenceHelper;
+import com.adobe.marketing.mobile.util.ValueExactMatch;
 import java.util.Arrays;
 import java.util.Map;
 import org.json.JSONObject;
@@ -84,7 +90,18 @@ public class IdentityBootUpTest {
 			"  }\n" +
 			"}";
 
-		JSONAsserts.assertEquals(expected, xdmSharedState); // 3 for ECID and 3 for secondaryECID + 6
+		assertTypeMatch(
+			expected,
+			xdmSharedState,
+			new CollectionEqualCount(Subtree),
+			new ElementCount(12, Subtree), // 3 for ECID and 3 for secondaryECID + 6
+			new ValueExactMatch(
+				"identityMap.ECID[0].id",
+				"identityMap.ECID[1].id",
+				"identityMap.Email[0].id",
+				"identityMap.UserId[0].id"
+			)
+		);
 
 		//verify persisted data
 		final String persistedJson = TestPersistenceHelper.readPersistedData(
@@ -92,7 +109,7 @@ public class IdentityBootUpTest {
 			IdentityConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
 		Map<String, Object> persistedMap = JSONUtils.toMap(new JSONObject(persistedJson));
-		JSONAsserts.assertEquals(expected, persistedMap);
+		assertExactMatch(expected, persistedMap, new ElementCount(12, Subtree));
 	}
 
 	@Test
@@ -132,7 +149,14 @@ public class IdentityBootUpTest {
 			"  }\n" +
 			"}";
 
-		JSONAsserts.assertEquals(expected, xdmSharedState);
+		assertTypeMatch(
+			expected,
+			xdmSharedState,
+			new CollectionEqualCount(Subtree),
+			new ElementCount(6, Subtree), // 3 for ECID and 3 for secondaryECID + 6
+			new ValueExactMatch("identityMap.ECID[0].id", "identityMap.UserId[0].id", "identityMap.UserId[1].id"),
+			new KeyMustBeAbsent("identityMap.UserId[1].id")
+		);
 	}
 	// --------------------------------------------------------------------------------------------
 	// All the other bootUp tests with to ECID is coded in IdentityECIDHandling
