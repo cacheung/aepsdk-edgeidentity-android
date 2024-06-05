@@ -12,7 +12,7 @@
 package com.adobe.marketing.mobile.edge.identity;
 
 import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.*;
-import static com.adobe.marketing.mobile.edge.identity.util.TestHelper.*;
+import static com.adobe.marketing.mobile.util.TestHelper.*;
 import static com.adobe.marketing.mobile.util.JSONAsserts.assertExactMatch;
 import static com.adobe.marketing.mobile.util.NodeConfig.Scope.Subtree;
 import static org.junit.Assert.*;
