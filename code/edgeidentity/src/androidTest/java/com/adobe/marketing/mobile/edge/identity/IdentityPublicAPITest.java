@@ -12,8 +12,8 @@
 package com.adobe.marketing.mobile.edge.identity;
 
 import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.*;
-import static com.adobe.marketing.mobile.util.TestHelper.*;
 import static com.adobe.marketing.mobile.util.NodeConfig.Scope.Subtree;
+import static com.adobe.marketing.mobile.util.TestHelper.*;
 import static org.junit.Assert.*;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;

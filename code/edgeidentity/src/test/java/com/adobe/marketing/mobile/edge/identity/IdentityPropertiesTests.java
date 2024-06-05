@@ -12,11 +12,11 @@
 package com.adobe.marketing.mobile.edge.identity;
 
 import static com.adobe.marketing.mobile.edge.identity.IdentityTestUtil.*;
+import static com.adobe.marketing.mobile.util.NodeConfig.Scope.Subtree;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static com.adobe.marketing.mobile.util.NodeConfig.Scope.Subtree;
 
 import com.adobe.marketing.mobile.util.DataReader;
 import com.adobe.marketing.mobile.util.DataReaderException;
@@ -138,7 +138,7 @@ public class IdentityPropertiesTests {
 
 		// test and verify, can't have secondary ECID without primary ECID
 		Map<String, Object> xdmMap = props.toXDMData(false);
-		JSONAsserts.assertExactMatch("{}", xdmMap, new ElementCount(0, Subtree) );
+		JSONAsserts.assertExactMatch("{}", xdmMap, new ElementCount(0, Subtree));
 	}
 
 	@Test
