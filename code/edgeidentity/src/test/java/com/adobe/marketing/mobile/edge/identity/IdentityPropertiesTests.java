@@ -11,7 +11,9 @@
 
 package com.adobe.marketing.mobile.edge.identity;
 
-import static com.adobe.marketing.mobile.edge.identity.IdentityTestUtil.*;
+import static com.adobe.marketing.mobile.edge.identity.IdentityTestUtil.TestECIDItem;
+import static com.adobe.marketing.mobile.edge.identity.IdentityTestUtil.TestItem;
+import static com.adobe.marketing.mobile.edge.identity.IdentityTestUtil.createXDMIdentityMap;
 import static com.adobe.marketing.mobile.util.NodeConfig.Scope.Subtree;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -22,8 +24,10 @@ import com.adobe.marketing.mobile.util.DataReader;
 import com.adobe.marketing.mobile.util.DataReaderException;
 import com.adobe.marketing.mobile.util.ElementCount;
 import com.adobe.marketing.mobile.util.JSONAsserts;
-import java.util.Map;
+
 import org.junit.Test;
+
+import java.util.Map;
 
 public class IdentityPropertiesTests {
 

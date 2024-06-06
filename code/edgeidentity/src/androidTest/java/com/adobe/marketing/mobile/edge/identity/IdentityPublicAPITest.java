@@ -11,12 +11,24 @@
 
 package com.adobe.marketing.mobile.edge.identity;
 
-import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.*;
+import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.createIdentityMap;
+import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.getExperienceCloudIdSync;
+import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.getIdentitiesSync;
+import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.getUrlVariablesSync;
+import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.registerExtensions;
+import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.setupConfiguration;
 import static com.adobe.marketing.mobile.util.NodeConfig.Scope.Subtree;
-import static com.adobe.marketing.mobile.util.TestHelper.*;
-import static org.junit.Assert.*;
+import static com.adobe.marketing.mobile.util.TestHelper.SetupCoreRule;
+import static com.adobe.marketing.mobile.util.TestHelper.getDispatchedEventsWith;
+import static com.adobe.marketing.mobile.util.TestHelper.getSharedStateFor;
+import static com.adobe.marketing.mobile.util.TestHelper.getXDMSharedStateFor;
+import static com.adobe.marketing.mobile.util.TestHelper.waitForThreads;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import com.adobe.marketing.mobile.Event;
 import com.adobe.marketing.mobile.EventSource;
 import com.adobe.marketing.mobile.EventType;
@@ -31,14 +43,16 @@ import com.adobe.marketing.mobile.util.TestPersistenceHelper;
 import com.adobe.marketing.mobile.util.ValueExactMatch;
 import com.adobe.marketing.mobile.util.ValueNotEqual;
 import com.adobe.marketing.mobile.util.ValueTypeMatch;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+
 import org.json.JSONObject;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 @RunWith(AndroidJUnit4.class)
 public class IdentityPublicAPITest {

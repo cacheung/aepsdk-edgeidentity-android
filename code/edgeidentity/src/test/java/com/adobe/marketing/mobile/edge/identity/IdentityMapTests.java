@@ -19,12 +19,14 @@ import com.adobe.marketing.mobile.util.CollectionEqualCount;
 import com.adobe.marketing.mobile.util.JSONAsserts;
 import com.adobe.marketing.mobile.util.JSONUtils;
 import com.adobe.marketing.mobile.util.NodeConfig;
+
+import org.json.JSONObject;
+import org.junit.Test;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.json.JSONObject;
-import org.junit.Test;
 
 public class IdentityMapTests {
 

@@ -11,7 +11,10 @@
 
 package com.adobe.marketing.mobile.edge.identity;
 
-import static com.adobe.marketing.mobile.edge.identity.IdentityTestUtil.*;
+import static com.adobe.marketing.mobile.edge.identity.IdentityTestUtil.TestItem;
+import static com.adobe.marketing.mobile.edge.identity.IdentityTestUtil.buildRemoveIdentityRequest;
+import static com.adobe.marketing.mobile.edge.identity.IdentityTestUtil.buildUpdateIdentityRequest;
+import static com.adobe.marketing.mobile.edge.identity.IdentityTestUtil.createXDMIdentityMap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -34,9 +37,7 @@ import com.adobe.marketing.mobile.SharedStateResolution;
 import com.adobe.marketing.mobile.SharedStateResolver;
 import com.adobe.marketing.mobile.SharedStateResult;
 import com.adobe.marketing.mobile.SharedStateStatus;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -44,6 +45,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class IdentityExtensionTests {
 

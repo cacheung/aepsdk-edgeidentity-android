@@ -16,11 +16,12 @@ import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertNotEquals;
 
+import org.junit.Test;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.junit.Test;
 
 public class ECIDTests {
 

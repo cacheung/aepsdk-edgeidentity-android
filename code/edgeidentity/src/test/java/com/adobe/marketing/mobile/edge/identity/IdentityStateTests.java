@@ -26,6 +26,7 @@ import static org.mockito.Mockito.when;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.adobe.marketing.mobile.Event;
 import com.adobe.marketing.mobile.EventSource;
 import com.adobe.marketing.mobile.EventType;
@@ -35,9 +36,7 @@ import com.adobe.marketing.mobile.SharedStateStatus;
 import com.adobe.marketing.mobile.services.DataStoring;
 import com.adobe.marketing.mobile.services.NamedCollection;
 import com.adobe.marketing.mobile.util.JSONAsserts;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -45,6 +44,10 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class IdentityStateTests {
 

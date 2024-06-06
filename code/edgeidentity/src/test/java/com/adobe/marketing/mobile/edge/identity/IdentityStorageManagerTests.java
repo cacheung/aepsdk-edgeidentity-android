@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 import com.adobe.marketing.mobile.services.DataStoring;
 import com.adobe.marketing.mobile.services.NamedCollection;
 import com.adobe.marketing.mobile.services.ServiceProvider;
+
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
