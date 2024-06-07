@@ -11,20 +11,20 @@
 
 package com.adobe.marketing.mobile.edge.identity;
 
-import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.*;
+import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.TestItem;
+import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.createXDMIdentityMap;
+import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.registerExtensions;
+import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.setEdgeIdentityPersistence;
 import static com.adobe.marketing.mobile.util.JSONAsserts.assertExactMatch;
-import static com.adobe.marketing.mobile.util.JSONAsserts.assertTypeMatch;
 import static com.adobe.marketing.mobile.util.NodeConfig.Scope.Subtree;
 import static com.adobe.marketing.mobile.util.TestHelper.getXDMSharedStateFor;
 
-import com.adobe.marketing.mobile.util.CollectionEqualCount;
 import com.adobe.marketing.mobile.util.ElementCount;
 import com.adobe.marketing.mobile.util.JSONUtils;
 import com.adobe.marketing.mobile.util.KeyMustBeAbsent;
 import com.adobe.marketing.mobile.util.MonitorExtension;
 import com.adobe.marketing.mobile.util.TestHelper;
 import com.adobe.marketing.mobile.util.TestPersistenceHelper;
-import com.adobe.marketing.mobile.util.ValueExactMatch;
 import java.util.Arrays;
 import java.util.Map;
 import org.json.JSONObject;
@@ -59,48 +59,32 @@ public class IdentityBootUpTest {
 		Map<String, Object> xdmSharedState = getXDMSharedStateFor(IdentityConstants.EXTENSION_NAME, 1000);
 
 		String expected =
-			"{\n" +
-			"  \"identityMap\": {\n" +
-			"    \"UserId\": [\n" +
-			"      {\n" +
-			"        \"id\": \"JohnDoe\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": false\n" +
-			"      }\n" +
-			"    ],\n" +
-			"    \"Email\": [\n" +
-			"      {\n" +
-			"        \"id\": \"example@email.com\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": false\n" +
-			"      }\n" +
-			"    ],\n" +
-			"    \"ECID\": [\n" +
-			"      {\n" +
-			"        \"id\": \"primaryECID\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": false\n" +
-			"      },\n" +
-			"      {\n" +
-			"        \"id\": \"secondaryECID\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": false\n" +
-			"      }\n" +
-			"    ]\n" +
-			"  }\n" +
+			"{" +
+			"\"identityMap\": {" +
+			"    \"ECID\": [" +
+			"        {" +
+			"            \"id\": \"primaryECID\"" +
+			"        }," +
+			"        {" +
+			"            \"id\": \"secondaryECID\"" +
+			"        }" +
+			"    ]," +
+			"    \"Email\": [" +
+			"        {" +
+			"            \"id\": \"example@email.com\"" +
+			"        }" +
+			"    ]," +
+			"    \"UserId\": [" +
+			"        {" +
+			"            \"id\": \"JohnDoe\"" +
+			"        }" +
+			"    ]" +
+			"  }" +
 			"}";
-
-		assertTypeMatch(
+		assertExactMatch(
 			expected,
 			xdmSharedState,
-			new CollectionEqualCount(Subtree),
-			new ElementCount(12, Subtree), // 3 for ECID and 3 for secondaryECID + 6
-			new ValueExactMatch(
-				"identityMap.ECID[0].id",
-				"identityMap.ECID[1].id",
-				"identityMap.Email[0].id",
-				"identityMap.UserId[0].id"
-			)
+			new ElementCount(12, Subtree) // 3 for ECID and 3 for secondaryECID + 6
 		);
 
 		//verify persisted data
@@ -109,7 +93,7 @@ public class IdentityBootUpTest {
 			IdentityConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
 		Map<String, Object> persistedMap = JSONUtils.toMap(new JSONObject(persistedJson));
-		assertExactMatch(expected, persistedMap, new ElementCount(12, Subtree));
+		assertExactMatch("{}", persistedMap, new ElementCount(12, Subtree));
 	}
 
 	@Test
@@ -130,36 +114,28 @@ public class IdentityBootUpTest {
 		Map<String, Object> xdmSharedState = getXDMSharedStateFor(IdentityConstants.EXTENSION_NAME, 1000);
 
 		String expected =
-			"{\n" +
-			"  \"identityMap\": {\n" +
-			"    \"UserId\": [\n" +
-			"      {\n" +
-			"        \"id\": \"JohnDoe\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": false\n" +
-			"      }\n" +
-			"    ],\n" +
-			"    \"ECID\": [\n" +
-			"      {\n" +
-			"        \"id\": \"primaryECID\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": false\n" +
-			"      }\n" +
-			"    ]\n" +
-			"  }\n" +
+			"{" +
+			"\"identityMap\": {" +
+			"    \"ECID\": [" +
+			"        {" +
+			"            \"id\": \"primaryECID\"" +
+			"        }" +
+			"    ]," +
+			"    \"UserId\": [" +
+			"        {" +
+			"            \"id\": \"JohnDoe\"" +
+			"        }" +
+			"    ]" +
+			"  }" +
 			"}";
-
-		assertTypeMatch(
+		assertExactMatch(
 			expected,
 			xdmSharedState,
-			new CollectionEqualCount(Subtree),
-			new ElementCount(6, Subtree), // 3 for ECID and 3 for secondaryECID + 6
-			new ValueExactMatch("identityMap.ECID[0].id", "identityMap.UserId[0].id", "identityMap.UserId[1].id"),
+			new ElementCount(6, Subtree), // 3 for ECID and 3 UserId JohnDoe
 			new KeyMustBeAbsent("identityMap.UserId[1].id")
 		);
 	}
 	// --------------------------------------------------------------------------------------------
 	// All the other bootUp tests with to ECID is coded in IdentityECIDHandling
 	// --------------------------------------------------------------------------------------------
-
 }

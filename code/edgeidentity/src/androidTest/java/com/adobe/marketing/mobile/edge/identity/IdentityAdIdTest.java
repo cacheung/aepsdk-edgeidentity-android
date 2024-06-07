@@ -11,9 +11,14 @@
 
 package com.adobe.marketing.mobile.edge.identity;
 
-import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.*;
-import static com.adobe.marketing.mobile.util.NodeConfig.Scope.Subtree;
-import static com.adobe.marketing.mobile.util.TestHelper.*;
+import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.TestItem;
+import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.createXDMIdentityMap;
+import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.registerExtensions;
+import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.setEdgeIdentityPersistence;
+import static com.adobe.marketing.mobile.util.TestHelper.getDispatchedEventsWith;
+import static com.adobe.marketing.mobile.util.TestHelper.getXDMSharedStateFor;
+import static com.adobe.marketing.mobile.util.TestHelper.resetTestExpectations;
+import static com.adobe.marketing.mobile.util.TestHelper.waitForThreads;
 import static org.junit.Assert.assertEquals;
 
 import androidx.annotation.NonNull;
@@ -22,15 +27,12 @@ import com.adobe.marketing.mobile.Event;
 import com.adobe.marketing.mobile.EventSource;
 import com.adobe.marketing.mobile.EventType;
 import com.adobe.marketing.mobile.MobileCore;
-import com.adobe.marketing.mobile.util.CollectionEqualCount;
-import com.adobe.marketing.mobile.util.ElementCount;
 import com.adobe.marketing.mobile.util.JSONAsserts;
 import com.adobe.marketing.mobile.util.JSONUtils;
 import com.adobe.marketing.mobile.util.MonitorExtension;
 import com.adobe.marketing.mobile.util.StringUtils;
 import com.adobe.marketing.mobile.util.TestHelper;
 import com.adobe.marketing.mobile.util.TestPersistenceHelper;
-import com.adobe.marketing.mobile.util.ValueExactMatch;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -343,28 +345,21 @@ public class IdentityAdIdTest {
 		assertEquals(isGenericIdentityEventAdIdEvent, EventUtils.isAdIdEvent(genericIdentityEvent));
 		// Verify Edge Consent event
 		List<Event> dispatchedConsentEvents = getDispatchedEventsWith(EventType.CONSENT, EventSource.UPDATE_CONSENT);
-		String expected =
-			"{" +
-			"  \"consents\": {" +
-			"    \"adID\": {" +
-			"      \"idType\": \"GAID\"," +
-			"      \"val\": \"" +
-			expectedConsentValue +
-			"\"" +
-			"    }" +
-			"  }" +
-			"}";
-
 		assertEquals(StringUtils.isNullOrEmpty(expectedConsentValue) ? 0 : 1, dispatchedConsentEvents.size());
 
 		if (!StringUtils.isNullOrEmpty(expectedConsentValue)) {
-			Map<String, Object> consentDataMap = dispatchedConsentEvents.get(0).getEventData();
-			JSONAsserts.assertTypeMatch(
-				expected,
-				consentDataMap,
-				new CollectionEqualCount(Subtree),
-				new ValueExactMatch("consents.adID.idType", "consents.adID.val")
-			);
+			String expected =
+				"{" +
+				"  \"consents\": {" +
+				"    \"adID\": {" +
+				"      \"idType\": \"GAID\"," +
+				"      \"val\": \"" +
+				expectedConsentValue +
+				"\"" +
+				"    }" +
+				"  }" +
+				"}";
+			JSONAsserts.assertExactMatch(expected, dispatchedConsentEvents.get(0).getEventData());
 		}
 	}
 
@@ -379,66 +374,36 @@ public class IdentityAdIdTest {
 		@NonNull final Map<String, Object> identityMap,
 		@Nullable final String expectedAdId
 	) {
-		String expectedECIDandAdid =
+		String baseIdentityMap =
 			"{" +
 			"\"identityMap\": {" +
+			"    \"ECID\": [" +
+			"        {" +
+			"            \"id\": \"primaryECID\"," +
+			"            \"authenticatedState\": \"ambiguous\"," +
+			"            \"primary\": false" +
+			"        }" +
+			"    ]" +
+			"%s" + // Placeholder for optional GAID
+			"  }" +
+			"}";
+
+		String gaidTemplate =
+			"," + // Leading comma required since GAID will be another property at the identityMap level
 			"    \"GAID\": [" +
 			"        {" +
-			"            \"id\": " +
+			"            \"id\": \"" +
 			expectedAdId +
-			"," +
+			"\"," +
 			"            \"authenticatedState\": \"ambiguous\"," +
 			"            \"primary\": false" +
 			"        }" +
-			"    ]," +
-			"    \"ECID\": [" +
-			"        {" +
-			"            \"id\": \"primaryECID\"," +
-			"            \"authenticatedState\": \"ambiguous\"," +
-			"            \"primary\": false" +
-			"        }" +
-			"    ]" +
-			"}" +
-			"}";
+			"    ]";
 
-		String expectedECIDonly =
-			"{" +
-			"\"identityMap\": {" +
-			"    \"ECID\": [" +
-			"        {" +
-			"            \"id\": \"primaryECID\"," +
-			"            \"authenticatedState\": \"ambiguous\"," +
-			"            \"primary\": false" +
-			"        }" +
-			"    ]" +
-			"}" +
-			"}";
+		String gaidProperty = expectedAdId != null ? gaidTemplate : "";
+		String expectedJson = String.format(baseIdentityMap, gaidProperty);
 
-		if (expectedAdId != null) {
-			JSONAsserts.assertTypeMatch(
-				expectedECIDandAdid,
-				identityMap,
-				new CollectionEqualCount(Subtree),
-				new ValueExactMatch(
-					"identityMap.GAID[0].primary",
-					"identityMap.GAID[0].id",
-					"identityMap.GAID[0].authenticatedState, identityMap.ECID[0].primary, identityMap.ECID[0].id, identityMap.ECID[0].authenticatedState"
-				),
-				new ElementCount(6, Subtree)
-			);
-		} else {
-			new ElementCount(3, Subtree);
-			JSONAsserts.assertTypeMatch(
-				expectedECIDonly,
-				identityMap,
-				new CollectionEqualCount(Subtree),
-				new ValueExactMatch(
-					"identityMap.ECID[0].primary",
-					"identityMap.ECID[0].id",
-					"identityMap.ECID[0].authenticatedState"
-				)
-			);
-		}
+		JSONAsserts.assertEquals(expectedJson, identityMap);
 	}
 
 	/**

@@ -11,22 +11,24 @@
 
 package com.adobe.marketing.mobile.edge.identity;
 
-import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.*;
+import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.getExperienceCloudIdSync;
+import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.registerExtensions;
 import static com.adobe.marketing.mobile.util.JSONAsserts.assertExactMatch;
 import static com.adobe.marketing.mobile.util.NodeConfig.Scope.Subtree;
-import static com.adobe.marketing.mobile.util.TestHelper.*;
-import static org.junit.Assert.*;
+import static com.adobe.marketing.mobile.util.TestHelper.SetupCoreRule;
+import static com.adobe.marketing.mobile.util.TestHelper.getDispatchedEventsWith;
+import static com.adobe.marketing.mobile.util.TestHelper.getXDMSharedStateFor;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 
 import com.adobe.marketing.mobile.Event;
 import com.adobe.marketing.mobile.EventSource;
 import com.adobe.marketing.mobile.EventType;
 import com.adobe.marketing.mobile.MobileCore;
-import com.adobe.marketing.mobile.util.CollectionEqualCount;
 import com.adobe.marketing.mobile.util.ElementCount;
-import com.adobe.marketing.mobile.util.JSONUtils;
 import com.adobe.marketing.mobile.util.MonitorExtension;
 import com.adobe.marketing.mobile.util.TestPersistenceHelper;
-import com.adobe.marketing.mobile.util.ValueExactMatch;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -87,9 +89,7 @@ public class IdentityResetHandlingTest {
 			"      {" +
 			"        \"id\": \"" +
 			newECID +
-			"\"," +
-			"        \"authenticatedState\": \"ambiguous\"," +
-			"        \"primary\": false" +
+			"\"" +
 			"      }" +
 			"    ]" +
 			"  }" +
@@ -98,24 +98,18 @@ public class IdentityResetHandlingTest {
 		assertExactMatch(
 			expected,
 			xdmSharedState,
-			new ElementCount(3, Subtree), // 3 for ECID
-			new CollectionEqualCount(Subtree),
-			new ValueExactMatch("identityMap.ECID[0].id")
+			new ElementCount(3, Subtree) // 3 for ECID still exists
 		);
-
 		// verify persistence is updated
 		final String persistedJson = TestPersistenceHelper.readPersistedData(
 			IdentityConstants.DataStoreKey.DATASTORE_NAME,
 			IdentityConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
 
-		Map<String, Object> persistedMap = JSONUtils.toMap(new JSONObject(persistedJson));
 		assertExactMatch(
 			expected,
-			persistedMap,
-			new ElementCount(3, Subtree), // 3 for ECID
-			new CollectionEqualCount(Subtree),
-			new ValueExactMatch("identityMap.ECID[0].id")
+			new JSONObject(persistedJson),
+			new ElementCount(3, Subtree) // 3 for ECID
 		);
 	}
 }

@@ -11,6 +11,7 @@
 
 package com.adobe.marketing.mobile.edge.identity;
 
+import static com.adobe.marketing.mobile.util.NodeConfig.Scope.Subtree;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -18,8 +19,6 @@ import static org.junit.Assert.assertTrue;
 import com.adobe.marketing.mobile.util.CollectionEqualCount;
 import com.adobe.marketing.mobile.util.JSONAsserts;
 import com.adobe.marketing.mobile.util.JSONUtils;
-import com.adobe.marketing.mobile.util.NodeConfig;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,12 +48,8 @@ public class IdentityMapTests {
 		JSONAsserts.assertExactMatch(
 			expected,
 			map.asXDMMap(false),
-			new CollectionEqualCount(NodeConfig.Scope.Subtree),
-			new CollectionEqualCount(
-				false,
-				NodeConfig.Scope.Subtree,
-				Collections.singletonList("identityMap.location[0]")
-			)
+			new CollectionEqualCount(Subtree),
+			new CollectionEqualCount(false, Subtree, "identityMap.location[0]")
 		);
 	}
 
@@ -314,27 +309,34 @@ public class IdentityMapTests {
 	@Test
 	public void test_FromData() throws Exception {
 		// setup
-		String json =
-			"{" +
-			"  \"identityMap\": {" +
-			"    \"ECID\": [" +
-			"      {" +
-			"        \"id\": \"randomECID\"," +
-			"        \"authenticatedState\": \"ambiguous\"," +
-			"        \"primary\": true" +
-			"      }" +
-			"    ]" +
-			"  }" +
+		final String jsonStr =
+			"{\n" +
+			"      \"identityMap\": {\n" +
+			"        \"ECID\": [\n" +
+			"          {\n" +
+			"            \"id\":randomECID,\n" +
+			"            \"authenticatedState\": \"ambiguous\",\n" +
+			"            \"primary\": true\n" +
+			"          }\n" +
+			"        ],\n" +
+			"        \"USERID\": [\n" +
+			"          {\n" +
+			"            \"id\":someUserID,\n" +
+			"            \"authenticatedState\": \"authenticated\",\n" +
+			"            \"primary\": false\n" +
+			"          }\n" +
+			"        ]\n" +
+			"      }\n" +
 			"}";
 
-		final JSONObject jsonObject = new JSONObject(json);
+		final JSONObject jsonObject = new JSONObject(jsonStr);
 		final Map<String, Object> xdmData = JSONUtils.toMap(jsonObject);
 
 		// test
 		IdentityMap map = IdentityMap.fromXDMMap(xdmData);
 
-		// verify  TODO
-		JSONAsserts.assertEquals(json, map.asXDMMap(false));
+		// verify
+		JSONAsserts.assertEquals(jsonStr, map.asXDMMap(false));
 	}
 
 	@Test

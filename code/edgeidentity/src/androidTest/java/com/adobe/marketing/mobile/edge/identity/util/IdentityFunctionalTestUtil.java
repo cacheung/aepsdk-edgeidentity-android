@@ -29,10 +29,8 @@ import com.adobe.marketing.mobile.edge.identity.IdentityMap;
 import com.adobe.marketing.mobile.util.ADBCountDownLatch;
 import com.adobe.marketing.mobile.util.CollectionEqualCount;
 import com.adobe.marketing.mobile.util.JSONAsserts;
-import com.adobe.marketing.mobile.util.NodeConfig;
 import com.adobe.marketing.mobile.util.TestHelper;
 import com.adobe.marketing.mobile.util.TestPersistenceHelper;
-import com.adobe.marketing.mobile.util.ValueTypeMatch;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -293,20 +291,13 @@ public class IdentityFunctionalTestUtil {
 			"\"identityMap\": {" +
 			"    \"ECID\": [" +
 			"        {" +
-			"            \"id\": \"STRING_TYPE\"," +
-			"            \"authenticatedState\": \"ambiguous\"," +
-			"            \"primary\": false" +
+			"            \"id\": \"STRING_TYPE\"" +
 			"        }" +
 			"    ]" +
-			"}" +
+			"  }" +
 			"}";
 
-		JSONAsserts.assertExactMatch(
-			expected,
-			xdmSharedState,
-			new CollectionEqualCount(NodeConfig.Scope.Subtree),
-			new ValueTypeMatch("identityMap.ECID[0].id")
-		);
+		JSONAsserts.assertTypeMatch(expected, xdmSharedState);
 	}
 
 	/**
@@ -359,15 +350,15 @@ public class IdentityFunctionalTestUtil {
 		}
 		String expected =
 			"{\n" +
-			"  \"identityMap\": {\n" +
-			"    \"ECID\": [\n" +
-			"      {\n" +
+			"  \"identityMap\": {" +
+			"    \"ECID\": [" +
+			"      {" +
 			"        \"id\": \"" +
 			secondaryECID +
-			"\"\n" +
-			"      }\n" +
-			"    ]\n" +
-			"  }\n" +
+			"\"" +
+			"      }" +
+			"    ]" +
+			"  }" +
 			"}";
 		JSONAsserts.assertTypeMatch(expected, xdmSharedState);
 
