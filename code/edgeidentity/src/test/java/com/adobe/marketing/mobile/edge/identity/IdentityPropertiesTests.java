@@ -24,10 +24,8 @@ import com.adobe.marketing.mobile.util.DataReader;
 import com.adobe.marketing.mobile.util.DataReaderException;
 import com.adobe.marketing.mobile.util.ElementCount;
 import com.adobe.marketing.mobile.util.JSONAsserts;
-
-import org.junit.Test;
-
 import java.util.Map;
+import org.junit.Test;
 
 public class IdentityPropertiesTests {
 

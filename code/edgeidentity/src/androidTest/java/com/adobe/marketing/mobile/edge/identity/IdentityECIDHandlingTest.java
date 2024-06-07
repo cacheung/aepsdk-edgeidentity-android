@@ -27,19 +27,16 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-
 import com.adobe.marketing.mobile.MobileCore;
 import com.adobe.marketing.mobile.MobilePrivacyStatus;
 import com.adobe.marketing.mobile.util.MonitorExtension;
 import com.adobe.marketing.mobile.util.TestHelper;
-
+import java.util.Arrays;
+import java.util.HashMap;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
-
-import java.util.Arrays;
-import java.util.HashMap;
 
 @RunWith(AndroidJUnit4.class)
 public class IdentityECIDHandlingTest {

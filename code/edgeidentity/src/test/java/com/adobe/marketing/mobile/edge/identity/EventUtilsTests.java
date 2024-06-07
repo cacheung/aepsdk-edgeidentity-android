@@ -19,12 +19,10 @@ import static org.junit.Assert.assertTrue;
 import com.adobe.marketing.mobile.Event;
 import com.adobe.marketing.mobile.EventSource;
 import com.adobe.marketing.mobile.EventType;
-
-import org.junit.Test;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import org.junit.Test;
 
 public class EventUtilsTests {
 
