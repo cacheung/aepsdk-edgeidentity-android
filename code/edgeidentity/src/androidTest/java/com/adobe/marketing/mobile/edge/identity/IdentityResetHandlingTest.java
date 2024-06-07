@@ -32,7 +32,6 @@ import com.adobe.marketing.mobile.util.TestPersistenceHelper;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -108,7 +107,7 @@ public class IdentityResetHandlingTest {
 
 		assertExactMatch(
 			expected,
-			new JSONObject(persistedJson),
+			persistedJson,
 			new ElementCount(3, Subtree) // 3 for ECID
 		);
 	}

@@ -34,7 +34,6 @@ import com.adobe.marketing.mobile.EventType;
 import com.adobe.marketing.mobile.edge.identity.util.IdentityTestConstants;
 import com.adobe.marketing.mobile.util.ElementCount;
 import com.adobe.marketing.mobile.util.JSONAsserts;
-import com.adobe.marketing.mobile.util.JSONUtils;
 import com.adobe.marketing.mobile.util.MonitorExtension;
 import com.adobe.marketing.mobile.util.TestPersistenceHelper;
 import com.adobe.marketing.mobile.util.ValueExactMatch;
@@ -42,7 +41,6 @@ import com.adobe.marketing.mobile.util.ValueNotEqual;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import org.json.JSONObject;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
@@ -138,10 +136,9 @@ public class IdentityPublicAPITest {
 			IdentityConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
 
-		Map<String, Object> persistedMap = JSONUtils.toMap(new JSONObject(persistedJson));
 		JSONAsserts.assertExactMatch(
 			expected,
-			new JSONObject(persistedJson),
+			persistedJson,
 			new ElementCount(6, Subtree) // 3 for ECID and 3 for Email
 		);
 	}
@@ -253,10 +250,10 @@ public class IdentityPublicAPITest {
 			IdentityConstants.DataStoreKey.DATASTORE_NAME,
 			IdentityConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
-		Map<String, Object> persistedMap = JSONUtils.toMap(new JSONObject(persistedJson));
+
 		JSONAsserts.assertExactMatch(
 			expected,
-			new JSONObject(persistedJson),
+			persistedJson,
 			new ElementCount(6, Subtree) // 3 for ECID and 3 for Email
 		);
 	}
@@ -301,10 +298,10 @@ public class IdentityPublicAPITest {
 			IdentityConstants.DataStoreKey.DATASTORE_NAME,
 			IdentityConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
-		Map<String, Object> persistedMap = JSONUtils.toMap(new JSONObject(persistedJson));
+
 		JSONAsserts.assertExactMatch(
 			expected,
-			new JSONObject(persistedJson),
+			persistedJson,
 			new ElementCount(3, Subtree), // 3 for ECID
 			new ValueNotEqual("identityMap.ECID[0].id") // ECID doesn't get replaced by API
 		);
@@ -362,11 +359,10 @@ public class IdentityPublicAPITest {
 			IdentityConstants.DataStoreKey.DATASTORE_NAME,
 			IdentityConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
-		Map<String, Object> persistedMap = JSONUtils.toMap(new JSONObject(persistedJson));
 
 		JSONAsserts.assertExactMatch(
 			expected,
-			new JSONObject(persistedJson),
+			persistedJson,
 			new ElementCount(15, Subtree) // 3 for ECID + 12 for new identities
 		);
 	}
@@ -412,11 +408,10 @@ public class IdentityPublicAPITest {
 			IdentityConstants.DataStoreKey.DATASTORE_NAME,
 			IdentityConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
-		Map<String, Object> persistedMap = JSONUtils.toMap(new JSONObject(persistedJson));
 
 		JSONAsserts.assertExactMatch(
 			expected,
-			new JSONObject(persistedJson),
+			persistedJson,
 			new ElementCount(9, Subtree) // 3 for ECID + 6 for new identities
 		);
 	}
@@ -604,9 +599,9 @@ public class IdentityPublicAPITest {
 			IdentityConstants.DataStoreKey.DATASTORE_NAME,
 			IdentityConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
-		Map<String, Object> persistedMap = JSONUtils.toMap(new JSONObject(persistedJson));
+
 		// 3 for ECID
-		JSONAsserts.assertExactMatch("{}", new JSONObject(persistedJson), new ElementCount(3, Subtree));
+		JSONAsserts.assertExactMatch("{}", persistedJson, new ElementCount(3, Subtree));
 	}
 
 	@Test
@@ -628,9 +623,9 @@ public class IdentityPublicAPITest {
 			IdentityConstants.DataStoreKey.DATASTORE_NAME,
 			IdentityConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
-		Map<String, Object> persistedMap = JSONUtils.toMap(new JSONObject(persistedJson));
+
 		// 3 for ECID
-		JSONAsserts.assertExactMatch("{}", new JSONObject(persistedJson), new ElementCount(3, Subtree));
+		JSONAsserts.assertExactMatch("{}", persistedJson, new ElementCount(3, Subtree));
 	}
 
 	@Test
@@ -657,9 +652,9 @@ public class IdentityPublicAPITest {
 			IdentityConstants.DataStoreKey.DATASTORE_NAME,
 			IdentityConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
-		Map<String, Object> persistedMap = JSONUtils.toMap(new JSONObject(persistedJson));
+
 		// 3 for ECID + 3 for Email
-		JSONAsserts.assertExactMatch("{}", new JSONObject(persistedJson), new ElementCount(6, Subtree));
+		JSONAsserts.assertExactMatch("{}", persistedJson, new ElementCount(6, Subtree));
 	}
 
 	@Test
@@ -686,9 +681,9 @@ public class IdentityPublicAPITest {
 			IdentityConstants.DataStoreKey.DATASTORE_NAME,
 			IdentityConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
-		Map<String, Object> persistedMap = JSONUtils.toMap(new JSONObject(persistedJson));
+
 		// 3 for ECID + 3 for Email
-		JSONAsserts.assertExactMatch("{}", new JSONObject(persistedJson), new ElementCount(6, Subtree));
+		JSONAsserts.assertExactMatch("{}", persistedJson, new ElementCount(6, Subtree));
 	}
 
 	@Test
@@ -714,8 +709,8 @@ public class IdentityPublicAPITest {
 			IdentityConstants.DataStoreKey.DATASTORE_NAME,
 			IdentityConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
-		Map<String, Object> persistedMap = JSONUtils.toMap(new JSONObject(persistedJson));
+
 		// 3 for ECID that still exists
-		JSONAsserts.assertExactMatch("{}", new JSONObject(persistedJson), new ElementCount(3, Subtree));
+		JSONAsserts.assertExactMatch("{}", persistedJson, new ElementCount(3, Subtree));
 	}
 }

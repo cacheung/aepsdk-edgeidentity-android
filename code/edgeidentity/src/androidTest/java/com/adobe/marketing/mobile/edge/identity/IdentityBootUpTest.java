@@ -20,14 +20,12 @@ import static com.adobe.marketing.mobile.util.NodeConfig.Scope.Subtree;
 import static com.adobe.marketing.mobile.util.TestHelper.getXDMSharedStateFor;
 
 import com.adobe.marketing.mobile.util.ElementCount;
-import com.adobe.marketing.mobile.util.JSONUtils;
 import com.adobe.marketing.mobile.util.KeyMustBeAbsent;
 import com.adobe.marketing.mobile.util.MonitorExtension;
 import com.adobe.marketing.mobile.util.TestHelper;
 import com.adobe.marketing.mobile.util.TestPersistenceHelper;
 import java.util.Arrays;
 import java.util.Map;
-import org.json.JSONObject;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
@@ -92,8 +90,8 @@ public class IdentityBootUpTest {
 			IdentityConstants.DataStoreKey.DATASTORE_NAME,
 			IdentityConstants.DataStoreKey.IDENTITY_PROPERTIES
 		);
-		Map<String, Object> persistedMap = JSONUtils.toMap(new JSONObject(persistedJson));
-		assertExactMatch("{}", persistedMap, new ElementCount(12, Subtree));
+
+		assertExactMatch("{}", persistedJson, new ElementCount(12, Subtree));
 	}
 
 	@Test
