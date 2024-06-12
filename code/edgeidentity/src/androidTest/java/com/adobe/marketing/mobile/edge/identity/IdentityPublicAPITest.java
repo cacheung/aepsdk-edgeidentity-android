@@ -15,13 +15,14 @@ import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTe
 import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.getExperienceCloudIdSync;
 import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.getIdentitiesSync;
 import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.getUrlVariablesSync;
-import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.registerExtensions;
 import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.setupConfiguration;
 import static com.adobe.marketing.mobile.util.NodeConfig.Scope.Subtree;
 import static com.adobe.marketing.mobile.util.TestHelper.SetupCoreRule;
 import static com.adobe.marketing.mobile.util.TestHelper.getDispatchedEventsWith;
 import static com.adobe.marketing.mobile.util.TestHelper.getSharedStateFor;
 import static com.adobe.marketing.mobile.util.TestHelper.getXDMSharedStateFor;
+import static com.adobe.marketing.mobile.util.TestHelper.registerExtensions;
+import static com.adobe.marketing.mobile.util.TestHelper.resetTestExpectations;
 import static com.adobe.marketing.mobile.util.TestHelper.waitForThreads;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -146,7 +147,7 @@ public class IdentityPublicAPITest {
 	@Test
 	public void testUpdateAPI_nullData() throws Exception {
 		registerExtensions(Arrays.asList(MonitorExtension.EXTENSION, Identity.EXTENSION), null);
-
+		resetTestExpectations();
 		// test
 		Identity.updateIdentities(null);
 		waitForThreads(2000);
@@ -179,6 +180,7 @@ public class IdentityPublicAPITest {
 	@Test
 	public void testUpdateAPI_emptyData() throws Exception {
 		registerExtensions(Arrays.asList(MonitorExtension.EXTENSION, Identity.EXTENSION), null);
+		resetTestExpectations();
 
 		// test
 		Identity.updateIdentities(new IdentityMap());

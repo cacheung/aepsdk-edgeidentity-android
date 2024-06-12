@@ -13,10 +13,10 @@ package com.adobe.marketing.mobile.edge.identity;
 
 import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.TestItem;
 import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.createXDMIdentityMap;
-import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.registerExtensions;
 import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.setEdgeIdentityPersistence;
 import static com.adobe.marketing.mobile.util.TestHelper.getDispatchedEventsWith;
 import static com.adobe.marketing.mobile.util.TestHelper.getXDMSharedStateFor;
+import static com.adobe.marketing.mobile.util.TestHelper.registerExtensions;
 import static com.adobe.marketing.mobile.util.TestHelper.resetTestExpectations;
 import static com.adobe.marketing.mobile.util.TestHelper.waitForThreads;
 import static org.junit.Assert.assertEquals;

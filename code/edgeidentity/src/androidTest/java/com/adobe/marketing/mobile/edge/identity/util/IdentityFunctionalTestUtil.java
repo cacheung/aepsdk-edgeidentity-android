@@ -14,13 +14,10 @@ package com.adobe.marketing.mobile.edge.identity.util;
 import static com.adobe.marketing.mobile.util.TestHelper.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
-import androidx.annotation.Nullable;
 import com.adobe.marketing.mobile.AdobeCallback;
 import com.adobe.marketing.mobile.AdobeCallbackWithError;
 import com.adobe.marketing.mobile.AdobeError;
-import com.adobe.marketing.mobile.Extension;
 import com.adobe.marketing.mobile.MobileCore;
 import com.adobe.marketing.mobile.edge.identity.AuthenticatedState;
 import com.adobe.marketing.mobile.edge.identity.Identity;
@@ -42,32 +39,6 @@ public class IdentityFunctionalTestUtil {
 
 	private static final String LOG_SOURCE = "IdentityFunctionalTestUtil";
 	private static final long REGISTRATION_TIMEOUT_MS = TimeUnit.SECONDS.toMillis(2);
-
-	/**
-	 * Applies the configuration provided, registers the extensions and then starts
-	 * core.
-	 * @param extensions the extensions that need to be registered
-	 * @param configuration the initial configuration update that needs to be applied
-	 */
-	public static void registerExtensions(
-		final List<Class<? extends Extension>> extensions,
-		@Nullable final Map<String, Object> configuration
-	) {
-		if (configuration != null) {
-			MobileCore.updateConfiguration(configuration);
-		}
-
-		final ADBCountDownLatch latch = new ADBCountDownLatch(1);
-		MobileCore.registerExtensions(extensions, o -> latch.countDown());
-
-		try {
-			latch.await(REGISTRATION_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-		} catch (InterruptedException e) {
-			fail("Failed to register extensions");
-		}
-		TestHelper.waitForThreads(2000);
-		resetTestExpectations();
-	}
 
 	/**
 	 * Updates configuration shared state with an orgId

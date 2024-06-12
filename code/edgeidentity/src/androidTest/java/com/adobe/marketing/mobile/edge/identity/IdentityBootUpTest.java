@@ -13,11 +13,11 @@ package com.adobe.marketing.mobile.edge.identity;
 
 import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.TestItem;
 import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.createXDMIdentityMap;
-import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.registerExtensions;
 import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.setEdgeIdentityPersistence;
 import static com.adobe.marketing.mobile.util.JSONAsserts.assertExactMatch;
 import static com.adobe.marketing.mobile.util.NodeConfig.Scope.Subtree;
 import static com.adobe.marketing.mobile.util.TestHelper.getXDMSharedStateFor;
+import static com.adobe.marketing.mobile.util.TestHelper.registerExtensions;
 
 import com.adobe.marketing.mobile.util.ElementCount;
 import com.adobe.marketing.mobile.util.KeyMustBeAbsent;

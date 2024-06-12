@@ -16,12 +16,12 @@ import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTe
 import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.createXDMIdentityMap;
 import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.getExperienceCloudIdSync;
 import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.getIdentityDirectECIDSync;
-import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.registerExtensions;
 import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.setEdgeIdentityPersistence;
 import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.setIdentityDirectPersistedECID;
 import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.verifyPrimaryECID;
 import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.verifyPrimaryECIDNotNull;
 import static com.adobe.marketing.mobile.edge.identity.util.IdentityFunctionalTestUtil.verifySecondaryECID;
+import static com.adobe.marketing.mobile.util.TestHelper.registerExtensions;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
