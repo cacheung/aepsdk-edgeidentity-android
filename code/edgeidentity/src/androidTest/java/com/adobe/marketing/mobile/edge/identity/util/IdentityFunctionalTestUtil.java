@@ -254,19 +254,10 @@ public class IdentityFunctionalTestUtil {
 		String ecid = getExperienceCloudIdSync();
 		assertNotNull(ecid);
 
-		// verify xdm shared state is has ECID
 		Map<String, Object> xdmSharedState = getXDMSharedStateFor(IdentityTestConstants.EXTENSION_NAME, 1000);
 
-		String expected =
-			"{" +
-			"\"identityMap\": {" +
-			"    \"ECID\": [" +
-			"        {" +
-			"            \"id\": \"STRING_TYPE\"" +
-			"        }" +
-			"    ]" +
-			"  }" +
-			"}";
+		// Validates "ECID" array has a single object element, with no restriction on what is inside that element
+		String expected = "{\"identityMap\": {\"ECID\": [{}]}}";
 
 		JSONAsserts.assertTypeMatch(expected, xdmSharedState);
 	}
@@ -320,9 +311,10 @@ public class IdentityFunctionalTestUtil {
 			return;
 		}
 		String expected =
-			"{\n" +
+			"{" +
 			"  \"identityMap\": {" +
 			"    \"ECID\": [" +
+			"      {}," + // Empty first ECID object
 			"      {" +
 			"        \"id\": \"" +
 			secondaryECID +

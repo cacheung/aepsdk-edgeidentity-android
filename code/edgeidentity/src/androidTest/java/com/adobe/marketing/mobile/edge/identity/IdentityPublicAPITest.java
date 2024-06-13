@@ -37,7 +37,6 @@ import com.adobe.marketing.mobile.util.ElementCount;
 import com.adobe.marketing.mobile.util.JSONAsserts;
 import com.adobe.marketing.mobile.util.MonitorExtension;
 import com.adobe.marketing.mobile.util.TestPersistenceHelper;
-import com.adobe.marketing.mobile.util.ValueExactMatch;
 import com.adobe.marketing.mobile.util.ValueNotEqual;
 import java.util.Arrays;
 import java.util.List;
@@ -84,11 +83,7 @@ public class IdentityPublicAPITest {
 			"  } " +
 			"}";
 
-		JSONAsserts.assertExactMatch(
-			expected,
-			sharedStateMap,
-			new ValueExactMatch("extensions.com.adobe.edge.identity.version")
-		);
+		JSONAsserts.assertExactMatch(expected, sharedStateMap);
 	}
 
 	// --------------------------------------------------------------------------------------------
