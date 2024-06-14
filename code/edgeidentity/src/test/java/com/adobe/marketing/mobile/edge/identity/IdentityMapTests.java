@@ -11,6 +11,7 @@
 
 package com.adobe.marketing.mobile.edge.identity;
 
+import static com.adobe.marketing.mobile.util.NodeConfig.Scope.Subtree;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -18,8 +19,6 @@ import static org.junit.Assert.assertTrue;
 import com.adobe.marketing.mobile.util.CollectionEqualCount;
 import com.adobe.marketing.mobile.util.JSONAsserts;
 import com.adobe.marketing.mobile.util.JSONUtils;
-import com.adobe.marketing.mobile.util.NodeConfig;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,12 +48,8 @@ public class IdentityMapTests {
 		JSONAsserts.assertExactMatch(
 			expected,
 			map.asXDMMap(false),
-			new CollectionEqualCount(NodeConfig.Scope.Subtree),
-			new CollectionEqualCount(
-				Collections.singletonList("identityMap.location[0]"),
-				false,
-				NodeConfig.Scope.Subtree
-			)
+			new CollectionEqualCount(Subtree),
+			new CollectionEqualCount(false, Subtree, "identityMap.location[0]")
 		);
 	}
 
@@ -180,16 +175,16 @@ public class IdentityMapTests {
 		baseMap.merge(newMap);
 
 		String expected =
-			"{\n" +
-			"  \"identityMap\": {\n" +
-			"    \"location\": [\n" +
-			"      {\n" +
-			"        \"id\": \"California\",\n" +
-			"        \"authenticatedState\": \"authenticated\",\n" +
-			"        \"primary\": true\n" +
-			"      }\n" +
-			"    ]\n" +
-			"  }\n" +
+			"{" +
+			"  \"identityMap\": {" +
+			"    \"location\": [" +
+			"      {" +
+			"        \"id\": \"California\"," +
+			"        \"authenticatedState\": \"authenticated\"," +
+			"        \"primary\": true" +
+			"      }" +
+			"    ]" +
+			"  }" +
 			"}";
 
 		JSONAsserts.assertEquals(expected, baseMap.asXDMMap(false));
@@ -375,16 +370,16 @@ public class IdentityMapTests {
 
 		// verify
 		final String expected =
-			"{\n" +
-			"      \"identityMap\": {\n" +
-			"        \"ECID\": [\n" +
-			"          {\n" +
-			"            \"id\": \"randomECID\",\n" +
-			"            \"authenticatedState\": \"ambiguous\",\n" +
-			"            \"primary\": true\n" +
-			"          }\n" +
-			"        ]\n" +
-			"      }\n" +
+			"{" +
+			"      \"identityMap\": {" +
+			"        \"ECID\": [" +
+			"          {" +
+			"            \"id\": \"randomECID\"," +
+			"            \"authenticatedState\": \"ambiguous\"," +
+			"            \"primary\": true" +
+			"          }" +
+			"        ]" +
+			"      }" +
 			"}";
 
 		JSONAsserts.assertEquals(expected, map.asXDMMap(false));
@@ -394,22 +389,22 @@ public class IdentityMapTests {
 	public void test_FromData_removesItem_missingId() throws Exception {
 		// setup
 		final String jsonStr =
-			"{\n" +
-			"      \"identityMap\": {\n" +
-			"        \"ECID\": [\n" +
-			"          {\n" +
-			"            \"id\":randomECID,\n" +
-			"            \"authenticatedState\": \"ambiguous\",\n" +
-			"            \"primary\": true\n" +
-			"          }\n" +
-			"        ],\n" +
-			"        \"USERID\": [\n" +
-			"          {\n" +
-			"            \"authenticatedState\": \"authenticated\",\n" +
-			"            \"primary\": false\n" +
-			"          }\n" +
-			"        ]\n" +
-			"      }\n" +
+			"{" +
+			"      \"identityMap\": {" +
+			"        \"ECID\": [" +
+			"          {" +
+			"            \"id\":randomECID," +
+			"            \"authenticatedState\": \"ambiguous\"," +
+			"            \"primary\": true" +
+			"          }" +
+			"        ]," +
+			"        \"USERID\": [" +
+			"          {" +
+			"            \"authenticatedState\": \"authenticated\"," +
+			"            \"primary\": false" +
+			"          }" +
+			"        ]" +
+			"      }" +
 			"}";
 
 		final JSONObject jsonObject = new JSONObject(jsonStr);
@@ -420,18 +415,17 @@ public class IdentityMapTests {
 
 		// verify
 		final String expected =
-			"{\n" +
-			"      \"identityMap\": {\n" +
-			"        \"ECID\": [\n" +
-			"          {\n" +
-			"            \"id\": \"randomECID\",\n" +
-			"            \"authenticatedState\": \"ambiguous\",\n" +
-			"            \"primary\": true\n" +
-			"          }\n" +
-			"        ]\n" +
-			"      }\n" +
+			"{" +
+			"      \"identityMap\": {" +
+			"        \"ECID\": [" +
+			"          {" +
+			"            \"id\": \"randomECID\"," +
+			"            \"authenticatedState\": \"ambiguous\"," +
+			"            \"primary\": true" +
+			"          }" +
+			"        ]" +
+			"      }" +
 			"}";
-
 		JSONAsserts.assertEquals(expected, map.asXDMMap(false));
 	}
 
@@ -446,14 +440,14 @@ public class IdentityMapTests {
 		// setup
 		// ECID namespace is map instead of list
 		final String invalidJsonStr =
-			"{\n" +
-			"  \"identityMap\": {\n" +
-			"    \"ECID\": {\n" +
-			"        \"id\": \"randomECID\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": true\n" +
-			"    }\n" +
-			"  }\n" +
+			"{" +
+			"  \"identityMap\": {" +
+			"    \"ECID\": {" +
+			"        \"id\": \"randomECID\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": true" +
+			"    }" +
+			"  }" +
 			"}";
 
 		final JSONObject jsonObject = new JSONObject(invalidJsonStr);
@@ -471,17 +465,17 @@ public class IdentityMapTests {
 		// setup
 		// namespace is an array of arrays instead of an array of identity items
 		final String invalidJsonStr =
-			"{\n" +
-			"  \"identityMap\": {\n" +
-			"    \"ECID\": [{\n" +
-			"        \"id\": \"randomECID\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": true\n" +
-			"    }],\n" +
-			"    \"namespace\": [\n" +
-			"       [ \"arrayInsteadOfMap\", \"invalid\"]\n" +
-			"    ]\n" +
-			"  }\n," +
+			"{" +
+			"  \"identityMap\": {" +
+			"    \"ECID\": [{" +
+			"        \"id\": \"randomECID\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": true" +
+			"    }]," +
+			"    \"namespace\": [" +
+			"       [ \"arrayInsteadOfMap\", \"invalid\"]" +
+			"    ]" +
+			"  }," +
 			"}";
 
 		final JSONObject jsonObject = new JSONObject(invalidJsonStr);

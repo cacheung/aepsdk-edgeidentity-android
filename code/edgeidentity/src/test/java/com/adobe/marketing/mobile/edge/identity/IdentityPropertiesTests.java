@@ -11,7 +11,9 @@
 
 package com.adobe.marketing.mobile.edge.identity;
 
-import static com.adobe.marketing.mobile.edge.identity.IdentityTestUtil.*;
+import static com.adobe.marketing.mobile.edge.identity.IdentityTestUtil.TestECIDItem;
+import static com.adobe.marketing.mobile.edge.identity.IdentityTestUtil.TestItem;
+import static com.adobe.marketing.mobile.edge.identity.IdentityTestUtil.createXDMIdentityMap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -71,32 +73,32 @@ public class IdentityPropertiesTests {
 		Map<String, Object> xdmData = props.toXDMData(false);
 
 		String expected =
-			"{\n" +
-			"  \"identityMap\": {\n" +
-			"    \"ECID\": [\n" +
-			"      {\n" +
+			"{" +
+			"  \"identityMap\": {" +
+			"    \"ECID\": [" +
+			"      {" +
 			"        \"id\": \"" +
 			props.getECID().toString() +
-			"\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": false\n" +
-			"      },\n" +
-			"      {\n" +
+			"\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }," +
+			"      {" +
 			"        \"id\": \"" +
 			props.getECIDSecondary().toString() +
-			"\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": false\n" +
-			"      }\n" +
-			"    ],\n" +
-			"    \"GAID\": [\n" +
-			"      {\n" +
-			"        \"id\": \"test-ad-id\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": false\n" +
-			"      }\n" +
-			"    ]\n" +
-			"  }\n" +
+			"\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }" +
+			"    ]," +
+			"    \"GAID\": [" +
+			"      {" +
+			"        \"id\": \"test-ad-id\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }" +
+			"    ]" +
+			"  }" +
 			"}";
 
 		JSONAsserts.assertEquals(expected, xdmData);
@@ -110,18 +112,18 @@ public class IdentityPropertiesTests {
 
 		// verify
 		String expected =
-			"{\n" +
-			"  \"identityMap\": {\n" +
-			"    \"ECID\": [\n" +
-			"      {\n" +
+			"{" +
+			"  \"identityMap\": {" +
+			"    \"ECID\": [" +
+			"      {" +
 			"        \"id\": \"" +
 			props.getECID().toString() +
-			"\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": false\n" +
-			"      }\n" +
-			"    ]\n" +
-			"  }\n" +
+			"\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }" +
+			"    ]" +
+			"  }" +
 			"}";
 
 		JSONAsserts.assertEquals(expected, props.toXDMData(false));
@@ -136,7 +138,7 @@ public class IdentityPropertiesTests {
 
 		// test and verify, can't have secondary ECID without primary ECID
 		Map<String, Object> xdmMap = props.toXDMData(false);
-		JSONAsserts.assertEquals("{}", xdmMap);
+		JSONAsserts.assertExactMatch("{}", xdmMap);
 	}
 
 	@Test
@@ -150,16 +152,16 @@ public class IdentityPropertiesTests {
 
 		// verify
 		String expected =
-			"{\n" +
-			"  \"identityMap\": {\n" +
-			"    \"GAID\": [\n" +
-			"      {\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"id\": \"test-ad-id\",\n" +
-			"        \"primary\": false\n" +
-			"      }\n" +
-			"    ]\n" +
-			"  }\n" +
+			"{" +
+			"  \"identityMap\": {" +
+			"    \"GAID\": [" +
+			"      {" +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"id\": \"test-ad-id\"," +
+			"        \"primary\": false" +
+			"      }" +
+			"    ]" +
+			"  }" +
 			"}";
 
 		JSONAsserts.assertExactMatch(expected, xdmMap);
@@ -199,42 +201,42 @@ public class IdentityPropertiesTests {
 
 		// verify
 		String expected =
-			"{\n" +
-			"  \"identityMap\": {\n" +
-			"    \"GAID\": [\n" +
-			"      {\n" +
-			"        \"id\": \"test-ad-id\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": false\n" +
-			"      }\n" +
-			"    ],\n" +
-			"    \"UserId\": [\n" +
-			"      {\n" +
-			"        \"id\": \"secretID\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": false\n" +
-			"      }\n" +
-			"    ],\n" +
-			"    \"ECID\": [\n" +
-			"      {\n" +
-			"        \"id\": \"primaryECID\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": false\n" +
-			"      },\n" +
-			"      {\n" +
-			"        \"id\": \"secondaryECID\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": false\n" +
-			"      }\n" +
-			"    ],\n" +
-			"    \"PushId\": [\n" +
-			"      {\n" +
-			"        \"id\": \"token\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": false\n" +
-			"      }\n" +
-			"    ]\n" +
-			"  }\n" +
+			"{" +
+			"  \"identityMap\": {" +
+			"    \"GAID\": [" +
+			"      {" +
+			"        \"id\": \"test-ad-id\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }" +
+			"    ]," +
+			"    \"UserId\": [" +
+			"      {" +
+			"        \"id\": \"secretID\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }" +
+			"    ]," +
+			"    \"ECID\": [" +
+			"      {" +
+			"        \"id\": \"primaryECID\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }," +
+			"      {" +
+			"        \"id\": \"secondaryECID\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }" +
+			"    ]," +
+			"    \"PushId\": [" +
+			"      {" +
+			"        \"id\": \"token\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }" +
+			"    ]" +
+			"  }" +
 			"}";
 
 		JSONAsserts.assertEquals(expected, props.toXDMData(false));
@@ -267,28 +269,28 @@ public class IdentityPropertiesTests {
 
 		// verify
 		String expected =
-			"{\n" +
-			"  \"identityMap\": {\n" +
-			"    \"UserId\": [\n" +
-			"      {\n" +
-			"        \"id\": \"secretID\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": false\n" +
-			"      }\n" +
-			"    ],\n" +
-			"    \"ECID\": [\n" +
-			"      {\n" +
-			"        \"id\": \"primaryECID\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": false\n" +
-			"      },\n" +
-			"      {\n" +
-			"        \"id\": \"secondaryECID\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": false\n" +
-			"      }\n" +
-			"    ]\n" +
-			"  }\n" +
+			"{" +
+			"  \"identityMap\": {" +
+			"    \"UserId\": [" +
+			"      {" +
+			"        \"id\": \"secretID\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }" +
+			"    ]," +
+			"    \"ECID\": [" +
+			"      {" +
+			"        \"id\": \"primaryECID\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }," +
+			"      {" +
+			"        \"id\": \"secondaryECID\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }" +
+			"    ]" +
+			"  }" +
 			"}";
 
 		JSONAsserts.assertEquals(expected, props.toXDMData(false));
@@ -310,16 +312,16 @@ public class IdentityPropertiesTests {
 
 		// verify
 		String expected1 =
-			"{\n" +
-			"  \"identityMap\": {\n" +
-			"    \"ECID\": [\n" +
-			"      {\n" +
-			"        \"id\": \"primary\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": false\n" +
-			"      }\n" +
-			"    ]\n" +
-			"  }\n" +
+			"{" +
+			"  \"identityMap\": {" +
+			"    \"ECID\": [" +
+			"      {" +
+			"        \"id\": \"primary\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }" +
+			"    ]" +
+			"  }" +
 			"}";
 
 		JSONAsserts.assertEquals(expected1, props.toXDMData(false));
@@ -330,16 +332,16 @@ public class IdentityPropertiesTests {
 
 		// verify
 		String expected2 =
-			"{\n" +
-			"  \"identityMap\": {\n" +
-			"    \"ECID\": [\n" +
-			"      {\n" +
-			"        \"id\": \"primaryAgain\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": false\n" +
-			"      }\n" +
-			"    ]\n" +
-			"  }\n" +
+			"{" +
+			"  \"identityMap\": {" +
+			"    \"ECID\": [" +
+			"      {" +
+			"        \"id\": \"primaryAgain\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }" +
+			"    ]" +
+			"  }" +
 			"}";
 
 		JSONAsserts.assertEquals(expected2, props.toXDMData(false));
@@ -375,21 +377,21 @@ public class IdentityPropertiesTests {
 
 		// verify
 		String expected1 =
-			"{\n" +
-			"  \"identityMap\": {\n" +
-			"    \"ECID\": [\n" +
-			"      {\n" +
-			"        \"id\": \"primary\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": false\n" +
-			"      },\n" +
-			"      {\n" +
-			"        \"id\": \"secondary\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": false\n" +
-			"      }\n" +
-			"    ]\n" +
-			"  }\n" +
+			"{" +
+			"  \"identityMap\": {" +
+			"    \"ECID\": [" +
+			"      {" +
+			"        \"id\": \"primary\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }," +
+			"      {" +
+			"        \"id\": \"secondary\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }" +
+			"    ]" +
+			"  }" +
 			"}";
 
 		JSONAsserts.assertEquals(expected1, props.toXDMData(false));
@@ -400,21 +402,21 @@ public class IdentityPropertiesTests {
 
 		// verify
 		String expected2 =
-			"{\n" +
-			"  \"identityMap\": {\n" +
-			"    \"ECID\": [\n" +
-			"      {\n" +
-			"        \"id\": \"primary\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": false\n" +
-			"      },\n" +
-			"      {\n" +
-			"        \"id\": \"secondaryAgain\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": false\n" +
-			"      }\n" +
-			"    ]\n" +
-			"  }\n" +
+			"{" +
+			"  \"identityMap\": {" +
+			"    \"ECID\": [" +
+			"      {" +
+			"        \"id\": \"primary\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }," +
+			"      {" +
+			"        \"id\": \"secondaryAgain\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }" +
+			"    ]" +
+			"  }" +
 			"}";
 
 		JSONAsserts.assertEquals(expected2, props.toXDMData(false));
@@ -429,21 +431,21 @@ public class IdentityPropertiesTests {
 		);
 
 		String expected =
-			"{\n" +
-			"  \"identityMap\": {\n" +
-			"    \"ECID\": [\n" +
-			"      {\n" +
-			"        \"id\": \"primary\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": false\n" +
-			"      },\n" +
-			"      {\n" +
-			"        \"id\": \"secondary\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": false\n" +
-			"      }\n" +
-			"    ]\n" +
-			"  }\n" +
+			"{" +
+			"  \"identityMap\": {" +
+			"    \"ECID\": [" +
+			"      {" +
+			"        \"id\": \"primary\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }," +
+			"      {" +
+			"        \"id\": \"secondary\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }" +
+			"    ]" +
+			"  }" +
 			"}";
 
 		JSONAsserts.assertEquals(expected, props.toXDMData(false));
@@ -452,16 +454,16 @@ public class IdentityPropertiesTests {
 
 		// test
 		String expected2 =
-			"{\n" +
-			"  \"identityMap\": {\n" +
-			"    \"ECID\": [\n" +
-			"      {\n" +
-			"        \"id\": \"primary\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": false\n" +
-			"      }\n" +
-			"    ]\n" +
-			"  }\n" +
+			"{" +
+			"  \"identityMap\": {" +
+			"    \"ECID\": [" +
+			"      {" +
+			"        \"id\": \"primary\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }" +
+			"    ]" +
+			"  }" +
 			"}";
 
 		JSONAsserts.assertEquals(expected2, props.toXDMData(false));
@@ -495,21 +497,21 @@ public class IdentityPropertiesTests {
 
 		// verify
 		String expected =
-			"{\n" +
-			"  \"identityMap\": {\n" +
-			"    \"ECID\": [\n" +
-			"      {\n" +
-			"        \"id\": \"primaryAgain\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": false\n" +
-			"      },\n" +
-			"      {\n" +
-			"        \"id\": \"secondary\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": false\n" +
-			"      }\n" +
-			"    ]\n" +
-			"  }\n" +
+			"{" +
+			"  \"identityMap\": {" +
+			"    \"ECID\": [" +
+			"      {" +
+			"        \"id\": \"primaryAgain\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }," +
+			"      {" +
+			"        \"id\": \"secondary\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }" +
+			"    ]" +
+			"  }" +
 			"}";
 
 		JSONAsserts.assertEquals(expected, props.toXDMData(false));
@@ -527,21 +529,21 @@ public class IdentityPropertiesTests {
 
 		// verify
 		String expected =
-			"{\n" +
-			"  \"identityMap\": {\n" +
-			"    \"ECID\": [\n" +
-			"      {\n" +
-			"        \"id\": \"primaryAgain\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": false\n" +
-			"      },\n" +
-			"      {\n" +
-			"        \"id\": \"secondary\",\n" +
-			"        \"authenticatedState\": \"ambiguous\",\n" +
-			"        \"primary\": false\n" +
-			"      }\n" +
-			"    ]\n" +
-			"  }\n" +
+			"{" +
+			"  \"identityMap\": {" +
+			"    \"ECID\": [" +
+			"      {" +
+			"        \"id\": \"primaryAgain\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }," +
+			"      {" +
+			"        \"id\": \"secondary\"," +
+			"        \"authenticatedState\": \"ambiguous\"," +
+			"        \"primary\": false" +
+			"      }" +
+			"    ]" +
+			"  }" +
 			"}";
 
 		JSONAsserts.assertEquals(expected, props.toXDMData(false));

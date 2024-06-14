@@ -756,15 +756,15 @@ public class IdentityStateTests {
 				final Event consentEvent = consentEventCaptor.getValue();
 
 				String expected =
-					"{\n" +
-					"  \"consents\": {\n" +
-					"    \"adID\": {\n" +
+					"{" +
+					"  \"consents\": {" +
+					"    \"adID\": {" +
 					"      \"val\": \"" +
 					expectedConsent +
-					"\",\n" +
-					"      \"idType\": \"GAID\"\n" +
-					"    }\n" +
-					"  }\n" +
+					"\"," +
+					"      \"idType\": \"GAID\"" +
+					"    }" +
+					"  }" +
 					"}";
 
 				JSONAsserts.assertEquals(expected, consentEvent.getEventData());
@@ -824,31 +824,31 @@ public class IdentityStateTests {
 		@NonNull final String expectedECID
 	) {
 		if (expectedAdId != null) {
-			String json =
-				"{\n" +
-				"  \"identityMap\": {\n" +
-				"    \"GAID\": [\n" +
-				"      {\n" +
+			String expected =
+				"{" +
+				"  \"identityMap\": {" +
+				"    \"GAID\": [" +
+				"      {" +
 				"        \"id\": \"" +
 				expectedAdId +
-				"\",\n" +
-				"        \"authenticatedState\": \"ambiguous\",\n" +
-				"        \"primary\": false\n" +
-				"      }\n" +
-				"    ],\n" +
-				"    \"ECID\": [\n" +
-				"      {\n" +
+				"\"," +
+				"        \"authenticatedState\": \"ambiguous\"," +
+				"        \"primary\": false" +
+				"      }" +
+				"    ]," +
+				"    \"ECID\": [" +
+				"      {" +
 				"        \"id\": \"" +
 				expectedECID +
-				"\",\n" +
-				"        \"authenticatedState\": \"ambiguous\",\n" +
-				"        \"primary\": false\n" +
-				"      }\n" +
-				"    ]\n" +
-				"  }\n" +
+				"\"," +
+				"        \"authenticatedState\": \"ambiguous\"," +
+				"        \"primary\": false" +
+				"      }" +
+				"    ]" +
+				"  }" +
 				"}";
 
-			JSONAsserts.assertEquals(json, IdentityMap);
+			JSONAsserts.assertEquals(expected, IdentityMap);
 		}
 	}
 }
